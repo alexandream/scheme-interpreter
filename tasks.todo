@@ -1,0 +1,25 @@
+
+Tarefas do projeto final:
+
+  - Primeiro dia:
+
+    x Criar estrutura básica para um Cell
+
+    x Criar constantes para Cell ATOM
+
+    - Criar constructor e printer para SPECIAL <boolean>
+    
+    x Criar constructor e printer para ATOM <int32>
+    
+    - Criar allocator básico para Cells (tamanho fixo de pool)
+  
+
+  - Segundo dia:
+
+    - Criar construtor e printer para ATOM <symbol>. Inclui fazer o
+      symbol map (string -> cell)
+
+
+
+  
+
