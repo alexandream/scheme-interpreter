@@ -2,6 +2,7 @@
 #define __CELL_H__
 
 #include <stdint.h>
+#include <cassert>
 
 /* The contents of cell_t is more than the struct defined below. For starters,
  * it's "car" value uses it's upper 4 bits to store that cell's flags. The
@@ -19,7 +20,8 @@
  *      00 - State A: Unvisited cell.
  *      11 - State B: Have just visited cell and it's car part.
  *      10 - State C: Cell's cdr part visited. Completely visisted the cell.
- *   
+ *      01 - State X: Cell is always "rooted". A GC pass will always mark.
+ *         
  *   META TYPE is a 2 bit value that encode what "class" of element this cell
  *   represents. It can have the following values:
  *
@@ -66,8 +68,16 @@ struct cell_t {
 	uint32_t cdr;
 };
 
+typedef uint32_t cell_ptr_t;
+
+extern cell_t* cell_pool;
+extern uint32_t cell_pool_size;
+
+cell_t& cell_alloc(void);
+cell_t& cell_alloc(cell_ptr_t& ptr);
+
 extern const 
-uint32_t CELL_CONTENT_MASK, 
+uint32_t CELL_CAR_MASK, 
          CELL_FLAG_MASK, 
          CELL_META_TYPE_MASK,
          CELL_GC_INFO_MASK,
@@ -79,48 +89,133 @@ uint8_t CELL_META_TYPE_CONS_CELL,
         CELL_META_TYPE_SIMPLE_ATOM,
         CELL_META_TYPE_EXTENDED;
 
+extern const
+cell_ptr_t NIL,
+           TRUE,
+           FALSE,
+           UNDEFINED,
+           UNSPECIFIED;
+
+extern
+cell_t NIL_CELL,
+       TRUE_CELL,
+       FALSE_CELL,
+       UNDEFINED_CELL,
+       UNSPECIFIED_CELL;
+
+
 static inline 
-uint32_t CELL_CAR(const cell_t& cell) {
-	// Mask the flag bits off so we can read car value.
-	return cell.car & CELL_CONTENT_MASK;
+cell_ptr_t CAR(const cell_t& cell) {
+	return (cell.car & CELL_CAR_MASK);
 }
 
 static inline
-uint32_t CELL_CDR(const cell_t& cell) {
-	// Mask the flag bits off so we can read cdr value.
-	return cell.cdr & CELL_CONTENT_MASK;
+void CAR(cell_t& cell, cell_ptr_t value) {
+	cell.car |= (value & CELL_CAR_MASK);
 }
 
 static inline
-uint8_t CELL_FLAGS(const cell_t& cell) {
+cell_ptr_t CDR(const cell_t& cell) {
+	return cell.cdr;
+}
+
+static inline
+void CDR(cell_t& cell, cell_ptr_t value) {
+	cell.cdr = value;
+}
+static inline
+uint8_t FLAGS(const cell_t& cell) {
 	// Mask the flag bits on and shifts down the flags to fit on 8 bits;
 	return (uint8_t) ((cell.car & CELL_FLAG_MASK) >> 28);
 }
 
 static inline
-uint8_t CELL_META_TYPE(const cell_t& cell) {
+uint8_t META_TYPE(const cell_t& cell) {
 	return (uint8_t) ((cell.car & CELL_META_TYPE_MASK) >> 30);
 }
 
 static inline
-void CELL_SET_META_TYPE(cell_t& cell, uint8_t meta_type) {
-	cell.car = (cell.car & CELL_CONTENT_MASK) | ((uint32_t) meta_type << 30);
+void META_TYPE(cell_t& cell, uint8_t meta_type) {
+	cell.car = (cell.car & CELL_CAR_MASK) | ((uint32_t) meta_type << 30);
 }
 
 static inline
-uint8_t CELL_GC_INFO(const cell_t& cell) {
+uint8_t GC_INFO(const cell_t& cell) {
 	return (uint8_t) ((cell.car & CELL_GC_INFO_MASK) >> 28);
 }
 
 static inline
-bool CELL_GC_STATE(const cell_t& cell) {
+bool GC_STATE(const cell_t& cell) {
 	return (bool) ((cell.car & CELL_GC_STATE_MASK) >> 28);
 }
 
 static inline
-bool CELL_GC_MARK(const cell_t& cell) {
+bool GC_MARK(const cell_t& cell) {
 	return (bool) ((cell.car & CELL_GC_MARK_MASK) >> 29);
 }
+//----------------------------------------------------------------------
+//--  PTR BASED FUNCTIONS  ---------------------------------------------
+//----------------------------------------------------------------------
+
+static inline
+bool SPECIAL_P(cell_ptr_t ptr) {
+	return ((uint32_t) ptr) > 0x0FFFFFF0;
+}
+static inline
+cell_t& PTR_LOOKUP(cell_ptr_t ptr) {
+	if (! SPECIAL_P(ptr)) {
+		assert(ptr < cell_pool_size);
+		return cell_pool[ptr];
+	}
+	return NIL_CELL;
+}
+
+static inline
+cell_ptr_t CAR(cell_ptr_t ptr) {
+	return CAR(PTR_LOOKUP(ptr));
+}
+
+static inline
+void CAR(cell_ptr_t ptr, cell_ptr_t car) {
+	CAR(PTR_LOOKUP(ptr), car);
+}
+
+static inline
+cell_ptr_t CDR(cell_ptr_t ptr) {
+	return CDR(PTR_LOOKUP(ptr));
+}
+
+static inline
+void CDR(cell_ptr_t ptr, cell_ptr_t cdr) {
+	CDR(PTR_LOOKUP(ptr), cdr);
+}
+
+static inline
+uint8_t FLAGS(cell_ptr_t ptr) {
+	return FLAGS(PTR_LOOKUP(ptr));
+}
+
+static inline
+uint8_t META_TYPE(cell_ptr_t ptr) {
+	return META_TYPE(PTR_LOOKUP(ptr));
+}
+
+static inline
+void META_TYPE(cell_ptr_t ptr, uint8_t meta_type) {
+	META_TYPE(PTR_LOOKUP(ptr), meta_type);
+}
+
+static inline
+uint8_t GC_INFO(cell_ptr_t ptr) {
+	return GC_INFO(PTR_LOOKUP(ptr));
+}
+
+static inline
+bool GC_STATE(cell_ptr_t ptr) {
+	return GC_STATE(PTR_LOOKUP(ptr));
+}
+
+
 
 
 #endif
