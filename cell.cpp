@@ -20,6 +20,8 @@ uint8_t CELL_META_TYPE_CONS_CELL   = 0x00,
         CELL_META_TYPE_SIMPLE_ATOM = 0x01,
         CELL_META_TYPE_EXTENDED    = 0x02;
 
+const
+uint8_t CELL_GC_FORCE_MARK = 0x01;
 
 const
 cell_ptr_t NIL         = 0x0FFFFFFF,

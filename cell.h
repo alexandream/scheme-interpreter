@@ -90,6 +90,9 @@ uint8_t CELL_META_TYPE_CONS_CELL,
         CELL_META_TYPE_EXTENDED;
 
 extern const
+uint8_t CELL_GC_FORCE_MARK;
+
+extern const
 cell_ptr_t NIL,
            TRUE,
            FALSE,
@@ -143,6 +146,12 @@ static inline
 uint8_t GC_INFO(const cell_t& cell) {
 	return (uint8_t) ((cell.car & CELL_GC_INFO_MASK) >> 28);
 }
+
+static inline
+void GC_INFO(cell_t& cell, uint8_t info) {
+	cell.car |= ( (uint32_t (info & 0x03) << 28) );
+}
+
 
 static inline
 bool GC_STATE(const cell_t& cell) {
@@ -208,6 +217,11 @@ void META_TYPE(cell_ptr_t ptr, uint8_t meta_type) {
 static inline
 uint8_t GC_INFO(cell_ptr_t ptr) {
 	return GC_INFO(PTR_LOOKUP(ptr));
+}
+
+static inline
+void GC_INFO(cell_ptr_t ptr, uint8_t info) {
+	GC_INFO(PTR_LOOKUP(ptr), info);
 }
 
 static inline
