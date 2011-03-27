@@ -6,6 +6,6 @@
 #include "cell.h"
 
 
-void int32_init_cell_from_string(cell_t& result, const std::string& str);
-std::string int32_display_format(const cell_t& cell);
+cell_ptr_t int32_make_from_string(const std::string& str);
+std::string int32_display_format(cell_ptr_t cell);
 #endif

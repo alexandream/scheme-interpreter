@@ -5,25 +5,33 @@
 #include "int32.h"
 
 
-void int32_init_cell_from_string(cell_t& result, const std::string& str) {
+cell_ptr_t make_int32_cell(int32_t value) {
+	cell_ptr_t result;
+	cell_t& cell = cell_alloc(result);
+
+	META_TYPE(cell, CELL_META_TYPE_SIMPLE_ATOM);
+	cell.cdr = (uint32_t) value;
+
+	return result;
+}
+
+cell_ptr_t int32_make_from_string(const std::string& str) {
+	// XXX: This assumes that checking whether the string represents a boolean
+	// or not was already done by an upper layer, like the lexer.
+
 	int32_t num;
 	std::stringstream ss(str);
 	
-	assert(!(ss >> num).fail());
-
-	CELL_SET_META_TYPE(result, CELL_META_TYPE_SIMPLE_ATOM);
-	result.cdr = (uint32_t) num;
+	ss >> num;
+	cell_ptr_t result = make_int32_cell(num);
+	return result;
 }	
 
-
-
-std::string int32_display_format(const cell_t& cell) {
-	assert(CELL_META_TYPE(cell) == CELL_META_TYPE_SIMPLE_ATOM);
-	/* TODO: Check int32 type here, as well as being a SIMPLE_ATOM.
-	assert(CELL_CAR(cell) == INT32_TYPE);
-	*/
+std::string int32_display_format(cell_ptr_t cell) {
+	// XXX: This assumes that checking whether the cell is one of the boolean
+	// values is already done by an upper layer, like the dispatcher.
 	
 	std::ostringstream oss;
-	oss << (int32_t) cell.cdr;
+	oss << (int32_t) CDR(cell);
 	return oss.str();
 }
