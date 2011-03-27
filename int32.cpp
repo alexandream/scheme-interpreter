@@ -16,8 +16,8 @@ cell_ptr_t make_int32_cell(int32_t value) {
 }
 
 cell_ptr_t int32_make_from_string(const std::string& str) {
-	// XXX: This assumes that checking whether the string represents a boolean
-	// or not was already done by an upper layer, like the lexer.
+	// ATTENTION: This assumes that checking whether the string represents a
+	// boolean or not was already done by an upper layer, like the lexer.
 
 	int32_t num;
 	std::stringstream ss(str);
@@ -28,8 +28,8 @@ cell_ptr_t int32_make_from_string(const std::string& str) {
 }	
 
 std::string int32_display_format(cell_ptr_t cell) {
-	// XXX: This assumes that checking whether the cell is one of the boolean
-	// values is already done by an upper layer, like the dispatcher.
+	// ATTENTION: This assumes that checking whether the cell is one of the
+	// boolean values is already done by an upper layer, like the dispatcher.
 	
 	std::ostringstream oss;
 	oss << (int32_t) CDR(cell);
