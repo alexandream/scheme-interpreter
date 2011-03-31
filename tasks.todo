@@ -1,6 +1,8 @@
 
 Tarefas do projeto final:
 
+======================================================================
+
   x Criar estrutura básica para um Cell
 
   x Criar constantes para Cell ATOM
@@ -13,12 +15,12 @@ Tarefas do projeto final:
 
   x Criar allocator básico para Cells (tamanho fixo de pool)
 
-----------------------------------------------------------------------
+======================================================================
 
   x Criar construtor e printer para ATOM <symbol>. Inclui fazer o
     symbol map (string -> cell_ptr_t)
 
-  - Lexer para LPAREN, RPAREN, SYMBOL, INT32, BOOLEAN
+  o Lexer para LPAREN, RPAREN, SYMBOL, INT32, BOOLEAN
 
   - Reader para INT32
 
@@ -28,8 +30,16 @@ Tarefas do projeto final:
 
   - Reader para LISTS
 
-----------------------------------------------------------------------
+======================================================================
 
-
+  - Eval para constantes (INT32 & BOOLEAN)
   
+  - Eval para constantes (QUOTE)
+
+  - Environment inicial, com alguns SYMBOLS pré definidos.
+
+  - Eval para variáveis, baseado no Environment atual.
+
+======================================================================
+
 

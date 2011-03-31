@@ -1,0 +1,57 @@
+Conventions:
+
+XX - A pair of X's in front of a line means something that was thought of
+     but later discarded. It's held here for documentation of thought process
+     purposes.
+
+######################################################################
+####    BRAINSTORM ON VALUE REPRESENTATION # 2011-03-30 03:29     ####
+######################################################################
+
+Let's say I decide to use a tagged word representation for the types, with
+extensions added to accommodate user defined types and any other extension.
+
+With that said I have to divide my values in two distinct categories:
+ 
+- Immediate Values, that is, those that can be expressed inside the tagged word
+  itself.
+   
+- Cell-based Values: those that need a cell to hold it's real value and whose
+  tagged representation is that of a pointer to the cell.
+  
+XX I have the impression that I can represent a Symbol as an ImmediVate Value,
+XX even though it's not possible to represent it's information in a subset of
+XX a 64 bits register. It seems so because they are never freed, making it 
+XX possible to represent it's pointer as an immutable/indestructible value
+XX that we can just allocate and discard. Therefore, the Symbol would merely
+XX hold as immediate value the pointer to the string it represents.
+
+Although it's tempting to represent the symbol as an immediate value, I 
+shall refrain from doing so at this stage, for it's premature optimization.
+I'm not yet sure of how the handling of namespaces will relate to symbols
+and, until that relation is very well specified, it is dangerous to limit
+the possibilities of what information a symbol can carry.
+
+On the other hand, it is still likely that the information held by a
+symbol, whatever it may be, is never going to be freed, making it a good
+candidate for embedding it's pointer as an immediate value.
+
+
+The immediate value type category can handle much of the simpler/smaller
+values we have in the interpreter, for example:
+
+- Up to 32 bit (possibly up to 58 bits) integers;
+- Character values, even 32 bit unicode;
+- 32 bit floating point numbers;
+- All the "special" values, namely:
+    - NIL, the empty list;
+    - #T and #F boolean constants;
+    - UNDEFINED;
+    - UNSPECIFIED;
+
+The category of immediate values has enough unused space to make it even
+possible to make the lexer to give out "lisp objects" from the get go, grouping
+the tokens as immediate values, symbols and other atoms, as needed.
+
+######################################################################
+

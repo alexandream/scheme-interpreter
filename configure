@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+
+$target = 'main';
+@libraries = ( '' );
+
+$compiler='clang++';
+$ext='cpp';
+
+sub list_local_includes($)
+{
+	$file = $_[0];
+	@includes = ();
+
+	open FILE, $file;
+	@lines = <FILE>;
+	foreach (@lines)
+ 	{
+		if (/^\s*#include\s*"(.*)"\s$/)
+		{
+			push(@includes, $1);
+		}
+	}
+	return @includes;
+}	
+
+
+opendir(LOCALDIR, ".");
+
+@files = grep(/\.$ext$/, readdir(LOCALDIR));
+
+closedir(LOCALDIR);
+
+`flex -o scanner.cpp scanner.l`;
+
+@rules=();
+foreach (@files)
+{
+	$file = $_;
+	s/\.$ext$//;
+	s/^\s*//;
+	$obj = "$_.o";
+	@includes = list_local_includes($file);
+	
+	$rule = "\n$obj: $file @includes\n";
+	$rule.= "\t$compiler -c $file -o $obj \${CFLAGS}\n\n";
+	
+	push @objs, $obj;
+	push @rules, $rule;
+}
+
+
+open MAKEFILE, ">", ".makefile";
+
+$result = <<EOF
+
+CFLAGS="-m32"
+LIBS=-L/usr/lib32 -lfl 
+
+OBJS=@objs
+
+$target: \${OBJS}
+\t$compiler -o $target @objs -m32 \${LIBS}
+
+
+@rules
+
+clean:
+\trm -f *.o $target
+
+EOF
+;
+print MAKEFILE $result;
+
+
+
