@@ -3,24 +3,24 @@ Tarefas do projeto final:
 
 ======================================================================
 
-  x Criar estrutura básica para um Cell
+  - Criar estrutura básica para um Cell
 
-  x Criar constantes para Cell ATOM
+  - Criar constantes para Cell ATOM
 
   x Criar constructor e printer para SPECIAL <boolean>
   
-  x Criar constructor e printer para ATOM <int32>
+  x Criar constructor e printer para IMMED <fixnum>
   
   x Criar constantes para as cells especiais (nil, undefined, booleans, etc)
 
-  x Criar allocator básico para Cells (tamanho fixo de pool)
+  - Criar allocator básico para Cells (tamanho fixo de pool)
 
 ======================================================================
 
-  x Criar construtor e printer para ATOM <symbol>. Inclui fazer o
+  - Criar construtor e printer para ATOM <symbol>. Inclui fazer o
     symbol map (string -> cell_ptr_t)
 
-  o Lexer para LPAREN, RPAREN, SYMBOL, INT32, BOOLEAN
+  - Lexer para LPAREN, RPAREN, SYMBOL, INT32, BOOLEAN
 
   - Reader para INT32
 
