@@ -15,6 +15,10 @@ WHITE                 [ \n\t]+
 
 {WHITE}               /* Do Nothing */
 {DIGIT}               return TK_INTEGER;
+
+#[Ff]                 return TK_BOOLEAN_FALSE; 
+#[Tt]                 return TK_BOOLEAN_TRUE;            
+
 <<EOF>>               return TK_EOF;
 %%
 

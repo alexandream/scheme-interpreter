@@ -11,7 +11,8 @@ enum token_types_t {
    TK_RPAREN,
    TK_INTEGER,
    TK_SYMBOL,
-   TK_BOOLEAN,
+   TK_BOOLEAN_FALSE,
+   TK_BOOLEAN_TRUE,
 
    TK_DOT
 };

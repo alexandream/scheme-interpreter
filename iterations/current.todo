@@ -14,7 +14,7 @@ Current Iteration Tasks:
   x Define tagged values format
   x Define boolean representation
   x Create boolean printer
-  - Create lexer for boolean constant
+  x Create lexer for boolean constant
   - Create boolean constant reader (string :- value)
   - Create boolean constant eval
 
