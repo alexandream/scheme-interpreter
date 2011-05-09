@@ -19,7 +19,7 @@ With that said I have to divide my values in two distinct categories:
 - Cell-based Values: those that need a cell to hold it's real value and whose
   tagged representation is that of a pointer to the cell.
   
-XX I have the impression that I can represent a Symbol as an ImmediVate Value,
+XX I have the impression that I can represent a Symbol as an Immediate Value,
 XX even though it's not possible to represent it's information in a subset of
 XX a 64 bits register. It seems so because they are never freed, making it 
 XX possible to represent it's pointer as an immutable/indestructible value
@@ -27,7 +27,7 @@ XX that we can just allocate and discard. Therefore, the Symbol would merely
 XX hold as immediate value the pointer to the string it represents.
 
 Although it's tempting to represent the symbol as an immediate value, I 
-shall refrain from doing so at this stage, for it's premature optimization.
+shall refrain from doing so at this stage, for it is premature optimization.
 I'm not yet sure of how the handling of namespaces will relate to symbols
 and, until that relation is very well specified, it is dangerous to limit
 the possibilities of what information a symbol can carry.
@@ -54,4 +54,41 @@ possible to make the lexer to give out "lisp objects" from the get go, grouping
 the tokens as immediate values, symbols and other atoms, as needed.
 
 ######################################################################
+####    MEMORY USAGE AND POINTER ALIGNMENT - 05/04/2011 00:42     ####
+######################################################################
+
+XX Been dealing with the problem of having one bit for signaling "immutable"
+XX values for a while, one thing that just popped in the head was that I *could*
+XX use more than 4 bits of mask without actually increasing the size of a cell if
+XX I aligned it to a bigger value than it's size.
+
+XX All I'd have to do is to tag on both ends, saving the upper end for, as an
+XX example, storing garbage collection information. That way it seems like I can
+XX effectively use less bits for a pointer.
+
+The above is not going to work, unless I add the extra bits in the MIDDLE of
+the pointer, which is kinda weird. The reason is that I can't use alignment on
+the bottom to free more bits (presumably from the top) without wasting as much
+space as the alignment.
+
+The only way in which I believe I can free an extra bit of the pointer mask is
+if I do weird things such as allocating aligned with, say, 64KB, but only
+allocating 32KB, therefore one bit would truly be unused in there, but I'd have
+to divide the actual pointer value in two pieces.
+
+######################################################################
+####       THOUGHTS ON WORD TAG VALUES - 09/05/2011 11:05         ####
+######################################################################
+
+To simplify [citation needed] the arithmetic operations on fixnum integers
+represented as immediate values, I shall use the all-zeroes tag to mark
+immediate values. That allow me to come up with a schema where fixnum values
+are coded with low bits all clear, making it possible for some arithmetic
+operations to treat it as if it was an untagged value.
+
+So, the least significant byte of a immediate value looks as follows:
+ x x x x x 0 0 0
+
+With the following signature for fixnums:
+ x x x x 0 0 0 0
 
