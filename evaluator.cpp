@@ -7,7 +7,14 @@
 
 value_t evaluate(value_t expr) {
 	value_t result = UNSPECIFIED;
-	error(1, 0, "Could not evaluate value 0x%016lX\n: Unknown type." expr);
+
+	if (is_boolean(expr)) {
+		result = expr;
+	}
+	else {
+		error(1, 0, "Could not evaluate value 0x%016lX\n: Unknown type." expr);
+	}
+
 	return result;
 }
 

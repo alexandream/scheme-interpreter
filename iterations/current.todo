@@ -13,10 +13,10 @@ Current Iteration Tasks:
 
   x Define tagged values format
   x Define boolean representation
-  x Create boolean printer
   x Create lexer for boolean constant
   x Create boolean constant reader (string :- value)
-  - Create boolean constant eval
+  x Create boolean constant eval
+  - Create boolean printer
 
   - Create read-eval-print loop
 
@@ -31,7 +31,7 @@ Current Iteration Tasks:
   - Create global environment getter
   - Create variable eval on global environment
 
-  - Define testing strategy 
+  - Define tgit testing strategy 
   
   - Create simple allocator (no collecting, fixed pool)
 
