@@ -1,0 +1,10 @@
+Future Iterations Backlog:
+  - Define special values representation (nil, undefined, unspecified)
+  - Create special values printers
+  - Create special values readers (string :- value)
+  - Define fixnum tagged format
+  - Define fixnum representation
+  - Create fixnum printer
+  - Create fixnum reader (string :- value)
+  - Create fixnum constant eval
+

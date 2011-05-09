@@ -1,0 +1,57 @@
+Current Iteration target: 
+  Being able to execute simple propositional logic statements.
+
+Current Iteration number: 01
+Current Iteration start:  2011-09-05 10:42
+Current Iteration finish: xxxx-xx-xx xx:xx
+
+Current Iteration Tasks:
+  - Create lexer interface
+  - Create manual reader dispatcher
+  - Create manual eval dispatcher
+  - Create manual printer dispatcher 
+
+  x Define tagged values format
+  x Define boolean representation
+  x Create boolean printer
+  - Create lexer for boolean constant
+  - Create boolean constant reader (string :- value)
+  - Create boolean constant eval
+
+  - Create read-eval-print loop
+
+  - Define symbol tagged format
+  - Define symbol representation
+  - Create lexer for symbol
+  - Create symbol constant reader (string :- value)
+  - Create symbol printer
+
+  - Define global environment
+  - Create global environment setter (conflict -> overwrite)
+  - Create global environment getter
+  - Create variable eval on global environment
+
+  - Define test strategy 
+  
+  - Create simple allocator (no collecting, fixed pool)
+
+  - Define cons cell tagged format
+  x Define cons cell representation
+  - Create cons cell constructor (value x value :- value)
+  - Create internal car function (value :- value)
+  - Create internal cdr function (value :- value)
+  - Define cons cell printer
+  - Create lexer for LPAREN, RPAREN
+  - Create cons cell reader
+
+  - Create list reader (no dotted lists)
+
+  - Create internal is_atom predicate (value -> boolean)
+  - Define primitive function representation
+  - Create primitive function 'and' (boolean x boolean :- boolean)
+  - Create primitive function 'or'  (boolean x boolean :- boolean)
+  - Create primitive function 'not' (boolean :- boolean)
+
+  - Create function application eval
+  - Create simple propositional logic test suite
+
