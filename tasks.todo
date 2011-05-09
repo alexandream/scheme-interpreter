@@ -15,6 +15,9 @@ Tarefas do projeto final:
 
   - Criar allocator básico para Cells (tamanho fixo de pool)
 
+  x Organizar notas pessoais para futura referência.
+
+
 ======================================================================
 
   - Criar construtor e printer para ATOM <symbol>. Inclui fazer o
@@ -31,6 +34,8 @@ Tarefas do projeto final:
   - Reader para LISTS
 
 ======================================================================
+
+  - Mecanismo de testes para gerenciar tudo isso. 
 
   - Eval para constantes (INT32 & BOOLEAN)
   
