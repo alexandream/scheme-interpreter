@@ -1,5 +1,6 @@
 #ifndef __SPECIAL_H__
 #define __SPECIAL_H__
+#include <string>
 
 #include "value.h"
 

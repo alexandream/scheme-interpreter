@@ -12,7 +12,7 @@ value_t evaluate(value_t expr) {
 		result = expr;
 	}
 	else {
-		error(1, 0, "Could not evaluate value 0x%016lX\n: Unknown type." expr);
+		error(1, 0, "Could not evaluate value 0x%016lX\n: Unknown type.", expr);
 	}
 
 	return result;
