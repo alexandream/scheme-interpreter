@@ -30,7 +30,7 @@ opendir(LOCALDIR, ".");
 
 closedir(LOCALDIR);
 
-`flex -o scanner.cpp scanner.l`;
+#`flex -o scanner.cpp scanner.l`;
 
 @rules=();
 foreach (@files)
@@ -53,13 +53,13 @@ open MAKEFILE, ">", ".makefile";
 
 $result = <<EOF
 
-CFLAGS="-m32"
-LIBS=-L/usr/lib32 -lfl 
+CFLAGS=""
+LIBS=-lfl 
 
 OBJS=@objs
 
 $target: \${OBJS}
-\t$compiler -o $target @objs -m32 \${LIBS}
+\t$compiler -o $target @objs \${LIBS}
 
 
 @rules
