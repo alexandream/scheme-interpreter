@@ -16,7 +16,7 @@ Current Iteration Tasks:
   x Create lexer for boolean constant
   x Create boolean constant reader (string :- value)
   x Create boolean constant eval
-  - Create boolean printer
+  x Create boolean printer
 
   - Create read-eval-print loop
 
