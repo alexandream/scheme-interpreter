@@ -1,0 +1,16 @@
+######################################################################
+####       THOUGHTS ON WORD TAG VALUES - 2011-05-09 11:05         ####
+######################################################################
+
+To simplify [citation needed] the arithmetic operations on fixnum integers
+represented as immediate values, I shall use the all-zeroes tag to mark
+immediate values. That allow me to come up with a schema where fixnum values
+are coded with low bits all clear, making it possible for some arithmetic
+operations to treat it as if it was an untagged value.
+
+So, the least significant byte of a immediate value looks as follows:
+ x x x x x 0 0 0
+
+With the following signature for fixnums:
+ x x x x 0 0 0 0
+

@@ -1,0 +1,10 @@
+In this directory I store notes that I take during the development of
+the scheme interpreter. Most of it is kept here to help me write the
+monograph that must come from this work.
+
+
+Conventions:
+
+XX - A pair of X's in front of a line means something that was thought of
+     but later discarded. It's held here for documentation of thought process
+     purposes.
