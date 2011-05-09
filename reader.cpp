@@ -13,9 +13,18 @@ value_t read(void) {
 	input = peek_token();
 	// TODO: Swap this switch for a dynamic dispatching schema later?
 	switch (input.type) {
+		case TK_BOOLEAN_TRUE:
+			result = BOOLEAN_TRUE;
+			break;
+		
+		case TK_BOOLEAN_FALSE:
+			result = BOOLEAN_FALSE;
+			break;
+
 		case TK_EOF:
 			result = END_OF_FILE;
 			break;
+
 		default:
 			error(1, 0, "Unknown token type: %d with lexeme: %s\n",
 				  input.type,
