@@ -20,7 +20,7 @@ Current Iteration Tasks:
 
   x Create read-eval-print loop
 
-  - Define symbol tagged format
+  x Define symbol tagged format
   - Define symbol representation
   - Create lexer for symbol
   - Create symbol constant reader (string :- value)

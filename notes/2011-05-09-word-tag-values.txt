@@ -9,8 +9,18 @@ are coded with low bits all clear, making it possible for some arithmetic
 operations to treat it as if it was an untagged value.
 
 So, the least significant byte of a immediate value looks as follows:
- x x x x x 0 0 0
+ x x x x ? 0 0 0
 
 With the following signature for fixnums:
- x x x x 0 0 0 0
+ x x x 0 ? 0 0 0
 
+Of the remaining 7 main tag values, 2 must be reserved for cons cells (mutable
+and immutable kinds), at least one must be saved for non-immediate atoms (which
+can, if needed, be used to support symbols, bignums, vectors, strings and a
+host of other types).
+
+So far, I'm only worrying about the symbol type, so I'll define the atom tag to
+be simply the next tag available.
+
+That gives the following signature for non immediate atoms' last byte:
+ x x x x ? 0 0 1
