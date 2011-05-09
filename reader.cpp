@@ -14,10 +14,12 @@ value_t read(void) {
 	// TODO: Swap this switch for a dynamic dispatching schema later?
 	switch (input.type) {
 		case TK_BOOLEAN_TRUE:
+			get_token();
 			result = BOOLEAN_TRUE;
 			break;
 		
 		case TK_BOOLEAN_FALSE:
+			get_token();
 			result = BOOLEAN_FALSE;
 			break;
 
@@ -26,8 +28,7 @@ value_t read(void) {
 			break;
 
 		default:
-			error(1, 0, "Unknown token type: %d with lexeme: %s\n",
-				  input.type,
+			error(1, 0, "Unknown token with lexeme: %s\n",
 				  input.lexeme.c_str());
 	}
 	return result;
