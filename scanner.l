@@ -15,7 +15,6 @@ WHITE                 [ \n\t]+
 
 {WHITE}               /* Do Nothing */
 {DIGIT}               return TK_INTEGER;
-
 <<EOF>>               return TK_EOF;
 %%
 
@@ -52,11 +51,3 @@ token_t get_token() {
 	return result;
 }
 
-int main(int argc, char **argv) {
-	token_t t;
-	do {
-		t = get_token();
-		std::cout << t.type << " :: " << t.lexeme << std::endl;
-	} while(t.type != TK_EOF);
-	return 0;
-}

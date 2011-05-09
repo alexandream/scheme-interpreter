@@ -7,7 +7,7 @@ Current Iteration finish: xxxx-xx-xx xx:xx
 
 Current Iteration Tasks:
   x Create lexer interface
-  - Create manual reader dispatcher
+  x Create manual reader dispatcher
   - Create manual eval dispatcher
   - Create manual printer dispatcher 
 

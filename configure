@@ -24,13 +24,14 @@ sub list_local_includes($)
 }	
 
 
+`flex -o scanner.cpp scanner.l`;
+
 opendir(LOCALDIR, ".");
 
 @files = grep(/\.$ext$/, readdir(LOCALDIR));
 
 closedir(LOCALDIR);
 
-#`flex -o scanner.cpp scanner.l`;
 
 @rules=();
 foreach (@files)
@@ -61,11 +62,10 @@ OBJS=@objs
 $target: \${OBJS}
 \t$compiler -o $target @objs \${LIBS}
 
-
 @rules
 
 clean:
-\trm -f *.o $target
+\trm -f *.o $target scanner.cpp a.out
 
 EOF
 ;

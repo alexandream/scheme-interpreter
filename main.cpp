@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#include "reader.h"
 #include "fixnum.h"
 #include "special.h"
 
@@ -53,4 +54,3 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
-

@@ -15,6 +15,7 @@
  * - Empty List or NIL: '()
  * - Undefined: No representation. Reserved for future use.
  * - Unspecified: #U
+ * - End Of File: #EOF
  *
  * The two values for booleans are:
  * #T : 00000000 0x00 0x00 0x00 0x00 0x00 0x00 00010000
@@ -34,7 +35,8 @@ value_t BOOLEAN_TRUE,
         BOOLEAN_FALSE,
         EMPTY_LIST,
         UNDEFINED,
-        UNSPECIFIED;
+        UNSPECIFIED,
+		END_OF_FILE;
 
 static inline 
 bool is_boolean(value_t value) {
