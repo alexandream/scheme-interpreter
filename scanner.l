@@ -20,6 +20,7 @@ WHITE                 [ \n\t]+
 #[Tt]                 return TK_BOOLEAN_TRUE;            
 
 <<EOF>>               return TK_EOF;
+.                     return TK_UNKNOWN;
 %%
 
 void scanner_init(FILE* fp) {

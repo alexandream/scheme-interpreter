@@ -5,6 +5,7 @@
 
 enum token_types_t {
    TK_NONE,
+   TK_UNKNOWN,
    TK_EOF,
   
    TK_LPAREN,
