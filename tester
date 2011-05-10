@@ -1,0 +1,66 @@
+#!/bin/bash
+
+TEST_FILE=$1
+TEST_NAME=`basename $1`
+REGEX=$2
+
+shift 2
+COMMAND=$*
+
+if [ -z "$REGEX" ]
+then
+	REGEX='%%'
+fi
+
+INPUT_FILE=`mktemp    --tmpdir $TEST_NAME.input.XXXXXX`
+EXPECTED_FILE=`mktemp --tmpdir $TEST_NAME.expected.XXXXXX`
+OUTPUT_FILE=`mktemp   --tmpdir $TEST_NAME.output.XXXXXX`
+
+# Partitions the file in two other files, based on a regex.
+# The whole file up to the first line that matches the $REGEX 
+# goes to $INPUT_FILE, while the rest of it goes to $EXPECTED_FILE.
+#
+# The line matching $REGEX is ignored, but subsequent lines are
+# kept, even if they match the regex.
+
+PARTITION_FILE=$INPUT_FILE
+while read LINE
+do
+	if [[ -n "$REGEX" && $LINE =~ $REGEX ]]
+	then
+		PARTITION_FILE=$EXPECTED_FILE
+		REGEX=""
+	else
+		echo $LINE >> $PARTITION_FILE
+	fi
+done < $TEST_FILE
+
+$COMMAND < $INPUT_FILE > $OUTPUT_FILE 2>/dev/null
+ERROR=$?
+
+# After running the command with the input data, capture the output
+# and check to see if the command succeeded. If it didn't succeed, 
+# it's an error.
+#
+# If it succeeds, test if the output matches the expected output.
+# This match test is made with a diff, ignoring blank lines. In case
+# the values don't match, print the output of the diff 
+if [ "$ERROR" != "0" ]
+then
+	echo "ERROR: $TEST_NAME -- exit value was $ERROR"
+else
+	DIFF=`colordiff -B $EXPECTED_FILE $OUTPUT_FILE`
+	ERROR=$?
+	if [ "$ERROR" != "0" ]
+	then
+		echo "FAIL : $TEST_NAME -- output differs from expected."
+		echo "$DIFF" | tail -n +2 | sed 's/^/    /'
+	else
+		echo "PASS : $TEST_NAME"
+	fi
+fi
+
+# Delete all temporary files created for this.
+rm $INPUT_FILE $EXPECTED_FILE $OUTPUT_FILE
+
+
