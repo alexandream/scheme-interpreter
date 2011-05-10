@@ -24,6 +24,7 @@ int main_repl(int argc, char ** argv) {
 		}
 		result = evaluate(input);
 		print(result);
+		std::cout << std::endl;
 	}
 	return 0;
 }
