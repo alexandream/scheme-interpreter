@@ -15,6 +15,11 @@ int main_repl(int argc, char ** argv) {
 	value_t input;
 	value_t result;
 	std::cerr << "Welcome to PFC." << std::endl;
+
+	environment_t *global_env = make_environment(NULL);
+	environment_set(global_env, symbol_make_from_string("T"), BOOLEAN_TRUE);
+	environment_set(global_env, symbol_make_from_string("F"), BOOLEAN_FALSE);
+
 	while(true) {
 		std::cerr << "> ";
 		input = read();

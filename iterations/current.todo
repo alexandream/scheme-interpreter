@@ -29,6 +29,7 @@ Current Iteration Tasks:
   x Define global environment
   x Create global environment setter (conflict -> overwrite)
   x Create global environment getter
+  x Create global environment with dummy values for tests
   - Create variable (symbol) eval on global environment
 
   x Define testing strategy 
