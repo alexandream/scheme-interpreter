@@ -10,11 +10,10 @@
 int main(int argc, char** argv) {
 	value_t input;
 	value_t result;
-	std::cout << "Welcome to PFC." << std::endl;
+	std::cerr << "Welcome to PFC." << std::endl;
 	while(true) {
-		std::cout << "> ";
+		std::cerr << "> ";
 		input = read();
-		std::cerr << "DEBUG: " << input << std::endl;
 		if (input == END_OF_FILE) {
 			std::cout << std::endl;
 			break;
