@@ -2,7 +2,7 @@
 #define __EVALUATOR_H__
 
 #include "value.h"
-
-value_t evaluate(value_t);
+#include "environment.h"
+value_t evaluate(value_t, environment_t*);
 
 #endif

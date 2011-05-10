@@ -27,7 +27,7 @@ int main_repl(int argc, char ** argv) {
 			std::cout << std::endl;
 			break;
 		}
-		result = evaluate(input);
+		result = evaluate(input, global_env);
 		println(result);
 	}
 	return 0;
