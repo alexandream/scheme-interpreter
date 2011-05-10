@@ -6,6 +6,7 @@
 #include "reader.h"
 #include "scanner.h"
 #include "special.h"
+#include "symbol.h"
 
 value_t read(void) {
 	value_t result;
@@ -25,6 +26,10 @@ value_t read(void) {
 
 		case TK_EOF:
 			result = END_OF_FILE;
+			break;
+		
+		case TK_SYMBOL:
+			result = symbol_make_from_string(input.lexeme);
 			break;
 
 		default:

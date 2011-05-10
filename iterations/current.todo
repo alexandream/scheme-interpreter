@@ -23,7 +23,7 @@ Current Iteration Tasks:
   x Define symbol tagged format
   x Define symbol representation
   x Create lexer for symbol
-  - Create symbol constant reader (string :- value)
+  x Create symbol constant reader (string :- value)
   - Create symbol printer
 
   - Define global environment
