@@ -7,6 +7,7 @@
 #include "printer.h"
 #include "special.h"
 #include "symbol.h"
+#include "scanner.h"
 
 
 
@@ -46,9 +47,20 @@ int main_symbol_test(int argc, char** argv) {
 	return 0;
 }
 
+int main_lexer_test(int argc, char** argv) {
+	token_t input;
+	do {
+		input = get_token();
+		std::cout << "Got token: " << input.type << " with lexeme: " 
+		          << input.lexeme << std::endl;
+	} while (input.type != TK_EOF);
+	return 0;
+}
+
 int (*prog_pool[])(int, char**) = {
 	main_repl,
-	main_symbol_test
+	main_symbol_test,
+	main_lexer_test
 };
 
 int main(int argc, char** argv) {

@@ -8,13 +8,23 @@ static token_t token_buf = { TK_NONE, "" };
 
 %}
 
+
 DIGIT                 [0-9]
 WHITE                 [ \n\t]+
 
+IDENT_INITIAL           [a-zA-Z?!$%*&/:<=>^_~]
+IDENT_SUBSEQUENT        {IDENT_INITIAL}|[0-9]
+
+SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
+
+
 %%
+
 
 {WHITE}               /* Do Nothing */
 {DIGIT}               return TK_INTEGER;
+
+{SYMBOL}              return TK_SYMBOL;
 
 #[Ff]                 return TK_BOOLEAN_FALSE; 
 #[Tt]                 return TK_BOOLEAN_TRUE;            
