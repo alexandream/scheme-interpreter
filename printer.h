@@ -4,5 +4,6 @@
 #include "value.h"
 
 void print(value_t);
+void println(value_t);
 
 #endif

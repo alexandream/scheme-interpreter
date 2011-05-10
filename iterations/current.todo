@@ -26,10 +26,10 @@ Current Iteration Tasks:
   x Create symbol constant reader (string :- value)
   x Create symbol printer
 
-  - Define global environment
-  - Create global environment setter (conflict -> overwrite)
-  - Create global environment getter
-  - Create variable eval on global environment
+  x Define global environment
+  x Create global environment setter (conflict -> overwrite)
+  x Create global environment getter
+  - Create variable (symbol) eval on global environment
 
   x Define testing strategy 
   

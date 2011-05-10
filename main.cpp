@@ -8,7 +8,7 @@
 #include "special.h"
 #include "symbol.h"
 #include "scanner.h"
-
+#include "environment.h"
 
 
 int main_repl(int argc, char ** argv) {
@@ -23,8 +23,7 @@ int main_repl(int argc, char ** argv) {
 			break;
 		}
 		result = evaluate(input);
-		print(result);
-		std::cout << std::endl;
+		println(result);
 	}
 	return 0;
 }
@@ -58,10 +57,27 @@ int main_lexer_test(int argc, char** argv) {
 	return 0;
 }
 
+int main_environment_test(int argc, char**argv) {
+	environment_t *global = make_environment(NULL);
+	value_t s1 = symbol_make_from_string("foo");
+	value_t s2 = symbol_make_from_string("bar");
+	value_t s3 = symbol_make_from_string("wakka");
+	
+	environment_set(global, s1, BOOLEAN_TRUE);
+	println(environment_get(global, s1));
+
+	environment_set(global, s2, BOOLEAN_FALSE);
+	println(environment_get(global, s2));
+	environment_set(global, s2, BOOLEAN_TRUE);
+	println(environment_get(global, s2));
+	println(environment_get(global, s3));
+	return 0;
+}
 int (*prog_pool[])(int, char**) = {
 	main_repl,
 	main_symbol_test,
-	main_lexer_test
+	main_lexer_test,
+	main_environment_test
 };
 
 int main(int argc, char** argv) {

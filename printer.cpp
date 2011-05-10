@@ -22,4 +22,7 @@ void print(value_t value) {
 	std::cout << result;
 }
 
-
+void println(value_t value) {
+	print(value);
+	std::cout << std::endl;
+}

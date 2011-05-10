@@ -1,4 +1,6 @@
 Future Iterations Backlog:
+  - Fix symbols to be real non immediate atoms.
+  - Change environments to be scheme objects, so GC can handle them.
   - Define special values representation (nil, undefined, unspecified)
   - Create special values printers
   - Create special values readers (string :- value)
