@@ -8,6 +8,8 @@
 #include "special.h"
 #include "symbol.h"
 #include "scanner.h"
+#include "memory.h"
+#include "pointer.h"
 #include "environment.h"
 
 
@@ -78,11 +80,22 @@ int main_environment_test(int argc, char**argv) {
 	println(environment_get(global, s3));
 	return 0;
 }
+
+int main_allocator_test(int argc, char **argv) {
+	value_t c1 = alloc_cell();
+	std::cout << "Allocated a cell in address 0x" << std::hex
+	          << unwrap_pointer(c1) << std::endl;
+	value_t c2 = alloc_cell();
+	std::cout << "Allocated a cell in address 0x" << std::hex
+	          << unwrap_pointer(c2) << std::endl;
+	return 0;
+}
 int (*prog_pool[])(int, char**) = {
 	main_repl,
 	main_symbol_test,
 	main_lexer_test,
-	main_environment_test
+	main_environment_test, //3
+	main_allocator_test
 };
 
 int main(int argc, char** argv) {

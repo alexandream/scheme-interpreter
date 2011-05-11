@@ -34,7 +34,7 @@ Current Iteration Tasks:
 
   x Define testing strategy 
   
-  - Create simple allocator (no collecting, fixed pool)
+  x Create simple allocator (no collecting, fixed pool)
 
   - Define cons cell tagged format
   x Define cons cell representation
@@ -48,7 +48,7 @@ Current Iteration Tasks:
   - Create list reader (no dotted lists)
 
   - Create internal is_atom predicate (value -> boolean)
-  o Define primitive function representation
+  x Define primitive function representation
   - Create primitive function 'and' (boolean x boolean :- boolean)
   - Create primitive function 'or'  (boolean x boolean :- boolean)
   - Create primitive function 'not' (boolean :- boolean)
