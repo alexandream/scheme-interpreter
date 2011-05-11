@@ -48,7 +48,7 @@ Current Iteration Tasks:
   - Create list reader (no dotted lists)
 
   - Create internal is_atom predicate (value -> boolean)
-  - Define primitive function representation
+  o Define primitive function representation
   - Create primitive function 'and' (boolean x boolean :- boolean)
   - Create primitive function 'or'  (boolean x boolean :- boolean)
   - Create primitive function 'not' (boolean :- boolean)
