@@ -39,8 +39,8 @@ Current Iteration Tasks:
   x Define cons cell tagged format
   x Define cons cell representation
   x Create cons cell constructor (value x value :- value)
-  - Create internal car function (value :- value)
-  - Create internal cdr function (value :- value)
+  x Create internal car function (value :- value)
+  x Create internal cdr function (value :- value)
   - Define cons cell printer
   - Create lexer for LPAREN, RPAREN
   - Create cons cell reader

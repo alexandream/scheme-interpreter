@@ -20,7 +20,7 @@ value_t symbol_make_from_string(const std::string& str) {
 	iter = symbol_pool.find(str);
 	if (iter == symbol_pool.end()) {
 		std::string *new_str = new std::string(str);
-		result = wrap_pointer((void*) new_str);
+		result = ((uint64_t) new_str) | 0x01;
 		symbol_pool[str] = result;
 	}
 	else {

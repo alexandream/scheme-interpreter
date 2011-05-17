@@ -16,3 +16,12 @@ value_t cons(value_t car, value_t cdr) {
 }
 
 
+value_t car(value_t cell) {
+	// XXX: Assumption #003
+	return ((double_storage_t*) unwrap_pointer(cell))->first_slot;
+}
+
+value_t cdr(value_t cell) {
+	// XXX: Assumption #003
+	return ((double_storage_t*) unwrap_pointer(cell))->second_slot;
+}
