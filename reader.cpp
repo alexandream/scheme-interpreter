@@ -4,9 +4,13 @@
 #include <error.h>
 
 #include "reader.h"
+#include "cell.h"
 #include "scanner.h"
 #include "special.h"
 #include "symbol.h"
+
+static
+value_t read_list(void);
 
 value_t read(void) {
 	value_t result;
@@ -22,6 +26,11 @@ value_t read(void) {
 		case TK_BOOLEAN_FALSE:
 			get_token();
 			result = BOOLEAN_FALSE;
+			break;
+		
+		case TK_LPAREN:
+			get_token(); // consume TK_LPAREN;
+			result = read_list();
 			break;
 
 		case TK_EOF:
@@ -41,4 +50,20 @@ value_t read(void) {
 	
 }
 
+static
+value_t read_list(void) {
+	token_t next = peek_token();
+	value_t result;
+	if (next.type == TK_RPAREN) {
+		get_token();
+		result = EMPTY_LIST;
+	}
+	else {
+		// Don't consume anything. read() will take care of it.
+		value_t x = read();
+		value_t y = read_list();
+		result = cons(x, y);
+	}
+	return result;
+}
 

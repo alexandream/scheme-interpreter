@@ -42,10 +42,8 @@ Current Iteration Tasks:
   x Create internal car function (value :- value)
   x Create internal cdr function (value :- value)
   x Define cons cell printer
-  - Create lexer for LPAREN, RPAREN
-  - Create cons cell reader
-
-  - Create list reader (no dotted lists)
+  x Create lexer for LPAREN, RPAREN
+  x Create list reader (no dotted lists)
 
   - Create internal is_atom predicate (value -> boolean)
   x Define primitive function representation
