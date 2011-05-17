@@ -36,9 +36,9 @@ Current Iteration Tasks:
   
   x Create simple allocator (no collecting, fixed pool)
 
-  - Define cons cell tagged format
+  x Define cons cell tagged format
   x Define cons cell representation
-  - Create cons cell constructor (value x value :- value)
+  x Create cons cell constructor (value x value :- value)
   - Create internal car function (value :- value)
   - Create internal cdr function (value :- value)
   - Define cons cell printer

@@ -3,22 +3,20 @@
 
 #include "memory.h"
 #include "pointer.h"
-#include "cell.h"
 
-static const int BLOCK_SIZE = 65536;
+static const int BLOCK_SIZE = 65520;
 
-cell_t  *cell_pool = NULL;
-uint32_t next_cell = 0;
+double_storage_t* ds_pool = NULL;
+uint32_t next_ds = 0;
 
-value_t alloc_cell(void) {
-	assert(next_cell < BLOCK_SIZE);
-	if (!cell_pool) {
-		cell_pool = new cell_t[BLOCK_SIZE];
-		next_cell = 0;
+double_storage_t* alloc_double_storage(void) {
+	assert(next_ds < BLOCK_SIZE);
+	if (!ds_pool) {
+		ds_pool = new double_storage_t[BLOCK_SIZE];
+		next_ds = 0;
 	}
-	void *ptr = (void*) (cell_pool + next_cell);
-	value_t result = wrap_pointer(ptr);
-	next_cell++;
+	double_storage_t* result = (double_storage_t*) (ds_pool + next_ds);
+	next_ds++;
 	return result;
 }
 

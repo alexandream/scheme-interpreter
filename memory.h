@@ -3,6 +3,12 @@
 
 #include "value.h"
 
-value_t alloc_cell(void);
+struct double_storage_t {
+	uint64_t meta;
+	value_t first_slot;
+	value_t second_slot;
+};
+
+double_storage_t* alloc_double_storage(void);
 
 #endif

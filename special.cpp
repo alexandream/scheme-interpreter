@@ -4,14 +4,13 @@
 #include "value.h"
 #include "special.h"
 
-
 const
-value_t BOOLEAN_TRUE  = 0x0000000000000010,
-        BOOLEAN_FALSE = 0x0000000000000031,
-        EMPTY_LIST    = 0x0000000000000050,
-        UNDEFINED     = 0x0000000000000070,
-        UNSPECIFIED   = 0x0000000000000090,
-        END_OF_FILE   = 0x00000000000000B0;
+value_t UNDEFINED     = 0x0000000000000006,
+        UNSPECIFIED   = 0x000000000000000E,
+        BOOLEAN_FALSE = 0x0000000000000016,
+        BOOLEAN_TRUE  = 0x000000000000001E,
+        END_OF_FILE   = 0x0000000000000026,
+        EMPTY_LIST    = 0x000000000000002E;
 
 
 value_t boolean_make_from_string(const std::string& str) {

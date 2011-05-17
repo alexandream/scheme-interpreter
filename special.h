@@ -4,33 +4,6 @@
 
 #include "value.h"
 
-/*********************************************************************
- * SPECIAL Representation.                                           *
- *********************************************************************
- * Every SPECIAL value is represented as an immediate value, hence being
- * stored on the value_t's own bits.
- *
- * As of now, we have 5 distinct special values:
- * - Boolean True: #T
- * - Boolean False: #F
- * - Empty List or NIL: '()
- * - Undefined: No representation. Reserved for future use.
- * - Unspecified: #U
- * - End Of File: #EOF
- *
- * The two values for booleans are:
- * #T : 00000000 0x00 0x00 0x00 0x00 0x00 0x00 00010000
- * #F : 00000000 0x00 0x00 0x00 0x00 0x00 0x00 00110000
- *
- * The value for the Empty List:
- *      00000000 0x00 0x00 0x00 0x00 0x00 0x00 01010000
- *
- * The value for Unspecified:
- * #U : 00000000 0x00 0x00 0x00 0x00 0x00 0x00 01110000 
- *
- * The value for Undefined:
- *      00000000 0x00 0x00 0x00 0x00 0x00 0x00 10010000
-*/
 extern const
 value_t BOOLEAN_TRUE,
         BOOLEAN_FALSE,
@@ -39,9 +12,14 @@ value_t BOOLEAN_TRUE,
         UNSPECIFIED,
 		END_OF_FILE;
 
+static inline
+bool is_special(value_t value) {
+	return ((value & 0x0000000000000006) == 0x06);
+}
+
 static inline 
 bool is_boolean(value_t value) {
-	return (value == BOOLEAN_TRUE || value == BOOLEAN_FALSE);
+	return ((value & 0x0000000000000016) == 0x16);
 }
 
 static inline

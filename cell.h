@@ -3,9 +3,5 @@
 
 #include "value.h"
 
-struct cell_t {
-	value_t car;
-	value_t cdr;
-};
-
+value_t cons(value_t, value_t);
 #endif

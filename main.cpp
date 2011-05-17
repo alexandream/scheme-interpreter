@@ -82,12 +82,10 @@ int main_environment_test(int argc, char**argv) {
 }
 
 int main_allocator_test(int argc, char **argv) {
-	value_t c1 = alloc_cell();
-	std::cout << "Allocated a cell in address 0x" << std::hex
-	          << unwrap_pointer(c1) << std::endl;
-	value_t c2 = alloc_cell();
-	std::cout << "Allocated a cell in address 0x" << std::hex
-	          << unwrap_pointer(c2) << std::endl;
+	double_storage_t* c1 = alloc_double_storage();
+	std::cout << "Allocated a cell in address " << c1 << std::endl;
+	double_storage_t* c2 = alloc_double_storage();
+	std::cout << "Allocated a cell in address " << c2 << std::endl;
 	return 0;
 }
 int (*prog_pool[])(int, char**) = {
