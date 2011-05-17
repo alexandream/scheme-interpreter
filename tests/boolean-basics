@@ -1,11 +1,41 @@
-#F
-#f
+(and #F #F)
+(and #F #T)
+(and #T #F)
+(and #T #T)
 
-#t
-#T
+(or #F #F)
+(or #F #T)
+(or #T #F)
+(or #T #T)
+
+(not #F)
+(not #T)
+
+T
+F
+(not T)
+(not F)
+
+(and #T (not #F))
 
 %%
+
+#F
 #F
 #F
 #T
+
+#F
+#T
+#T
+#T
+
+#T
+#F
+
+#T
+#F
+#F
+#T
+
 #T
