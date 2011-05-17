@@ -47,10 +47,10 @@ Current Iteration Tasks:
 
   x Create internal is_atom predicate (value -> boolean)
   x Define primitive function representation
-  - Create primitive function 'and' (boolean x boolean :- boolean)
-  - Create primitive function 'or'  (boolean x boolean :- boolean)
-  - Create primitive function 'not' (boolean :- boolean)
+  x Create primitive function 'and' (boolean x boolean :- boolean)
+  x Create primitive function 'or'  (boolean x boolean :- boolean)
+  x Create primitive function 'not' (boolean :- boolean)
 
-  - Create function application eval
+  o Create function application eval
   - Create simple propositional logic test suite
 

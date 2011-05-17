@@ -9,6 +9,7 @@ bool is_cons(value_t cell) {
 	return ((((uint8_t) cell) & 0x03) == 0x00);
 }
 
+static inline
 bool is_atom(value_t cell) {
 	return (! is_cons(cell));
 }
