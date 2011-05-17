@@ -9,6 +9,10 @@ bool is_cons(value_t cell) {
 	return ((((uint8_t) cell) & 0x03) == 0x00);
 }
 
+bool is_atom(value_t cell) {
+	return (! is_cons(cell));
+}
+
 static inline
 value_t car(value_t cell) {
 	// XXX: Assumption #003

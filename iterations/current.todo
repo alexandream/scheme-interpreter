@@ -45,7 +45,7 @@ Current Iteration Tasks:
   x Create lexer for LPAREN, RPAREN
   x Create list reader (no dotted lists)
 
-  - Create internal is_atom predicate (value -> boolean)
+  x Create internal is_atom predicate (value -> boolean)
   x Define primitive function representation
   - Create primitive function 'and' (boolean x boolean :- boolean)
   - Create primitive function 'or'  (boolean x boolean :- boolean)
