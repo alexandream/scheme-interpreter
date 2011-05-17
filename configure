@@ -61,7 +61,7 @@ OBJS=@objs
 
 $target: \${OBJS}
 \t$compiler -o $target @objs \${LIBS}
-
+\t\@rm -f scanner.cpp
 @rules
 
 clean:
