@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "reader.h"
+#include "cell.h"
 #include "evaluator.h"
 #include "printer.h"
 #include "special.h"
@@ -88,12 +89,23 @@ int main_allocator_test(int argc, char **argv) {
 	std::cout << "Allocated a cell in address " << c2 << std::endl;
 	return 0;
 }
+
+int main_printer_test(int argc, char**argv) {
+	value_t c1 = cons(BOOLEAN_TRUE, EMPTY_LIST);
+	println(c1);
+	value_t c2 = cons(BOOLEAN_FALSE, c1);
+	println(c2);
+	value_t c3 = cons(BOOLEAN_TRUE, c2);
+	println(c3);
+	return 0;
+}
 int (*prog_pool[])(int, char**) = {
 	main_repl,
 	main_symbol_test,
 	main_lexer_test,
 	main_environment_test, //3
-	main_allocator_test
+	main_allocator_test,
+	main_printer_test
 };
 
 int main(int argc, char** argv) {
