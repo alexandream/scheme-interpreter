@@ -51,6 +51,6 @@ Current Iteration Tasks:
   x Create primitive function 'or'  (boolean x boolean :- boolean)
   x Create primitive function 'not' (boolean :- boolean)
 
-  o Create function application eval
+  x Create function application eval
   - Create simple propositional logic test suite
 

@@ -12,6 +12,8 @@
 #include "memory.h"
 #include "pointer.h"
 #include "environment.h"
+#include "primitive_function.h"
+#include "boolean_primitives.h"
 
 
 int main_repl(int argc, char ** argv) {
@@ -22,6 +24,13 @@ int main_repl(int argc, char ** argv) {
 	environment_t *global_env = make_environment(NULL);
 	environment_set(global_env, symbol_make_from_string("T"), BOOLEAN_TRUE);
 	environment_set(global_env, symbol_make_from_string("F"), BOOLEAN_FALSE);
+	
+	environment_set(global_env, symbol_make_from_string("and"),
+			        wrap_primitive_function(boolean_primitive_and));
+	environment_set(global_env, symbol_make_from_string("or"),
+			        wrap_primitive_function(boolean_primitive_or));
+	environment_set(global_env, symbol_make_from_string("not"),
+			        wrap_primitive_function(boolean_primitive_not));
 
 	while(true) {
 		std::cerr << "> ";

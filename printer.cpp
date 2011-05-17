@@ -6,6 +6,8 @@
 #include "special.h"
 #include "symbol.h"
 #include "cell.h"
+#include "primitive_function.h"
+
 static
 void print_cell(value_t cell);
 void print(value_t value) {
@@ -18,6 +20,9 @@ void print(value_t value) {
 		// TODO: This must be a generic function. Not this mess.
 		if (is_boolean(value)) {
 			result = boolean_format(value);
+		}
+		else if (is_primitive_function(value)) {
+			result = primitive_function_format(value);
 		}
 		else if (is_symbol(value)) {
 			result = symbol_format(value);
