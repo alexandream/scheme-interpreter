@@ -35,11 +35,12 @@ Iteration Tasks:
   x Add meta information for symbols
   x Update type predicate for symbols to use meta information
   x Set the tag on symbols to be 'non-immediate'
-
-  - Update primitive function creation to use storage.
-  - Add meta information for primitive functions (name, arity)
-  - Update type predicate for primitive functions to use meta information
-  - Update primitive function formatter to show meta information
+  
+  x Rename "primitive functions" to be simply "primitives".
+  - Update primitive creation to use storage.
+  - Add meta information for primitives (name, arity)
+  - Update type predicate for primitives to use meta information
+  - Update primitive formatter to show meta information
   - Set the tag on primitive functions to be 'non-immediate'
 
   - Create a dispatcher on the function "format"

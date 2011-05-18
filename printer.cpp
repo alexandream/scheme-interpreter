@@ -6,7 +6,7 @@
 #include "special.h"
 #include "symbol.h"
 #include "pair.h"
-#include "primitive_function.h"
+#include "primitive.h"
 
 static
 void print_pair(value_t pair);
@@ -21,8 +21,8 @@ void print(value_t value) {
 		if (is_boolean(value)) {
 			result = boolean_format(value);
 		}
-		else if (is_primitive_function(value)) {
-			result = primitive_function_format(value);
+		else if (is_primitive(value)) {
+			result = primitive_format(value);
 		}
 		else if (is_symbol(value)) {
 			result = symbol_format(value);

@@ -3,7 +3,7 @@
 
 #include "evaluator.h"
 #include "environment.h"
-#include "primitive_function.h"
+#include "primitive.h"
 #include "reader.h"
 #include "special.h"
 #include "symbol.h"
@@ -44,9 +44,9 @@ value_t evaluate_list(value_t expr, environment_t* env) {
 value_t evaluate_primitive_application(value_t expr, environment_t* env) {
 	value_t func = evaluate(pair_left(expr), env);
 	
-	assert(is_primitive_function(func));
+	assert(is_primitive(func));
 
 	value_t param_list = evaluate_list(pair_right(expr), env);
-	return primitive_function_apply(func, param_list);
+	return primitive_apply(func, param_list);
 }
 
