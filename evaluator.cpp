@@ -10,16 +10,9 @@
 #include "pair.h"
 
 
-value_t evaluate_list(value_t expr, environment_t* env);
-value_t evaluate_primitive_application(value_t expr, environment_t* env);
+value_t evaluate_form(value_t expr, environment_t* env);
 
-value_t QUOTE_SYMBOL = UNSPECIFIED;
 value_t evaluate(value_t expr, environment_t *env) {
-	// TODO: Take this initialization from here and put it in a place that
-	// is run only once.
-	if (QUOTE_SYMBOL == UNSPECIFIED) {
-		QUOTE_SYMBOL = make_symbol("quote");
-	}
 	value_t result = UNSPECIFIED;
 	
 	if (is_boolean(expr)) {
@@ -29,14 +22,7 @@ value_t evaluate(value_t expr, environment_t *env) {
 		result = environment_get(env, expr);
 	}
 	else if (is_pair(expr)) {
-		value_t head = pair_left(expr);
-		if (head == QUOTE_SYMBOL) {
-			// TODO: Handle case where there's no argument to quote.
-			return pair_left(pair_right(expr));
-		}
-		else {
-			result = evaluate_primitive_application(expr, env);
-		}
+		result = evaluate_form(expr, env);
 	}
 	else {
 		error(1, 0, "Could not evaluate value 0x%016lX\n: Unknown type.", expr);
@@ -54,6 +40,7 @@ value_t evaluate_list(value_t expr, environment_t* env) {
 	}
 }
 
+
 value_t evaluate_primitive_application(value_t expr, environment_t* env) {
 	value_t func = evaluate(pair_left(expr), env);
 	
@@ -61,5 +48,65 @@ value_t evaluate_primitive_application(value_t expr, environment_t* env) {
 
 	value_t param_list = evaluate_list(pair_right(expr), env);
 	return primitive_apply(func, param_list);
+}
+
+
+value_t evaluate_quote(value_t expr, environment_t* env) {
+	int32_t arguments = pair_linked_length(expr);
+
+	if (arguments != 1) {
+		error(1, 0, "Expected 1 argument for 'quote', got %d.", arguments);
+	}
+	return pair_left(expr);
+}
+
+
+value_t evaluate_if(value_t expr, environment_t* env) {
+	int32_t arguments = pair_linked_length(expr);
+	if (arguments != 3) {
+		error(1, 0, "Expected 3 arguments for 'if', got %d", arguments);
+	}
+	value_t condition = evaluate(pair_left(expr), env);
+	value_t options = pair_right(expr);
+	value_t consequence = pair_left(options);
+	value_t alternative = pair_left(pair_right(options));
+	
+	value_t result;
+	if (condition == BOOLEAN_TRUE) {
+		result = evaluate(consequence, env);
+	}
+	else {
+		result = evaluate(alternative, env);
+	}
+
+	return result;
+}
+
+
+value_t QUOTE_SYMBOL = UNSPECIFIED;
+value_t IF_SYMBOL = UNSPECIFIED;
+
+value_t evaluate_form(value_t expr, environment_t*env) {
+	// TODO: Take this initialization from here and put it in a place that
+	// is run only once.
+	if (QUOTE_SYMBOL == UNSPECIFIED) {
+		QUOTE_SYMBOL = make_symbol("quote");
+	}
+	if (IF_SYMBOL == UNSPECIFIED) {
+		IF_SYMBOL = make_symbol("if");
+	}
+
+	value_t result = UNSPECIFIED;
+	value_t head = pair_left(expr);
+	if (head == IF_SYMBOL) {
+		result = evaluate_if(pair_right(expr), env);
+	}
+	else if (head == QUOTE_SYMBOL) {
+		result = evaluate_quote(pair_right(expr), env);
+	}
+	else {
+		result = evaluate_primitive_application(expr, env);
+	}
+	return result;
 }
 

@@ -40,3 +40,13 @@ std::string pair_format(value_t pair) {
 
 	return sstream.str();
 }
+
+
+int32_t pair_linked_length(value_t value) {
+	int32_t result = 0;
+	while (is_pair(value)) {
+		result ++;
+		value = pair_right(value);
+	}
+	return result;
+}

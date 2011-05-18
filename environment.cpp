@@ -42,7 +42,7 @@ value_t environment_get(environment_t *env, value_t symbol) {
 		result = environment_get(env->parent, symbol);
 		}
 		else {
-			error(1, 0, "Could not find a binding for symbol %s in current environment.",
+			error(1, 0, "Could not find a binding for symbol '%s' in current environment.",
 			      symbol_format(symbol).c_str());
 		}
 	}

@@ -34,5 +34,8 @@ value_t pair_right(value_t pair) {
 }
 
 value_t make_pair(value_t, value_t);
+
+int32_t pair_linked_length(value_t);
+
 std::string pair_format(value_t pair);
 #endif

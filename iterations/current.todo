@@ -57,5 +57,5 @@ Iteration Tasks:
   - Create evaluator for function application
 
   - Create evaluator for "define"
-  - Create evaluator for "if"
+  x Create evaluator for "if"
   x Create evaluator for "quote"
