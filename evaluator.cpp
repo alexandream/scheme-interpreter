@@ -7,7 +7,7 @@
 #include "reader.h"
 #include "special.h"
 #include "symbol.h"
-#include "cell.h"
+#include "pair.h"
 
 
 value_t evaluate_list(value_t expr, environment_t* env);
@@ -22,7 +22,7 @@ value_t evaluate(value_t expr, environment_t *env) {
 	else if (is_symbol(expr)) {
 		result = environment_get(env, expr);
 	}
-	else if (is_cons(expr)) {
+	else if (is_pair(expr)) {
 		result = evaluate_primitive_application(expr, env);
 	}
 	else {
@@ -37,16 +37,16 @@ value_t evaluate_list(value_t expr, environment_t* env) {
 		return EMPTY_LIST;
 	}
 	else {
-		return cons(evaluate(car(expr), env), evaluate_list(cdr(expr), env));
+		return make_pair(evaluate(pair_left(expr), env), evaluate_list(pair_right(expr), env));
 	}
 }
 
 value_t evaluate_primitive_application(value_t expr, environment_t* env) {
-	value_t func = evaluate(car(expr), env);
+	value_t func = evaluate(pair_left(expr), env);
 	
 	assert(is_primitive_function(func));
 
-	value_t param_list = evaluate_list(cdr(expr), env);
+	value_t param_list = evaluate_list(pair_right(expr), env);
 	return primitive_function_apply(func, param_list);
 }
 

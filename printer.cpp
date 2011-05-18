@@ -5,14 +5,14 @@
 #include "printer.h"
 #include "special.h"
 #include "symbol.h"
-#include "cell.h"
+#include "pair.h"
 #include "primitive_function.h"
 
 static
-void print_cell(value_t cell);
+void print_pair(value_t pair);
 void print(value_t value) {
-	if (is_cons(value)) {
-		print_cell(value);
+	if (is_pair(value)) {
+		print_pair(value);
 	}
 	else {
 		std::string result;
@@ -40,13 +40,13 @@ void println(value_t value) {
 }
 
 static
-void print_cell(value_t cell) {
+void print_pair(value_t pair) {
 	// XXX: Assertion #003
 	std::cout << "(";
 	do {
-		print(car(cell));
+		print(pair_left(pair));
 		std::cout << " ";
-		cell = cdr(cell);
-	} while (is_cons(cell));
+		pair = pair_right(pair);
+	} while (is_pair(pair));
 	std::cout << ")";
 }

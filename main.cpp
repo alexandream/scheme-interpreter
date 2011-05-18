@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "reader.h"
-#include "cell.h"
+#include "pair.h"
 #include "evaluator.h"
 #include "printer.h"
 #include "special.h"
@@ -93,18 +93,18 @@ int main_environment_test(int argc, char**argv) {
 
 int main_allocator_test(int argc, char **argv) {
 	double_storage_t* c1 = alloc_double_storage();
-	std::cout << "Allocated a cell in address " << c1 << std::endl;
+	std::cout << "Allocated a pair in address " << c1 << std::endl;
 	double_storage_t* c2 = alloc_double_storage();
-	std::cout << "Allocated a cell in address " << c2 << std::endl;
+	std::cout << "Allocated a pair in address " << c2 << std::endl;
 	return 0;
 }
 
 int main_printer_test(int argc, char**argv) {
-	value_t c1 = cons(BOOLEAN_TRUE, EMPTY_LIST);
+	value_t c1 = make_pair(BOOLEAN_TRUE, EMPTY_LIST);
 	println(c1);
-	value_t c2 = cons(BOOLEAN_FALSE, c1);
+	value_t c2 = make_pair(BOOLEAN_FALSE, c1);
 	println(c2);
-	value_t c3 = cons(BOOLEAN_TRUE, c2);
+	value_t c3 = make_pair(BOOLEAN_TRUE, c2);
 	println(c3);
 	return 0;
 }

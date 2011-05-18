@@ -22,6 +22,7 @@ Number of work-days
  Realized: x
 
 Iteration Tasks:
+  x Rename 'cons cells' to be known as 'pairs' 
   - Add meta information for cons cells
   - Update type predicate for cons cells to use meta information
 

@@ -4,7 +4,7 @@
 #include <error.h>
 
 #include "reader.h"
-#include "cell.h"
+#include "pair.h"
 #include "scanner.h"
 #include "special.h"
 #include "symbol.h"
@@ -62,7 +62,7 @@ value_t read_list(void) {
 		// Don't consume anything. read() will take care of it.
 		value_t x = read();
 		value_t y = read_list();
-		result = cons(x, y);
+		result = make_pair(x, y);
 	}
 	return result;
 }
