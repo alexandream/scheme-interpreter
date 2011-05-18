@@ -1,0 +1,21 @@
+
+######################################################################
+## BRAINSTORM ON META INFORMATION REPRESENTATION # 2011-05-18 13:20 ##
+######################################################################
+
+The meta information on storage elements has, at least, the following
+information encoded within it:
+
+Highest Bit: Immutable? 1 = True, 0 = False.
+Three Bits : Reserved for future use.
+Eight Bits : Type information, 00000000 means user defined type in double
+             storage
+Four Bits  : Reserved for Garbage Collector use
+
+As of now, the following type flags are defined:
+
+00000001: Pairs
+00000010: Symbols
+00000011: Primitives
+00000100: Functions
+

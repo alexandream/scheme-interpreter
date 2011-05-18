@@ -14,7 +14,7 @@ Iteration target:
   
 Iteration number: 002
 
-Iteration start:  xxxx-xx-xx xx:xx
+Iteration start:  2009-05-18 12:07
 Iteration finish: xxxx-xx-xx xx:xx
 
 Number of work-days
@@ -23,8 +23,11 @@ Number of work-days
 
 Iteration Tasks:
   x Rename 'cons cells' to be known as 'pairs' 
-  - Add meta information for cons cells
-  - Update type predicate for cons cells to use meta information
+
+  x Define meta information format
+
+  - Add meta information for pairs
+  - Update type predicate for pairs to use meta information
 
   - Create storage for non immediate atoms
 
