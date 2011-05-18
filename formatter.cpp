@@ -9,6 +9,7 @@
 #include "symbol.h"
 #include "pair.h"
 #include "primitive.h"
+#include "function.h"
 
 std::string format(value_t value) {
 	std::string result;
@@ -28,6 +29,9 @@ std::string format(value_t value) {
 	}
 	else if (is_primitive(value)) {
 		result = primitive_format(value);
+	}
+	else if (is_function(value)) {
+		result = function_format(value);
 	}
 	else if (is_symbol(value)) {
 		result = symbol_format(value);

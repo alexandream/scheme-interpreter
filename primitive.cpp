@@ -5,6 +5,7 @@
 #include "value.h"
 
 #include "primitive.h"
+#include "storage.h"
 #include "pointer.h"
 #include "pair.h"
 
