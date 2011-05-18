@@ -17,6 +17,9 @@ std::string format(value_t value) {
 	if (value == EMPTY_LIST) {
 		result = "()";
 	}
+	else if (value == UNSPECIFIED) {
+		result = "#U";
+	}
 	else if (is_boolean(value)) {
 		result = boolean_format(value);
 	}

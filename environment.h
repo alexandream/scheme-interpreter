@@ -3,7 +3,11 @@
 
 #include "value.h"
 
+
 struct environment_t;
+
+extern  
+environment_t* GLOBAL_ENVIRONMENT;
 
 environment_t * make_environment(environment_t *parent);
 
