@@ -1,11 +1,16 @@
-Current Iteration target: 
+Iteration target: 
   Being able to execute simple propositional logic statements.
 
-Current Iteration number: 01
-Current Iteration start:  2011-09-05 10:42
-Current Iteration finish: xxxx-xx-xx xx:xx
+Iteration number: 001
 
-Current Iteration Tasks:
+Iteration start:  2011-05-09 10:42
+Iteration finish: 2011-05-17 18:12
+
+Number of work-days
+  Expected: 3
+  Realized: 3
+
+Iteration Tasks:
   x Create lexer interface
   x Create manual reader dispatcher
   x Create manual eval dispatcher

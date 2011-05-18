@@ -1,0 +1,53 @@
+Iteration target: 
+  Adding to the Simple "Propositional Logic Statements Evaluator" a
+  few more functions.
+  More specifically:
+   * Defining global variables;
+   * Creating anonymous functions (single expression);
+   * Evaluating control flow statements (if, obligatory 2 expressions);
+   * Quoting (specially for lists)
+  
+  Refactoring some of the constructs created by previous iteration, such as: 
+   * Add meta information on all non immediate types;
+   * Improve the support for non immediate atoms;
+   * Detach the dispatcher on formatting from printing;
+  
+Iteration number: 002
+
+Iteration start:  xxxx-xx-xx xx:xx
+Iteration finish: xxxx-xx-xx xx:xx
+
+Number of work-days
+ Expected: 1
+ Realized: x
+
+Iteration Tasks:
+  - Add meta information for cons cells
+  - Update type predicate for cons cells to use meta information
+
+  - Create storage for non immediate atoms
+
+  - Update symbol creation to use storage
+  - Add meta information for symbols
+  - Update type predicate for symbols to use meta information
+  - Set the tag on symbols to be 'non-immediate'
+
+  - Update primitive function creation to use storage.
+  - Add meta information for primitive functions (name, arity)
+  - Update type predicate for primitive functions to use meta information
+  - Update primitive function formatter to show meta information
+  - Set the tag on primitive functions to be 'non-immediate'
+
+  - Create a dispatcher on the function "format"
+  - Update "print" and "println" to use "format" instead of dispatching
+  
+  - Define function representation
+  - Define function meta-data
+  - Create evaluator for "lambda" (single expression)
+  - Create function printer
+  
+  - Create evaluator for function application
+
+  - Create evaluator for "define"
+  - Create evaluator for "if"
+  - Create evaluator for "quote"
