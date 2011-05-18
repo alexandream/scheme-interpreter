@@ -9,4 +9,8 @@ void * unwrap_pointer(value_t value) {
 	return (void*) (value & 0xFFFFFFFFFFFFFFFC);
 }
 
+static inline
+value_t wrap_pointer(void* ptr) {
+	return (value_t) ptr;
+}
 #endif

@@ -5,7 +5,7 @@
 
 struct single_storage_t {
 	uint64_t header;
-	value_t slot;
+	value_t first_slot;
 };
 
 struct double_storage_t {
@@ -15,5 +15,5 @@ struct double_storage_t {
 };
 
 double_storage_t* alloc_double_storage(void);
-
+single_storage_t* alloc_single_storage(void);
 #endif

@@ -4,10 +4,13 @@
 
 #include "value.h"
 
+extern const
+uint8_t SYMBOL_TYPE_MASK;
+
 static inline
 bool is_symbol(value_t value) {
-	// FIXME: This assumes the only value with tag 0x01 is a symbol. Not true.
-	return (((uint8_t) value) & 0x0F) == 0x01;
+	return (!is_immediate(value) &&
+			get_non_immediate_type(value) == SYMBOL_TYPE_MASK);
 }
 
 value_t symbol_make_from_string(const std::string& str);

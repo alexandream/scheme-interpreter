@@ -13,6 +13,6 @@ value_t make_pair(value_t left, value_t right) {
 	storage->first_slot = left;
 	storage->second_slot = right;
 
-	return ((value_t) storage);
+	return wrap_pointer(storage);
 }
 

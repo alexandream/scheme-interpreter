@@ -31,10 +31,10 @@ Iteration Tasks:
 
   x Create storage for non immediate atoms
 
-  - Update symbol creation to use storage
-  - Add meta information for symbols
-  - Update type predicate for symbols to use meta information
-  - Set the tag on symbols to be 'non-immediate'
+  x Update symbol creation to use storage
+  x Add meta information for symbols
+  x Update type predicate for symbols to use meta information
+  x Set the tag on symbols to be 'non-immediate'
 
   - Update primitive function creation to use storage.
   - Add meta information for primitive functions (name, arity)
