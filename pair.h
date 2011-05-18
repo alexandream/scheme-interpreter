@@ -4,6 +4,10 @@
 #include "value.h"
 #include "storage.h"
 #include "pointer.h"
+
+extern const
+uint8_t PAIR_TYPE_MASK;
+
 static inline
 bool is_pair(value_t pair) {
 	return ((((uint8_t) pair) & 0x03) == 0x00);
