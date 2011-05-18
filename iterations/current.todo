@@ -27,7 +27,7 @@ Iteration Tasks:
   x Define meta information format
 
   x Add meta information for pairs
-  - Update type predicate for pairs to use meta information
+  x Update type predicate for pairs to use meta information
 
   - Create storage for non immediate atoms
 

@@ -10,7 +10,8 @@ uint8_t PAIR_TYPE_MASK;
 
 static inline
 bool is_pair(value_t pair) {
-	return ((((uint8_t) pair) & 0x03) == 0x00);
+	return (!is_immediate(pair) && 
+	        get_non_immediate_type(pair) == PAIR_TYPE_MASK);
 }
 
 static inline
