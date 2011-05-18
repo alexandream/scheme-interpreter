@@ -44,7 +44,7 @@ Iteration Tasks:
   x Update primitive application to new primitive representation
   x Set the tag on primitive functions to be 'non-immediate'
   x Update primitive creation on REPL
-  - Verify arity on primitive application.
+  o Verify arity on primitive application.
 
   x Create a dispatcher on the function "format"
   x Update "print" and "println" to use "format" instead of dispatching

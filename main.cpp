@@ -19,7 +19,7 @@
 
 primitive_descriptor_t and_primitive_details = { "and", 2 };
 primitive_descriptor_t or_primitive_details = { "or", 2 };
-primitive_descriptor_t not_primitive_details = { "not", 2 };
+primitive_descriptor_t not_primitive_details = { "not", 1 };
 
 int main_repl(int argc, char ** argv) {
 	value_t input;

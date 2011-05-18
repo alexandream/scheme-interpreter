@@ -1,10 +1,12 @@
 #include <string>
 #include <sstream>
+#include <error.h>
 
 #include "value.h"
 
 #include "primitive.h"
 #include "pointer.h"
+#include "pair.h"
 
 
 const
@@ -43,6 +45,16 @@ value_t primitive_apply(value_t func, value_t param_list) {
 
 	primitive_t f_ptr = (primitive_t) storage->first_slot;
 	
+	primitive_descriptor_t* descriptor = 
+		(primitive_descriptor_t*) storage->second_slot;
+
+	int32_t arguments = pair_linked_length(param_list);
+	if (arguments != descriptor->arity) {
+		error(1, 0, "Expected %d arguments for primitive '%s', got %d",
+		            descriptor->arity,
+					descriptor->name.c_str(),
+					arguments);
+	}
 	return (*f_ptr)(param_list);
 }
 
