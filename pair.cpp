@@ -1,7 +1,7 @@
 #include "pair.h"
 #include "pointer.h"
 
-#include "memory.h"
+#include "storage.h"
 
 
 value_t make_pair(value_t left, value_t right) {

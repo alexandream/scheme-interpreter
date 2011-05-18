@@ -2,7 +2,7 @@
 #define __PAIR_H__
 
 #include "value.h"
-#include "memory.h"
+#include "storage.h"
 #include "pointer.h"
 static inline
 bool is_pair(value_t pair) {

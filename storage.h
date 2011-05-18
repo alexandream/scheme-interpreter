@@ -1,10 +1,15 @@
-#ifndef __MEMORY_H__
-#define __MEMORY_H__
+#ifndef __STORAGE_H__
+#define __STORAGE_H__
 
 #include "value.h"
 
+struct single_storage_t {
+	uint64_t header;
+	value_t slot;
+};
+
 struct double_storage_t {
-	uint64_t meta;
+	uint64_t header;
 	value_t first_slot;
 	value_t second_slot;
 };

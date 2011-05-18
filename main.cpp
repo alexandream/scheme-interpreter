@@ -9,7 +9,7 @@
 #include "special.h"
 #include "symbol.h"
 #include "scanner.h"
-#include "memory.h"
+#include "storage.h"
 #include "pointer.h"
 #include "environment.h"
 #include "primitive_function.h"

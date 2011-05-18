@@ -1,7 +1,10 @@
 #include <iostream>
 #include <assert.h>
 
-#include "memory.h"
+#include "value.h"
+
+#include "storage.h"
+
 #include "pointer.h"
 
 static const int BLOCK_SIZE = 65520;
