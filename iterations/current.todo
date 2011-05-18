@@ -58,4 +58,4 @@ Iteration Tasks:
 
   - Create evaluator for "define"
   - Create evaluator for "if"
-  - Create evaluator for "quote"
+  x Create evaluator for "quote"

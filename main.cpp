@@ -27,18 +27,18 @@ int main_repl(int argc, char ** argv) {
 	std::cerr << "Welcome to PFC." << std::endl;
 
 	environment_t *global_env = make_environment(NULL);
-	environment_set(global_env, symbol_make_from_string("T"), BOOLEAN_TRUE);
-	environment_set(global_env, symbol_make_from_string("F"), BOOLEAN_FALSE);
+	environment_set(global_env, make_symbol("T"), BOOLEAN_TRUE);
+	environment_set(global_env, make_symbol("F"), BOOLEAN_FALSE);
 	
-	value_t and_symbol = symbol_make_from_string("and");
+	value_t and_symbol = make_symbol("and");
 	value_t and_primitive = make_primitive(boolean_primitive_and,
 	                                       &and_primitive_details);
 
-	value_t or_symbol = symbol_make_from_string("or");
+	value_t or_symbol = make_symbol("or");
 	value_t or_primitive = make_primitive(boolean_primitive_or,
 	                                      &or_primitive_details);
 
-	value_t not_symbol = symbol_make_from_string("not");
+	value_t not_symbol = make_symbol("not");
 	value_t not_primitive = make_primitive(boolean_primitive_not,
 	                                       &not_primitive_details);
 
@@ -60,19 +60,19 @@ int main_repl(int argc, char ** argv) {
 }
 
 int main_symbol_test(int argc, char** argv) {
-	value_t s1 = symbol_make_from_string("hello");
+	value_t s1 = make_symbol("hello");
 	std::cout << "0x" << std::hex << (uint64_t) s1 << ": " 
 		      << symbol_format(s1) << std::endl;
 
-	value_t s2 = symbol_make_from_string("hello");
+	value_t s2 = make_symbol("hello");
 	std::cout << "0x" << std::hex << (uint64_t) s2 << ": " 
 		      << symbol_format(s2) << std::endl;
 
-	value_t s3 = symbol_make_from_string("world");
+	value_t s3 = make_symbol("world");
 	std::cout << "0x" << std::hex << (uint64_t) s3 << ": "
 		      << symbol_format(s3) << std::endl;
 	
-	value_t s4 = symbol_make_from_string("worla");
+	value_t s4 = make_symbol("worla");
 	std::cout << "0x" << std::hex << (uint64_t) s4 << ": "
 		      << symbol_format(s4) << std::endl;
 	return 0;
@@ -90,9 +90,9 @@ int main_lexer_test(int argc, char** argv) {
 
 int main_environment_test(int argc, char**argv) {
 	environment_t *global = make_environment(NULL);
-	value_t s1 = symbol_make_from_string("foo");
-	value_t s2 = symbol_make_from_string("bar");
-	value_t s3 = symbol_make_from_string("wakka");
+	value_t s1 = make_symbol("foo");
+	value_t s2 = make_symbol("bar");
+	value_t s3 = make_symbol("wakka");
 	
 	environment_set(global, s1, BOOLEAN_TRUE);
 	println(environment_get(global, s1));

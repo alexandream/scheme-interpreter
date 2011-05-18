@@ -13,7 +13,7 @@ bool is_symbol(value_t value) {
 			get_non_immediate_type(value) == SYMBOL_TYPE_MASK);
 }
 
-value_t symbol_make_from_string(const std::string& str);
+value_t make_symbol(const std::string& str);
 
 std::string symbol_format(value_t value);
 

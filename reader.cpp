@@ -39,7 +39,7 @@ value_t read(void) {
 		
 		case TK_SYMBOL:
 			get_token();
-			result = symbol_make_from_string(input.lexeme);
+			result = make_symbol(input.lexeme);
 			break;
 
 		default:
