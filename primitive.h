@@ -3,20 +3,26 @@
 #include <string>
 
 #include "value.h"
+extern const
+uint8_t PRIMITIVE_TYPE_MASK;
+
 typedef value_t (*primitive_t)(value_t);
+
+struct primitive_descriptor_t {
+	std::string name;
+	uint8_t arity;
+};
+
 
 static inline
 bool is_primitive(value_t value) {
-	// FIXME: This assumes primitive functions have a tagged
-	// space of their own. This is not true, as they'll be
-	// atoms like any others later.
-	return (((uint8_t) value) & 0x0F) == 0x03;
+	return (!is_immediate(value) &&
+	        get_non_immediate_type(value) == PRIMITIVE_TYPE_MASK);
 }
 
-static inline
-value_t wrap_primitive(primitive_t func) {
-	return ((uint64_t) func) | 0x03;
-}
+
+value_t make_primitive(primitive_t func,
+                       primitive_descriptor_t* descriptor);
 
 std::string primitive_format(value_t value);
 

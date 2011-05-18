@@ -2,6 +2,8 @@
 #include <sstream>
 #include <stdio.h>
 
+#include "value.h"
+
 #include "reader.h"
 #include "pair.h"
 #include "evaluator.h"
@@ -15,6 +17,9 @@
 #include "primitive.h"
 #include "boolean_primitives.h"
 
+primitive_descriptor_t and_primitive_details = { "and", 2 };
+primitive_descriptor_t or_primitive_details = { "or", 2 };
+primitive_descriptor_t not_primitive_details = { "not", 2 };
 
 int main_repl(int argc, char ** argv) {
 	value_t input;
@@ -25,12 +30,21 @@ int main_repl(int argc, char ** argv) {
 	environment_set(global_env, symbol_make_from_string("T"), BOOLEAN_TRUE);
 	environment_set(global_env, symbol_make_from_string("F"), BOOLEAN_FALSE);
 	
-	environment_set(global_env, symbol_make_from_string("and"),
-			        wrap_primitive(boolean_primitive_and));
-	environment_set(global_env, symbol_make_from_string("or"),
-			        wrap_primitive(boolean_primitive_or));
-	environment_set(global_env, symbol_make_from_string("not"),
-			        wrap_primitive(boolean_primitive_not));
+	value_t and_symbol = symbol_make_from_string("and");
+	value_t and_primitive = make_primitive(boolean_primitive_and,
+	                                       &and_primitive_details);
+
+	value_t or_symbol = symbol_make_from_string("or");
+	value_t or_primitive = make_primitive(boolean_primitive_or,
+	                                      &or_primitive_details);
+
+	value_t not_symbol = symbol_make_from_string("not");
+	value_t not_primitive = make_primitive(boolean_primitive_not,
+	                                       &not_primitive_details);
+
+	environment_set(global_env, and_symbol, and_primitive);
+	environment_set(global_env, or_symbol, or_primitive);
+	environment_set(global_env, not_symbol, not_primitive);
 
 	while(true) {
 		std::cerr << "> ";
