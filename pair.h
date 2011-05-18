@@ -1,6 +1,8 @@
 #ifndef __PAIR_H__
 #define __PAIR_H__
 
+#include <string>
+
 #include "value.h"
 #include "storage.h"
 #include "pointer.h"
@@ -32,4 +34,5 @@ value_t pair_right(value_t pair) {
 }
 
 value_t make_pair(value_t, value_t);
+std::string pair_format(value_t pair);
 #endif

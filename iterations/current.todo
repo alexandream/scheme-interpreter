@@ -46,8 +46,8 @@ Iteration Tasks:
   x Update primitive creation on REPL
   - Verify arity on primitive application.
 
-  - Create a dispatcher on the function "format"
-  - Update "print" and "println" to use "format" instead of dispatching
+  x Create a dispatcher on the function "format"
+  x Update "print" and "println" to use "format" instead of dispatching
   
   - Define function representation
   - Define function meta-data
