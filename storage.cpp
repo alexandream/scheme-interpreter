@@ -10,6 +10,9 @@
 static const int BLOCK_SIZE = 65520;
 
 double_storage_t* ds_pool = NULL;
+single_storage_t* ss_pool = NULL;
+
+uint32_t next_ss = 0;
 uint32_t next_ds = 0;
 
 double_storage_t* alloc_double_storage(void) {
@@ -23,3 +26,13 @@ double_storage_t* alloc_double_storage(void) {
 	return result;
 }
 
+single_storage_t* alloc_single_storage(void) {
+	assert(next_ss < BLOCK_SIZE);
+	if (!ss_pool) {
+		ss_pool = new single_storage_t[BLOCK_SIZE];
+		next_ss = 0;
+	}
+	single_storage_t* result = (single_storage_t*) (ss_pool + next_ss);
+	next_ss++;
+	return result;
+}

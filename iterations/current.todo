@@ -29,7 +29,7 @@ Iteration Tasks:
   x Add meta information for pairs
   x Update type predicate for pairs to use meta information
 
-  - Create storage for non immediate atoms
+  x Create storage for non immediate atoms
 
   - Update symbol creation to use storage
   - Add meta information for symbols
