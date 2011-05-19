@@ -43,14 +43,22 @@ value_t evaluate_list(value_t expr, environment_t* env) {
 	}
 }
 
-
-value_t evaluate_primitive_application(value_t expr, environment_t* env) {
+value_t evaluate_application(value_t expr, environment_t* env) {
 	value_t func = evaluate(pair_left(expr), env);
-	
-	assert(is_primitive(func));
 
 	value_t param_list = evaluate_list(pair_right(expr), env);
-	return primitive_apply(func, param_list);
+
+	value_t result;
+	if (is_primitive(func)) {
+		result = primitive_apply(func, param_list);
+	}
+	else if (is_function(func)) {
+		result = function_apply(func, param_list, env);
+	}
+	else {
+		error(1, 0, "Trying to apply something that is neither a function nor a primitive.");
+	}
+	return result;
 }
 
 
@@ -153,7 +161,7 @@ value_t evaluate_form(value_t expr, environment_t*env) {
 		result = evaluate_quote(pair_right(expr), env);
 	}
 	else {
-		result = evaluate_primitive_application(expr, env);
+		result = evaluate_application(expr, env);
 	}
 	return result;
 }

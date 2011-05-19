@@ -15,11 +15,11 @@ Iteration target:
 Iteration number: 002
 
 Iteration start:  2009-05-18 12:07
-Iteration finish: xxxx-xx-xx xx:xx
+Iteration finish: 2009-05-18 21:32
 
 Number of work-days
  Expected: 1
- Realized: x
+ Realized: 1
 
 Iteration Tasks:
   x Rename 'cons cells' to be known as 'pairs' 
@@ -54,7 +54,7 @@ Iteration Tasks:
   x Create evaluator for "lambda" (single expression, no closure)
   x Create function printer
   
-  - Create evaluator for function application
+  x Create evaluator for function application
 
   x Create evaluator for toplevel "define"
   x Create evaluator for "if"

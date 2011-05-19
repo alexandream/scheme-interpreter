@@ -3,6 +3,7 @@
 #include <string>
 
 #include "value.h"
+#include "environment.h"
 
 extern const
 uint8_t FUNCTION_TYPE_MASK;
@@ -19,6 +20,6 @@ value_t make_function(value_t, value_t);
 
 std::string function_format(value_t value);
 
-//value_t function_apply(value_t, value_t);
+value_t function_apply(value_t, value_t, environment_t*);
 
 #endif
