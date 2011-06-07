@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <stdarg.h>
 
 #include "value.h"
 
@@ -49,4 +50,20 @@ int32_t pair_linked_length(value_t value) {
 		value = pair_right(value);
 	}
 	return result;
+}
+
+value_t make_list(value_t first, ...) {
+	va_list args;
+	value_t list = make_pair(first, EMPTY_LIST);
+	value_t last = list;
+	va_start(args, first);
+	value_t next = va_arg(args, value_t);
+	value_t link;
+	while (next != 0) {
+		link = make_pair(next, EMPTY_LIST);
+		pair_set_right(last, link);
+		last = link;
+		next = va_arg(args, value_t);
+	}
+	return list;
 }

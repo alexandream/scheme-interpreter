@@ -33,8 +33,13 @@ value_t pair_right(value_t pair) {
 	return ((double_storage_t*) unwrap_pointer(pair))->second_slot;
 }
 
-value_t make_pair(value_t, value_t);
+static inline
+void pair_set_right(value_t pair, value_t val) {
+	((double_storage_t*) unwrap_pointer(pair))->second_slot = val;
+}
 
+value_t make_pair(value_t, value_t);
+value_t make_list(value_t first, ...);
 int32_t pair_linked_length(value_t);
 
 std::string pair_format(value_t pair);

@@ -15,13 +15,7 @@ std::string format(value_t value) {
 	std::string result;
 
 	// TODO: This must be a generic function. Not this mess.
-	if (value == EMPTY_LIST) {
-		result = "()";
-	}
-	else if (value == UNSPECIFIED) {
-		result = "#U";
-	}
-	else if (is_boolean(value)) {
+	 if (is_boolean(value)) {
 		result = boolean_format(value);
 	}
 	else if (is_pair(value)) {
@@ -37,7 +31,38 @@ std::string format(value_t value) {
 		result = symbol_format(value);
 	}
 	else {
-		error(1, 0, "Unable to format! Unknown value: 0x%016lX\n", value);
+		if (value == EMPTY_LIST) 
+			result = "()";
+		else if (value == UNSPECIFIED)
+			result = "#U";
+#ifdef DEBUG_COMPILER
+		else if (value == OP_HALT)
+			result = "@OP_HALT";
+		else if (value == OP_CONSTANT)
+			result = "@OP_CONSTANT";
+		else if (value == OP_LOOKUP)
+			result = "@OP_LOOKUP";
+		else if (value == OP_CLOSURE)
+			result = "@OP_CLOSURE";
+		else if (value == OP_TEST)
+			result = "@OP_TEST";
+		else if (value == OP_ASSIGN)
+			result = "@OP_ASSIGN";
+		else if (value == OP_SAVE)
+			result = "@OP_SAVE";
+		else if (value == OP_REIFY)
+			result = "@OP_REIFY";
+		else if (value == OP_FRAME)
+			result = "@OP_FRAME";
+		else if (value == OP_APPLY)
+			result = "@OP_APPLY";
+		else if (value == OP_ARGUMENT)
+			result = "@OP_ARGUMENT";
+		else if (value == OP_RETURN)
+			result = "@OP_RETURN";
+#endif 
+		else
+			error(1, 0, "Unable to format! Unknown value: 0x%016lX\n", value);
 	}
 	return result;
 }	

@@ -7,6 +7,7 @@
 #include "reader.h"
 #include "pair.h"
 #include "evaluator.h"
+#include "compiler.h"
 #include "printer.h"
 #include "special.h"
 #include "symbol.h"
@@ -126,13 +127,20 @@ int main_printer_test(int argc, char**argv) {
 	println(c3);
 	return 0;
 }
+
+int main_make_list_test(int argc, char **argv) {
+	value_t l = make_list(BOOLEAN_TRUE, BOOLEAN_FALSE, 0);
+	println(l);
+	return 0;
+}
 int (*prog_pool[])(int, char**) = {
 	main_repl,
 	main_symbol_test,
 	main_lexer_test,
 	main_environment_test, //3
 	main_allocator_test,
-	main_printer_test
+	main_printer_test,
+	main_make_list_test //6
 };
 
 int main(int argc, char** argv) {
