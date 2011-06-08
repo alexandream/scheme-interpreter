@@ -106,7 +106,7 @@ value_t evaluate_define(value_t expr, environment_t* env) {
 	value_t value = evaluate(pair_left(pair_right(expr)), env);
 	
 	environment_t* global_env = GLOBAL_ENVIRONMENT;
-	environment_set(global_env, identifier, value);
+	environment_add(global_env, identifier, value);
 
 	return UNSPECIFIED;
 }

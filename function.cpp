@@ -53,17 +53,8 @@ value_t function_apply(value_t func, value_t param_list, environment_t* env) {
 		            n_params);
 	}
 	if (n_args > 0) {
-		env = make_environment(env);
-		value_t i_arg = arg_list;
-		value_t i_param = param_list;
-		while(is_pair(i_arg)) {
-			// TODO: Swap names on 'arg' and 'param'. They're inverted.
-			value_t arg = pair_left(i_arg);
-			value_t param = pair_left(i_param);
-			environment_set(env, arg, param);
-			i_arg = pair_right(i_arg);
-			i_param = pair_right(i_param);
-		}
+		// TODO: Change this to use the new environment constructor.
+		env = make_environment(env, arg_list, param_list);
 	}
 	return evaluate(body, env);
 }

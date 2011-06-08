@@ -32,8 +32,8 @@ int main_repl(int argc, char ** argv) {
 	environment_t *global_env = make_environment(NULL);
 	GLOBAL_ENVIRONMENT = global_env;
 
-	environment_set(global_env, make_symbol("T"), BOOLEAN_TRUE);
-	environment_set(global_env, make_symbol("F"), BOOLEAN_FALSE);
+	environment_add(global_env, make_symbol("T"), BOOLEAN_TRUE);
+	environment_add(global_env, make_symbol("F"), BOOLEAN_FALSE);
 	
 	value_t and_symbol = make_symbol("and");
 	value_t and_primitive = make_primitive(boolean_primitive_and,
@@ -47,9 +47,9 @@ int main_repl(int argc, char ** argv) {
 	value_t not_primitive = make_primitive(boolean_primitive_not,
 	                                       &not_primitive_details);
 
-	environment_set(global_env, and_symbol, and_primitive);
-	environment_set(global_env, or_symbol, or_primitive);
-	environment_set(global_env, not_symbol, not_primitive);
+	environment_add(global_env, and_symbol, and_primitive);
+	environment_add(global_env, or_symbol, or_primitive);
+	environment_add(global_env, not_symbol, not_primitive);
 
 	while(true) {
 		std::cerr << "> ";
