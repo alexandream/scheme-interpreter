@@ -54,7 +54,7 @@ open MAKEFILE, ">", ".makefile";
 
 $result = <<EOF
 
-CFLAGS="-g"
+CFLAGS=-g -DDEBUG_COMPILER
 LIBS=-lfl 
 
 OBJS=@objs

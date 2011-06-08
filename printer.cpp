@@ -4,13 +4,11 @@
 #include "printer.h"
 #include "formatter.h"
 
-static
-void print_pair(value_t pair);
-void print(value_t value) {
-	std::cout << format(value);
+void print(value_t value, const char* prefix) {
+	std::cout << prefix << format(value);
 }
 
-void println(value_t value) {
-	print(value);
+void println(value_t value, const char* prefix) {
+	print(value, prefix);
 	std::cout << std::endl;
 }

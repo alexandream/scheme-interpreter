@@ -15,18 +15,18 @@ const
 uint8_t FUNCTION_TYPE_MASK = 0x04;
 
 static inline
-bool is_all_symbols(value_t arg_list);
+bool is_all_symbols(value_t params);
 
-value_t make_function(value_t arg_list, value_t body) {
-	if (!is_all_symbols(arg_list)) {
-		error(1, 0, "Argument lists can only be composed of proper lists of symbols.");
+value_t make_function(value_t env, value_t params, value_t body) {
+	if (!is_all_symbols(params)) {
+		error(1, 0, "Formal Parameter lists can only be composed of proper lists of symbols.");
 	}
 	
 	double_storage_t* storage = alloc_double_storage();
 
 	storage->header = make_header(true, FUNCTION_TYPE_MASK);
-	storage->first_slot = arg_list;
-	storage->second_slot = body;
+	storage->first_slot = env;
+	storage->second_slot = make_pair(params, body);
 
 	return wrap_pointer(storage);
 }
@@ -38,7 +38,7 @@ std::string function_format(value_t value) {
 
 	return sstream.str();
 }
-	
+/*
 value_t function_apply(value_t func, value_t param_list, value_t env) {
 	double_storage_t* storage = (double_storage_t*) unwrap_pointer(func);
 
@@ -55,9 +55,9 @@ value_t function_apply(value_t func, value_t param_list, value_t env) {
 	if (n_args > 0) {
 		env = make_environment(env, arg_list, param_list);
 	}
-	return evaluate(body, env);
+	return UNSPECIFIED;//evaluate(body, env);
 }
-
+*/
 
 static inline
 bool is_all_symbols(value_t arg_list) {

@@ -9,6 +9,7 @@
 #include "evaluator.h"
 #include "compiler.h"
 #include "printer.h"
+#include "formatter.h"
 #include "special.h"
 #include "symbol.h"
 #include "scanner.h"
@@ -50,7 +51,12 @@ int main_repl(int argc, char ** argv) {
 	environment_add(global_env, and_symbol, and_primitive);
 	environment_add(global_env, or_symbol, or_primitive);
 	environment_add(global_env, not_symbol, not_primitive);
-
+	
+	context_t* context = new context_t();
+	context->accumulator = UNSPECIFIED;
+	context->environment = global_env;
+	context->value_stack = EMPTY_LIST;
+	context->frame_stack = EMPTY_LIST;
 	while(true) {
 		std::cerr << "> ";
 		input = read();
@@ -58,89 +64,18 @@ int main_repl(int argc, char ** argv) {
 			std::cout << std::endl;
 			break;
 		}
-		result = evaluate(input, global_env);
+		context->next_expr = compile(input, make_list(OP_HALT, 0));
+#ifdef DEBUG_COMPILER
+		std::cerr << "; " << format(context->next_expr) << std::endl;
+#endif
+		result = evaluate(context);
 		println(result);
 	}
 	return 0;
 }
 
-int main_symbol_test(int argc, char** argv) {
-	value_t s1 = make_symbol("hello");
-	std::cout << "0x" << std::hex << (uint64_t) s1 << ": " 
-		      << symbol_format(s1) << std::endl;
-
-	value_t s2 = make_symbol("hello");
-	std::cout << "0x" << std::hex << (uint64_t) s2 << ": " 
-		      << symbol_format(s2) << std::endl;
-
-	value_t s3 = make_symbol("world");
-	std::cout << "0x" << std::hex << (uint64_t) s3 << ": "
-		      << symbol_format(s3) << std::endl;
-	
-	value_t s4 = make_symbol("worla");
-	std::cout << "0x" << std::hex << (uint64_t) s4 << ": "
-		      << symbol_format(s4) << std::endl;
-	return 0;
-}
-
-int main_lexer_test(int argc, char** argv) {
-	token_t input;
-	do {
-		input = get_token();
-		std::cout << "Got token: " << input.type << " with lexeme: " 
-		          << input.lexeme << std::endl;
-	} while (input.type != TK_EOF);
-	return 0;
-}
-
-int main_environment_test(int argc, char**argv) {
-	value_t global = make_environment(UNSPECIFIED);
-	value_t s1 = make_symbol("foo");
-	value_t s2 = make_symbol("bar");
-	value_t s3 = make_symbol("wakka");
-	
-	environment_set(global, s1, BOOLEAN_TRUE);
-	println(environment_get(global, s1));
-
-	environment_set(global, s2, BOOLEAN_FALSE);
-	println(environment_get(global, s2));
-	environment_set(global, s2, BOOLEAN_TRUE);
-	println(environment_get(global, s2));
-	println(environment_get(global, s3));
-	return 0;
-}
-
-int main_allocator_test(int argc, char **argv) {
-	double_storage_t* c1 = alloc_double_storage();
-	std::cout << "Allocated a pair in address " << c1 << std::endl;
-	double_storage_t* c2 = alloc_double_storage();
-	std::cout << "Allocated a pair in address " << c2 << std::endl;
-	return 0;
-}
-
-int main_printer_test(int argc, char**argv) {
-	value_t c1 = make_pair(BOOLEAN_TRUE, EMPTY_LIST);
-	println(c1);
-	value_t c2 = make_pair(BOOLEAN_FALSE, c1);
-	println(c2);
-	value_t c3 = make_pair(BOOLEAN_TRUE, c2);
-	println(c3);
-	return 0;
-}
-
-int main_make_list_test(int argc, char **argv) {
-	value_t l = make_list(BOOLEAN_TRUE, BOOLEAN_FALSE, 0);
-	println(l);
-	return 0;
-}
 int (*prog_pool[])(int, char**) = {
-	main_repl,
-	main_symbol_test,
-	main_lexer_test,
-	main_environment_test, //3
-	main_allocator_test,
-	main_printer_test,
-	main_make_list_test //6
+	main_repl
 };
 
 int main(int argc, char** argv) {

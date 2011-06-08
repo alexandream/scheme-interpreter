@@ -22,7 +22,8 @@ value_t BOOLEAN_TRUE,
         OP_FRAME,
         OP_APPLY,
         OP_ARGUMENT,
-        OP_RETURN;
+        OP_RETURN, 
+		OP_BIND;
 static inline
 bool is_special(value_t value) {
 	return ((value & 0x0000000000000006) == 0x06);

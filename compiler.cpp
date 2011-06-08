@@ -17,6 +17,7 @@ value_t compile_if(value_t expr, value_t next);
 value_t compile_lambda(value_t expr, value_t next);
 value_t compile_quote(value_t expr, value_t next);
 value_t compile_application(value_t expr, value_t next);
+value_t compile_define(value_t args, value_t next);
 value_t compile_form(value_t expr, value_t next);
 
 value_t compile(value_t expr, value_t next) {
@@ -54,6 +55,9 @@ value_t compile_form(value_t expr, value_t next) {
 	else if (head == SYM_QUOTE) {
 		result = compile_quote(pair_right(expr), next);
 	}
+	else if (head == SYM_DEFINE) {
+		result = compile_define(pair_right(expr), next);
+	}
 	else {
 		result = compile_application(expr, next);
 	}
@@ -74,10 +78,21 @@ value_t compile_lambda(value_t expr, value_t next) {
 
 	value_t compiled_body = compile(body, make_list(OP_RETURN, 0));
 
-	return make_list(OP_CLOSURE, arg_list, compiled_body, 0);
+	return make_list(OP_CLOSURE, arg_list, compiled_body, next, 0);
 }
 
+value_t compile_define(value_t args, value_t next) {
+	int32_t arguments = pair_linked_length(args);
+	if (arguments != 2) {
+		error(1, 0, "Expected 2 arguments for 'define', got '%d'", arguments);
+	}
 
+	value_t symbol = pair_left(args);
+	value_t expr = pair_left(pair_right(args));
+	
+	value_t bind = make_list(OP_BIND, symbol, next, 0);
+	return compile(expr, bind);
+}
 value_t compile_if(value_t expr, value_t next) {
 	int32_t arguments = pair_linked_length(expr);
 	if (arguments < 2 || arguments > 3) {
@@ -106,7 +121,7 @@ value_t compile_quote(value_t expr, value_t next) {
 	if (arguments != 1) {
 		error(1, 0, "Expected 1 argument for 'quote', got %d.", arguments);
 	}
-	value_t quoted_obj = pair_right(expr);
+	value_t quoted_obj = pair_left(expr);
 	return make_list(OP_CONSTANT, quoted_obj, next, 0);
 }
 
@@ -131,7 +146,7 @@ value_t compile_application(value_t expr, value_t next) {
 
 	// Detecting tail calls.
 	value_t next_op = pair_left(next);
-	if (next_op != OP_RETURN && next_op != OP_HALT) {
+	if (next_op != OP_RETURN) {
 		// If we're not making a tail call, we should save the current frame
 		// before doing all the function-application code generated above.
 		result = make_list(OP_FRAME, next, result, 0);

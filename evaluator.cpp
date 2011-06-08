@@ -12,157 +12,156 @@
 #include "symbol.h"
 #include "pair.h"
 
-
-value_t evaluate_form(value_t expr, value_t env);
-
-value_t evaluate(value_t expr, value_t env) {
-	value_t result = UNSPECIFIED;
-	
-	if (is_boolean(expr)) {
-		result = expr;
-	}
-	else if (is_symbol(expr)) {
-		result = environment_get(env, expr);
-	}
-	else if (is_pair(expr)) {
-		result = evaluate_form(expr, env);
+static inline
+void evaluate_op_test(context_t* context, value_t& args) {
+	value_t consequence = pair_left(args);
+	value_t alternative = pair_left(pair_right(args));
+	if (context->accumulator != BOOLEAN_FALSE) {
+		context->next_expr = consequence;
 	}
 	else {
-		error(1, 0, "Could not evaluate value 0x%016lX\n: Unknown type.", expr);
-	}
-
-	return result;
-}
-
-value_t evaluate_list(value_t expr, value_t env) {
-	if (expr == EMPTY_LIST) {
-		return EMPTY_LIST;
-	}
-	else {
-		return make_pair(evaluate(pair_left(expr), env), evaluate_list(pair_right(expr), env));
+		context->next_expr = alternative;
 	}
 }
 
-value_t evaluate_application(value_t expr, value_t env) {
-	value_t func = evaluate(pair_left(expr), env);
+static inline
+void evaluate_op_return(context_t* context, value_t& args) {
+	value_t frame = pair_left(context->frame_stack);
+	context->frame_stack = pair_right(context->frame_stack);
 
-	value_t param_list = evaluate_list(pair_right(expr), env);
+	context->environment = pair_left(frame);
+	context->value_stack = pair_left(pair_right(frame));
+	context->next_expr = pair_left(pair_right(pair_right(frame)));
+}
 
-	value_t result;
+static inline
+void evaluate_op_frame(context_t* context, value_t& args) {
+	value_t ret = pair_left(args);
+	value_t next = pair_left(pair_right(args));
+
+	value_t frame = make_list(context->environment, context->value_stack,
+	                                                ret, 0);
+	context->value_stack = EMPTY_LIST;
+	context->frame_stack = make_pair(frame, context->frame_stack);
+	context->next_expr = next;
+}
+static inline
+void evaluate_op_constant(context_t* context, value_t& args) {
+	value_t constant = pair_left(args);
+	value_t next = pair_left(pair_right(args));
+
+	context->next_expr = next;
+	context->accumulator = constant;
+}
+static inline
+void evaluate_op_apply(context_t* context, value_t& args) {
+	value_t func = context->accumulator;
+	value_t arg_list = context->value_stack;
+
 	if (is_primitive(func)) {
-		result = primitive_apply(func, param_list);
+		context->accumulator = primitive_apply(func, arg_list);
+		context->value_stack = EMPTY_LIST;
+		context->next_expr = make_list(OP_RETURN, 0);
 	}
 	else if (is_function(func)) {
-		result = function_apply(func, param_list, env);
+		value_t params = function_get_params(func);
+		value_t env = make_environment(function_get_environment(func),
+		                               params,
+		                               arg_list);
+		value_t body = function_get_body(func);
+
+		context->environment = env;
+		context->value_stack = EMPTY_LIST;
+		context->next_expr = body;
 	}
 	else {
 		error(1, 0, "Trying to apply something that is neither a function nor a primitive.");
 	}
-	return result;
 }
 
-
-value_t evaluate_quote(value_t expr, value_t env) {
-	int32_t arguments = pair_linked_length(expr);
-
-	if (arguments != 1) {
-		error(1, 0, "Expected 1 argument for 'quote', got %d.", arguments);
-	}
-	return pair_left(expr);
+static inline
+void evaluate_op_argument(context_t* context, value_t& args) {
+	value_t next = pair_left(args);
+	// Push the current accumulator to value stack.
+	context->value_stack = make_pair(context->accumulator, context->value_stack);
+	context->next_expr = next;
 }
 
+static inline
+void evaluate_op_lookup(context_t* context, value_t& args) {
+	value_t variable = pair_left(args);
+	value_t next = pair_left(pair_right(args));
 
-value_t evaluate_if(value_t expr, value_t env) {
-	int32_t arguments = pair_linked_length(expr);
-	if (arguments != 3) {
-		error(1, 0, "Expected 3 arguments for 'if', got %d", arguments);
-	}
-	value_t condition = evaluate(pair_left(expr), env);
-	value_t options = pair_right(expr);
-	value_t consequence = pair_left(options);
-	value_t alternative = pair_left(pair_right(options));
+	context->next_expr = next;
+	context->accumulator = environment_get(context->environment, variable);
+}
+
+static inline
+void evaluate_op_closure(context_t* context, value_t& args) {
+	value_t params = pair_left(args);
+	value_t body = pair_left(pair_right(args));
+	value_t next = pair_left(pair_right(pair_right(args)));
+
+	value_t env = context->environment;
+
+	context->accumulator = make_function(env, params, body);
+	context->next_expr = next;
+}
+
+static inline
+void evaluate_op_bind(context_t* context, value_t& args) {
+	value_t name = pair_left(args);
+	value_t next = pair_left(pair_right(args));
+
+	environment_add(context->environment, name, context->accumulator);
+	context->accumulator = UNSPECIFIED;
+	context->next_expr = next;
+}
+value_t evaluate(context_t* context) {
+	value_t op_code = pair_left(context->next_expr);
+	value_t args = pair_right(context->next_expr);
 	
-	value_t result;
-	if (condition == BOOLEAN_TRUE) {
-		result = evaluate(consequence, env);
-	}
-	else {
-		result = evaluate(alternative, env);
-	}
+	while (op_code != OP_HALT) {
+		if (op_code == OP_CONSTANT) {
+			evaluate_op_constant(context, args);
+		}
+		else if (op_code == OP_LOOKUP) {
+			evaluate_op_lookup(context, args);
+		}
+		else if (op_code == OP_CLOSURE) {
+			evaluate_op_closure(context, args);
+		}
+		else if (op_code == OP_TEST) {
+			evaluate_op_test(context, args);
+		}
+		else if (op_code == OP_ASSIGN) {
+			error(1, 0, "Not yet implemented.");
+		}
+		else if (op_code == OP_SAVE) {
+			error(1, 0, "Not yet implemented.");
+		}
+		else if (op_code == OP_REIFY) {
+			error(1, 0, "Not yet implemented.");
+		}
+		else if (op_code == OP_FRAME) {
+			evaluate_op_frame(context, args);
+		}
+		else if (op_code == OP_APPLY) {
+			evaluate_op_apply(context, args);
+		}
+		else if (op_code == OP_ARGUMENT) {
+			evaluate_op_argument(context, args);
+		}
+		else if (op_code == OP_RETURN) {
+			evaluate_op_return(context, args);
+		}
+		else if (op_code == OP_BIND) {
+			evaluate_op_bind(context, args);
+		}
 
-	return result;
-}
-
-
-value_t evaluate_define(value_t expr, value_t env) {
-	int32_t arguments = pair_linked_length(expr);
-	if (arguments != 2) {
-		error(1, 0, "Expected 2 arguments for 'define', got %d", arguments);
+		op_code = pair_left(context->next_expr);
+		args = pair_right(context->next_expr);
 	}
-	value_t identifier = pair_left(expr);
-	if (!is_symbol(identifier)) {
-		error(1, 0, "First argument for 'define' must be a symbol");
-	}
-	value_t value = evaluate(pair_left(pair_right(expr)), env);
-	
-	value_t global_env = GLOBAL_ENVIRONMENT;
-	environment_add(global_env, identifier, value);
-
-	return UNSPECIFIED;
-}
-
-value_t evaluate_lambda(value_t expr, value_t env) {
-	int32_t arguments = pair_linked_length(expr);
-	if (arguments != 2) {
-		error(1, 0, "Expected 2 arguments for 'lambda', got %d", arguments);
-	}
-	
-	value_t arg_list = pair_left(expr);
-	value_t body = pair_left(pair_right(expr));
-
-	value_t function = make_function(arg_list, body);
-
-	return function;
-}
-
-value_t QUOTE_SYMBOL = UNSPECIFIED;
-value_t IF_SYMBOL = UNSPECIFIED;
-value_t DEFINE_SYMBOL = UNSPECIFIED;
-value_t LAMBDA_SYMBOL = UNSPECIFIED;
-
-value_t evaluate_form(value_t expr, value_t env) {
-	// TODO: Take this initialization from here and put it in a place that
-	// is run only once.
-	if (QUOTE_SYMBOL == UNSPECIFIED) {
-		QUOTE_SYMBOL = make_symbol("quote");
-	}
-	if (IF_SYMBOL == UNSPECIFIED) {
-		IF_SYMBOL = make_symbol("if");
-	}
-	if (DEFINE_SYMBOL == UNSPECIFIED) {
-		DEFINE_SYMBOL = make_symbol("define");
-	}
-	if (LAMBDA_SYMBOL == UNSPECIFIED) {
-		LAMBDA_SYMBOL = make_symbol("lambda");
-	}
-
-	value_t result = UNSPECIFIED;
-	value_t head = pair_left(expr);
-	if (head == IF_SYMBOL) {
-		result = evaluate_if(pair_right(expr), env);
-	}
-	else if (head == LAMBDA_SYMBOL) {
-		result = evaluate_lambda(pair_right(expr), env);
-	}
-	else if (head == DEFINE_SYMBOL) {
-		result = evaluate_define(pair_right(expr), env);
-	}
-	else if (head == QUOTE_SYMBOL) {
-		result = evaluate_quote(pair_right(expr), env);
-	}
-	else {
-		result = evaluate_application(expr, env);
-	}
-	return result;
+	return context->accumulator;
 }
 

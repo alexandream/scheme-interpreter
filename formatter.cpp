@@ -60,6 +60,8 @@ std::string format(value_t value) {
 			result = "@OP_ARGUMENT";
 		else if (value == OP_RETURN)
 			result = "@OP_RETURN";
+		else if (value == OP_BIND)
+			result = "@OP_BIND";
 #endif 
 		else
 			error(1, 0, "Unable to format! Unknown value: 0x%016lX\n", value);
