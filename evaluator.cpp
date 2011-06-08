@@ -13,9 +13,9 @@
 #include "pair.h"
 
 
-value_t evaluate_form(value_t expr, environment_t* env);
+value_t evaluate_form(value_t expr, value_t env);
 
-value_t evaluate(value_t expr, environment_t *env) {
+value_t evaluate(value_t expr, value_t env) {
 	value_t result = UNSPECIFIED;
 	
 	if (is_boolean(expr)) {
@@ -34,7 +34,7 @@ value_t evaluate(value_t expr, environment_t *env) {
 	return result;
 }
 
-value_t evaluate_list(value_t expr, environment_t* env) {
+value_t evaluate_list(value_t expr, value_t env) {
 	if (expr == EMPTY_LIST) {
 		return EMPTY_LIST;
 	}
@@ -43,7 +43,7 @@ value_t evaluate_list(value_t expr, environment_t* env) {
 	}
 }
 
-value_t evaluate_application(value_t expr, environment_t* env) {
+value_t evaluate_application(value_t expr, value_t env) {
 	value_t func = evaluate(pair_left(expr), env);
 
 	value_t param_list = evaluate_list(pair_right(expr), env);
@@ -62,7 +62,7 @@ value_t evaluate_application(value_t expr, environment_t* env) {
 }
 
 
-value_t evaluate_quote(value_t expr, environment_t* env) {
+value_t evaluate_quote(value_t expr, value_t env) {
 	int32_t arguments = pair_linked_length(expr);
 
 	if (arguments != 1) {
@@ -72,7 +72,7 @@ value_t evaluate_quote(value_t expr, environment_t* env) {
 }
 
 
-value_t evaluate_if(value_t expr, environment_t* env) {
+value_t evaluate_if(value_t expr, value_t env) {
 	int32_t arguments = pair_linked_length(expr);
 	if (arguments != 3) {
 		error(1, 0, "Expected 3 arguments for 'if', got %d", arguments);
@@ -94,7 +94,7 @@ value_t evaluate_if(value_t expr, environment_t* env) {
 }
 
 
-value_t evaluate_define(value_t expr, environment_t* env) {
+value_t evaluate_define(value_t expr, value_t env) {
 	int32_t arguments = pair_linked_length(expr);
 	if (arguments != 2) {
 		error(1, 0, "Expected 2 arguments for 'define', got %d", arguments);
@@ -105,13 +105,13 @@ value_t evaluate_define(value_t expr, environment_t* env) {
 	}
 	value_t value = evaluate(pair_left(pair_right(expr)), env);
 	
-	environment_t* global_env = GLOBAL_ENVIRONMENT;
+	value_t global_env = GLOBAL_ENVIRONMENT;
 	environment_add(global_env, identifier, value);
 
 	return UNSPECIFIED;
 }
 
-value_t evaluate_lambda(value_t expr, environment_t* env) {
+value_t evaluate_lambda(value_t expr, value_t env) {
 	int32_t arguments = pair_linked_length(expr);
 	if (arguments != 2) {
 		error(1, 0, "Expected 2 arguments for 'lambda', got %d", arguments);
@@ -130,7 +130,7 @@ value_t IF_SYMBOL = UNSPECIFIED;
 value_t DEFINE_SYMBOL = UNSPECIFIED;
 value_t LAMBDA_SYMBOL = UNSPECIFIED;
 
-value_t evaluate_form(value_t expr, environment_t*env) {
+value_t evaluate_form(value_t expr, value_t env) {
 	// TODO: Take this initialization from here and put it in a place that
 	// is run only once.
 	if (QUOTE_SYMBOL == UNSPECIFIED) {

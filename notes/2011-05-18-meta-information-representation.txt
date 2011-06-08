@@ -10,7 +10,10 @@ Highest Bit: Immutable? 1 = True, 0 = False.
 Three Bits : Reserved for future use.
 Eight Bits : Type information, 00000000 means user defined type in double
              storage
-Four Bits  : Reserved for Garbage Collector use
+Eight Bits : Reserved for Garbage Collector use. Must encode whether each of
+			 the storage slots is supposed to be marked during mark phase, and
+			 whether each of the slots is supposed to be manually deleted on
+             collection.
 
 As of now, the following type flags are defined:
 
@@ -18,4 +21,5 @@ As of now, the following type flags are defined:
 00000010: Symbols
 00000011: Primitives
 00000100: Functions
+00000101: Environments
 

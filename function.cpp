@@ -39,7 +39,7 @@ std::string function_format(value_t value) {
 	return sstream.str();
 }
 	
-value_t function_apply(value_t func, value_t param_list, environment_t* env) {
+value_t function_apply(value_t func, value_t param_list, value_t env) {
 	double_storage_t* storage = (double_storage_t*) unwrap_pointer(func);
 
 	value_t arg_list = storage->first_slot;
@@ -53,7 +53,6 @@ value_t function_apply(value_t func, value_t param_list, environment_t* env) {
 		            n_params);
 	}
 	if (n_args > 0) {
-		// TODO: Change this to use the new environment constructor.
 		env = make_environment(env, arg_list, param_list);
 	}
 	return evaluate(body, env);

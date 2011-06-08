@@ -20,6 +20,6 @@ value_t make_function(value_t, value_t);
 
 std::string function_format(value_t value);
 
-value_t function_apply(value_t, value_t, environment_t*);
+value_t function_apply(value_t, value_t, value_t);
 
 #endif

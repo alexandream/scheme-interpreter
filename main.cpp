@@ -18,7 +18,7 @@
 #include "primitive.h"
 #include "boolean_primitives.h"
 
-environment_t* GLOBAL_ENVIRONMENT = NULL;
+value_t GLOBAL_ENVIRONMENT;
 
 primitive_descriptor_t and_primitive_details = { "and", 2 };
 primitive_descriptor_t or_primitive_details = { "or", 2 };
@@ -27,9 +27,9 @@ primitive_descriptor_t not_primitive_details = { "not", 1 };
 int main_repl(int argc, char ** argv) {
 	value_t input;
 	value_t result;
-	std::cerr << "Welcome to PFC." << std::endl;
+	std::cerr << "Welcome to Stutter." << std::endl;
 
-	environment_t *global_env = make_environment(NULL);
+	value_t global_env = make_environment(UNSPECIFIED);
 	GLOBAL_ENVIRONMENT = global_env;
 
 	environment_add(global_env, make_symbol("T"), BOOLEAN_TRUE);
@@ -94,7 +94,7 @@ int main_lexer_test(int argc, char** argv) {
 }
 
 int main_environment_test(int argc, char**argv) {
-	environment_t *global = make_environment(NULL);
+	value_t global = make_environment(UNSPECIFIED);
 	value_t s1 = make_symbol("foo");
 	value_t s2 = make_symbol("bar");
 	value_t s3 = make_symbol("wakka");

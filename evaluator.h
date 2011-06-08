@@ -3,6 +3,6 @@
 
 #include "value.h"
 #include "environment.h"
-value_t evaluate(value_t, environment_t*);
+value_t evaluate(value_t, value_t);
 
 #endif
