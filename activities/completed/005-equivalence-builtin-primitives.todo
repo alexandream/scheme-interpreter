@@ -1,0 +1,17 @@
+Activity target: 
+  Implement the basic predicates eq? and eqv?. At this point, eq? and eqv?
+  behave exactly the same, so it's really only a matter of implementing one.
+
+Activity number: 005
+
+Activity start:  2011-09-06 16:13
+Activity finish: 2011-09-06 16:28
+
+Number of work-hours
+  Expected: 0.25
+  Realized: 0.25
+
+Current Activity Tasks: 
+  x Create function for eq?
+  x Bind the function as eq? and eqv? on the repl toplevel environment.
+

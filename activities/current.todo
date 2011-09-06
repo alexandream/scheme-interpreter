@@ -1,17 +1,16 @@
 Activity target: 
-  Implement the basic predicates eq? and eqv?. At this point, eq? and eqv?
-  behave exactly the same, so it's really only a matter of implementing one.
+  Have support for the basic three pair primitives (cons, car, cdr) available 
+  on the global environment.
 
-Activity number: 004
+Activity number: xxx
 
-Activity start:  2011-09-06 16:13
-Activity finish: 2011-09-06 16:28
+Activity start:  xxxx-xx-xx xx:xx
+Activity finish: xxxx-xx-xx xx:xx
 
 Number of work-hours
-  Expected: 0.25
-  Realized: 0.25
+  Expected: 0.2
+  Realized: x
 
 Current Activity Tasks: 
-  x Create function for eq?
-  x Bind the function as eq? and eqv? on the repl toplevel environment.
-
+  - Encapsulate pair_left, pair_right and make_pair in primitive functions.
+  - Export those to the global environment.
