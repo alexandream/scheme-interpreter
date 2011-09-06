@@ -18,12 +18,15 @@
 #include "environment.h"
 #include "primitive.h"
 #include "boolean_primitives.h"
+#include "builtin_primitives.h"
 
 value_t GLOBAL_ENVIRONMENT;
 
 primitive_descriptor_t and_primitive_details = { "and", 2 };
 primitive_descriptor_t or_primitive_details = { "or", 2 };
 primitive_descriptor_t not_primitive_details = { "not", 1 };
+primitive_descriptor_t eqP_primitive_details = { "eq?", 2 };
+primitive_descriptor_t eqvP_primitive_details = { "eqv?", 2 };
 
 int main_repl(int argc, char ** argv) {
 	value_t input;
@@ -48,6 +51,16 @@ int main_repl(int argc, char ** argv) {
 	value_t not_primitive = make_primitive(boolean_primitive_not,
 	                                       &not_primitive_details);
 
+	value_t eqP_symbol = make_symbol("eq?");
+	value_t eqP_primitive = make_primitive(BP_eqP,
+	                                       &eqP_primitive_details);
+
+	value_t eqvP_symbol = make_symbol("eqv?");
+	value_t eqvP_primitive = make_primitive(BP_eqP,
+	                                       &eqvP_primitive_details);
+	
+	environment_add(global_env, eqP_symbol, eqP_primitive);
+	environment_add(global_env, eqvP_symbol, eqvP_primitive);
 	environment_add(global_env, and_symbol, and_primitive);
 	environment_add(global_env, or_symbol, or_primitive);
 	environment_add(global_env, not_symbol, not_primitive);
@@ -69,6 +82,7 @@ int main_repl(int argc, char ** argv) {
 		std::cerr << "; " << format(context->next_expr) << std::endl;
 #endif
 		result = evaluate(context);
+		std::cerr << ":::" << std::endl;
 		println(result);
 	}
 	return 0;
