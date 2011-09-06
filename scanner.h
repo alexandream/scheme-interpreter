@@ -10,6 +10,8 @@ enum token_types_t {
   
    TK_LPAREN,
    TK_RPAREN,
+   TK_QUOTE, 
+
    TK_INTEGER,
    TK_SYMBOL,
    TK_BOOLEAN_FALSE,

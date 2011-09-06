@@ -11,6 +11,8 @@
 
 static
 value_t read_list(void);
+static
+value_t read_quote_shortcut(void);
 
 value_t read(void) {
 	value_t result;
@@ -32,7 +34,10 @@ value_t read(void) {
 			get_token(); // consume TK_LPAREN;
 			result = read_list();
 			break;
-
+		case TK_QUOTE:
+			get_token(); // consume TK_QUOTE;
+			result = read_quote_shortcut();
+			break;
 		case TK_EOF:
 			result = END_OF_FILE;
 			break;
@@ -67,3 +72,10 @@ value_t read_list(void) {
 	return result;
 }
 
+static
+value_t read_quote_shortcut(void) {
+	value_t quote = make_symbol("quote");
+	value_t next = read();
+	value_t result = make_list(quote, next, 0);
+	return result;
+}

@@ -24,6 +24,7 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 {WHITE}               /* Do Nothing */
 "("                   return TK_LPAREN;
 ")"                   return TK_RPAREN;
+"'"                   return TK_QUOTE;
 
 {DIGIT}               return TK_INTEGER;
 

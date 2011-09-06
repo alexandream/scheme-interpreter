@@ -1,0 +1,9 @@
+'#T
+'#F
+'(lambda (a b c) (and (or a b) c))
+
+%%
+
+#T
+#F
+(lambda (a b c) (and (or a b) c))
