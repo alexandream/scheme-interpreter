@@ -1,0 +1,16 @@
+Activity target: 
+  Have support for the basic three pair primitives (cons, car, cdr) available 
+  on the global environment.
+
+Activity number: 006
+
+Activity start:  2011-09-06 17:20
+Activity finish: 2011-09-06 17:33
+
+Number of work-hours
+  Expected: 0.2
+  Realized: 0.2
+
+Current Activity Tasks: 
+  x Encapsulate pair_left, pair_right and make_pair in primitive functions.
+  x Export those to the global environment.

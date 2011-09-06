@@ -27,11 +27,18 @@ struct {
 	primitive_t func;
 } 
 primitives[] = {
+	// BOOLEANS
 	{ "and", 2, BP_and },
 	{ "or", 2, BP_or },
 	{ "not", 1, BP_not },
+	// EQUIVALENCE
 	{ "eq?", 2, BP_eqP },
 	{ "eqv?", 2, BP_eqP },
+	// PAIRS
+	{ "cons", 2, BP_cons },
+	{ "car", 1, BP_car },
+	{ "cdr", 1, BP_cdr },
+	// TOMBSTONE
 	{ "", 0, 0 }
 };
 

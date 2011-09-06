@@ -30,3 +30,23 @@ value_t BP_eqP(value_t params) {
 
 	return wrap_boolean(op1 == op2);
 }
+// PAIR PRIMITIVES
+//
+value_t BP_cons(value_t params) {
+	value_t op1 = pair_left(params);
+	value_t op2 = pair_left(pair_right(params));
+
+	return make_pair(op1, op2);
+}
+
+value_t BP_car(value_t params) {
+	value_t oper = pair_left(params);
+	
+	return pair_left(oper);
+}
+
+value_t BP_cdr(value_t params) {
+	value_t oper = pair_left(params);
+
+	return pair_right(oper);
+}
