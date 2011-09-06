@@ -15,4 +15,3 @@ test:
 	@echo "Running tests.\n"
 	@find tests -type f -exec ./tester '{}' %% ./main ';'
 	@echo ""
-	@make --no-print-directory clean > /dev/null
