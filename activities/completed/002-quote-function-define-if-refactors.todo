@@ -1,4 +1,4 @@
-Iteration target: 
+Activity target: 
   Adding to the Simple "Propositional Logic Statements Evaluator" a
   few more functions.
   More specifically:
@@ -12,16 +12,16 @@ Iteration target:
    * Improve the support for non immediate atoms;
    * Detach the dispatcher on formatting from printing;
   
-Iteration number: 002
+Activity number: 002
 
-Iteration start:  2009-05-18 12:07
-Iteration finish: 2009-05-18 21:32
+Activity start:  2009-05-18 12:07
+Activity finish: 2009-05-18 21:32
 
-Number of work-days
- Expected: 1
- Realized: 1
+Number of work-hours
+ Expected: 8
+ Realized: 8
 
-Iteration Tasks:
+Activity Tasks:
   x Rename 'cons cells' to be known as 'pairs' 
 
   x Define meta information format

@@ -1,0 +1,17 @@
+Activity target: 
+  Using the apostrophe character to signalize to the reader the need to
+  "quote" the next datum, to simplify input of quoted values.
+
+Activity number: xxx
+
+Activity start:  xxxx-xx-xx xx:xx
+Activity finish: xxxx-xx-xx xx:xx
+
+Number of work-hours
+  Expected: 0.5
+  Realized: 
+
+Current Activity Tasks: 
+  - Identify the quotation lexeme
+  - Alter the reader function to create the correct output
+

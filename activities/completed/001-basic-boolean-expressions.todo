@@ -1,16 +1,16 @@
-Iteration target: 
+Activity target: 
   Being able to execute simple propositional logic statements.
 
-Iteration number: 001
+Activity number: 001
 
-Iteration start:  2011-05-09 10:42
-Iteration finish: 2011-05-17 18:12
+Activity start:  2011-05-09 10:42
+Activity finish: 2011-05-17 18:12
 
-Number of work-days
-  Expected: 3
-  Realized: 3
+Number of work-hours
+  Expected: 24
+  Realized: 24
 
-Iteration Tasks:
+Activity Tasks:
   x Create lexer interface
   x Create manual reader dispatcher
   x Create manual eval dispatcher

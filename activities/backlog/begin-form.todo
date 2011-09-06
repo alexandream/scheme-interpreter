@@ -1,0 +1,23 @@
+Activity target: 
+  Create a facility to describe sequential blocks of operation. The form itself
+  must evaluate to whatever it's last expression evaluates to. The last 
+  expression must be executed on a tail-context.
+
+Activity number: xxx
+
+Activity start:  xxxx-xx-xx xx:xx
+Activity finish: xxxx-xx-xx xx:xx
+
+Number of work-hours
+  Expected: 1
+  Realized: x
+
+Current Activity Tasks: 
+  - Modify "lambda" forms to be able to handle more than one expression, with
+    the tail-context properties and evaluated value rules described above;
+  - Create a "begin" form like the one described below
+      (begin <expression>+)
+    that compiles into
+      ((lambda () <expression>+))
+
+

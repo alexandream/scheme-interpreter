@@ -1,20 +1,20 @@
-Iteration target: 
+Activity target: 
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
   consequat imperdiet nulla, eget ultricies risus egestas et. Aliquam
   eget tellus id nulla vulputate ultricies. Proin quis tortor dolor, ut
   vehicula felis. Cras feugiat pellentesque urna, vitae consectetur
   neque rutrum at.
 
-Iteration number: xxx
+Activity number: xxx
 
-Iteration start:  xxxx-xx-xx xx:xx
-Iteration finish: xxxx-xx-xx xx:xx
+Activity start:  xxxx-xx-xx xx:xx
+Activity finish: xxxx-xx-xx xx:xx
 
-Number of work-days
+Number of work-hours
   Expected: x
   Realized: x
 
-Current Iteration Tasks: 
+Current Activity Tasks: 
   - Lorem ipsum dolor sit amet
   - Consectetur adipiscing elit
   - Nullam consequat imperdiet nulla
