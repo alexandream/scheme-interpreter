@@ -32,6 +32,9 @@ value_t compile(value_t expr, value_t next) {
 	else if (is_pair(expr)) {
 		result = compile_form(expr, next);	
 	}
+	else if (expr == EMPTY_LIST) {
+		error(1, 0, "Illegal empty combination ()");
+	}
 	else {
 		result = make_list(OP_CONSTANT, expr, next, 0);
 	}

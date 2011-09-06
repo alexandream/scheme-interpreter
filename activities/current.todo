@@ -1,8 +1,8 @@
 Activity target: 
   Create the call-with-current-continuation form, which can be used to capture
-  the current continuation. This current continuation behaves like a callable.
+  the current continuation. This continuation object behaves like a callable.
 
-Activity number: xxx
+Activity number: 005
 
 Activity start:  xxxx-xx-xx xx:xx
 Activity finish: xxxx-xx-xx xx:xx
