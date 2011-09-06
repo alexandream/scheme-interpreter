@@ -10,10 +10,12 @@ static
 value_t SYM_QUOTE = UNSPECIFIED,
         SYM_IF = UNSPECIFIED,
         SYM_DEFINE = UNSPECIFIED,
-        SYM_LAMBDA = UNSPECIFIED;
+        SYM_LAMBDA = UNSPECIFIED,
+		SYM_BEGIN = UNSPECIFIED;
 
 
 value_t compile_if(value_t expr, value_t next);
+value_t compile_begin(value_t expr, value_t next);
 value_t compile_sequence(value_t expr_list, value_t next);
 value_t compile_lambda(value_t expr, value_t next);
 value_t compile_quote(value_t expr, value_t next);
@@ -43,6 +45,7 @@ value_t compile_form(value_t expr, value_t next) {
 		SYM_IF = make_symbol("if");
 		SYM_DEFINE = make_symbol("define");
 		SYM_LAMBDA = make_symbol("lambda");
+		SYM_BEGIN = make_symbol("begin");
 	}
 	
 	value_t head = pair_left(expr);
@@ -58,6 +61,10 @@ value_t compile_form(value_t expr, value_t next) {
 	}
 	else if (head == SYM_DEFINE) {
 		result = compile_define(pair_right(expr), next);
+	}
+	// FIXME: This should be a macro. But we have no macro system so far.
+	else if (head == SYM_BEGIN) {
+		result = compile_begin(pair_right(expr), next);
 	}
 	else {
 		result = compile_application(expr, next);
@@ -81,6 +88,12 @@ value_t compile_lambda(value_t expr, value_t next) {
 	return make_list(OP_CLOSURE, arg_list, compiled_body, next, 0);
 }
 
+// FIXME: This should be a macro. But we have no macro system so far.
+value_t compile_begin(value_t expr, value_t next) {
+	value_t lambda_form = make_pair(SYM_LAMBDA, make_pair(EMPTY_LIST, expr));
+	value_t substitute = make_list(lambda_form, 0);
+	return compile(substitute, next);
+}
 value_t compile_sequence(value_t expr_list, value_t next) {
 	// The desired output of this is:
 	//   compile_sequence( { exp1, exp2, exp3 }, next)
