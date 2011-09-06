@@ -31,6 +31,8 @@ std::string primitive_format(value_t value) {
 
 value_t make_primitive(primitive_t func,
 		               primitive_descriptor_t* descriptor) {
+	// make_primitive takes ownership of "descriptor" parameter. Has to live
+	// throughout entire session.
 	double_storage_t* storage = alloc_double_storage();
 
 	storage->header = make_header(true, PRIMITIVE_TYPE_MASK);

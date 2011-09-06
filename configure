@@ -39,7 +39,7 @@ foreach (@files)
 	$file = $_;
 	s/\.$ext$//;
 	s/^\s*//;
-	$obj = "$_.o";
+	$obj = "build/$_.o";
 	@includes = list_local_includes($file);
 	
 	$rule = "\n$obj: $file @includes\n";

@@ -17,16 +17,38 @@
 #include "pointer.h"
 #include "environment.h"
 #include "primitive.h"
-#include "boolean_primitives.h"
 #include "builtin_primitives.h"
 
 value_t GLOBAL_ENVIRONMENT;
 
-primitive_descriptor_t and_primitive_details = { "and", 2 };
-primitive_descriptor_t or_primitive_details = { "or", 2 };
-primitive_descriptor_t not_primitive_details = { "not", 1 };
-primitive_descriptor_t eqP_primitive_details = { "eq?", 2 };
-primitive_descriptor_t eqvP_primitive_details = { "eqv?", 2 };
+struct {
+	std::string name;
+	uint8_t arity;
+	primitive_t func;
+} 
+primitives[] = {
+	{ "and", 2, BP_and },
+	{ "or", 2, BP_or },
+	{ "not", 1, BP_not },
+	{ "eq?", 2, BP_eqP },
+	{ "eqv?", 2, BP_eqP },
+	{ "", 0, 0 }
+};
+
+
+void bind_primitive(value_t env,
+	                const std::string& name,
+	                uint8_t arity,
+	                primitive_t func) {
+	primitive_descriptor_t *descriptor = new primitive_descriptor_t();
+	descriptor->name = name;
+	descriptor->arity = arity;
+
+	value_t symbol = make_symbol(name);
+	value_t primitive = make_primitive(func, descriptor);
+	
+	environment_add(env, symbol, primitive);
+}
 
 int main_repl(int argc, char ** argv) {
 	value_t input;
@@ -39,31 +61,12 @@ int main_repl(int argc, char ** argv) {
 	environment_add(global_env, make_symbol("T"), BOOLEAN_TRUE);
 	environment_add(global_env, make_symbol("F"), BOOLEAN_FALSE);
 	
-	value_t and_symbol = make_symbol("and");
-	value_t and_primitive = make_primitive(boolean_primitive_and,
-	                                       &and_primitive_details);
-
-	value_t or_symbol = make_symbol("or");
-	value_t or_primitive = make_primitive(boolean_primitive_or,
-	                                      &or_primitive_details);
-
-	value_t not_symbol = make_symbol("not");
-	value_t not_primitive = make_primitive(boolean_primitive_not,
-	                                       &not_primitive_details);
-
-	value_t eqP_symbol = make_symbol("eq?");
-	value_t eqP_primitive = make_primitive(BP_eqP,
-	                                       &eqP_primitive_details);
-
-	value_t eqvP_symbol = make_symbol("eqv?");
-	value_t eqvP_primitive = make_primitive(BP_eqP,
-	                                       &eqvP_primitive_details);
-	
-	environment_add(global_env, eqP_symbol, eqP_primitive);
-	environment_add(global_env, eqvP_symbol, eqvP_primitive);
-	environment_add(global_env, and_symbol, and_primitive);
-	environment_add(global_env, or_symbol, or_primitive);
-	environment_add(global_env, not_symbol, not_primitive);
+	// Register primitives into toplevel environment.
+	for (int i = 0; primitives[i].func != 0; i++) {
+		bind_primitive(global_env, primitives[i].name,
+		                           primitives[i].arity,
+		                           primitives[i].func);
+	}
 	
 	context_t* context = new context_t();
 	context->accumulator = UNSPECIFIED;
@@ -82,7 +85,6 @@ int main_repl(int argc, char ** argv) {
 		std::cerr << "; " << format(context->next_expr) << std::endl;
 #endif
 		result = evaluate(context);
-		std::cerr << ":::" << std::endl;
 		println(result);
 	}
 	return 0;
