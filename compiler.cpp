@@ -14,6 +14,7 @@ value_t SYM_QUOTE = UNSPECIFIED,
 
 
 value_t compile_if(value_t expr, value_t next);
+value_t compile_sequence(value_t expr_list, value_t next);
 value_t compile_lambda(value_t expr, value_t next);
 value_t compile_quote(value_t expr, value_t next);
 value_t compile_application(value_t expr, value_t next);
@@ -62,23 +63,45 @@ value_t compile_form(value_t expr, value_t next) {
 		result = compile_application(expr, next);
 	}
 	return result;
-
 }
 
 
 value_t compile_lambda(value_t expr, value_t next) {
 	// TODO: Support implicit begin block inside lambda.
 	int32_t arguments = pair_linked_length(expr);
-	if (arguments != 2) {
-		error(1, 0, "Expected 2 arguments for 'lambda', got %d", arguments);
+	if (arguments < 2) {
+		error(1, 0, "Expected at least 2 arguments for 'lambda', got %d", arguments);
 	}
 	
 	value_t arg_list = pair_left(expr);
-	value_t body = pair_left(pair_right(expr));
+	value_t body = pair_right(expr);
 
-	value_t compiled_body = compile(body, make_list(OP_RETURN, 0));
+	value_t compiled_body = compile_sequence(body, make_list(OP_RETURN, 0));
 
 	return make_list(OP_CLOSURE, arg_list, compiled_body, next, 0);
+}
+
+value_t compile_sequence(value_t expr_list, value_t next) {
+	// The desired output of this is:
+	//   compile_sequence( { exp1, exp2, exp3 }, next)
+	//   -> compile(exp1, compile(exp2, compile(exp3, next)))
+	value_t result;
+	if (expr_list == EMPTY_LIST) {
+		// We got to the bottom of the sequence, it should return simply the 
+		// value given as "next", since there's nothing else to compile.
+		result = next;
+	}
+	else {
+		// Here we have a recursion to make. A stack consuming one, since we
+		// want to compile them from the bottom to the top of the sequence, so
+		// we can chain the compilation using the compiled next expression as 
+		// 'next' value for this one.
+		value_t expression = pair_left(expr_list);
+		value_t expr_tail = pair_right(expr_list);
+		value_t expr_next = compile_sequence(expr_tail, next);
+		result = compile(expression, expr_next);
+	}
+	return result;
 }
 
 value_t compile_define(value_t args, value_t next) {
