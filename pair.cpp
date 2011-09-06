@@ -34,7 +34,12 @@ std::string pair_format(value_t pair) {
 		sstream << format(pair_left(pair));
 		pair = pair_right(pair);
 		if (pair != EMPTY_LIST) {
-			sstream << " ";
+			if (!is_pair(pair)) {
+				sstream << " . " << format(pair);
+			}
+			else {
+				sstream << " ";
+			}
 		}
 	} while (is_pair(pair));
 	sstream << ")";
