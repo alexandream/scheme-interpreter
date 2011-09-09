@@ -1,0 +1,16 @@
+Activity target: 
+  Have support for the 'apply' primitive available on the global environment.
+
+Activity number: 007
+
+Activity start:  2011-09-06 18:02
+Activity finish: 2011-09-06 20:19
+
+Number of work-hours
+  Expected: 1
+  Realized: 2.3
+
+Current Activity Tasks: 
+  x Create apply primitive
+  x Export it to global environment
+

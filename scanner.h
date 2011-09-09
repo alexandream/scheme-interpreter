@@ -27,5 +27,8 @@ struct token_t {
 
 token_t peek_token();
 token_t get_token();
+void scanner_push(FILE* fp);
+int scanner_pop();
+
 #endif
 

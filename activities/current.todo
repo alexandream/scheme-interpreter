@@ -1,0 +1,21 @@
+Activity target: 
+  Support variable arity primitive functions, refactor primitive application
+  and rewrite the apply function to work on this new scenario.
+
+Activity number: 008
+
+Activity start:  2011-09-09 12:44
+Activity finish: 2011-09-09 13:45
+Number of work-hours
+  Expected: 1
+  Realized: 1
+
+Current Activity Tasks:
+  x Alter the primitives descriptor to keep track of minimum and
+    maximum number of arguments.
+  x Put the function handler in the primitive descriptor.
+  x Pass the context to the primitive_apply function.
+  x Pass the context to the primitive handle upon call.
+  x Rewrite BP_apply so that it turns into a simple chained call to
+    the OP_APPLY low level operation.
+

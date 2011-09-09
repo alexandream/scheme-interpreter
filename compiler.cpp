@@ -178,11 +178,12 @@ value_t compile_application(value_t expr, value_t next) {
 	
 	value_t args = pair_right(expr);
 
+	int n_args = 0;
 	while (args != EMPTY_LIST) {
+		n_args++;
 		result = compile(pair_left(args), make_list(OP_ARGUMENT, result, 0));
 		args = pair_right(args);
 	}
-
 	// Detecting tail calls.
 	value_t next_op = pair_left(next);
 	if (next_op != OP_RETURN) {

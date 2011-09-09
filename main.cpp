@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include <error.h>
 
 #include "value.h"
 
@@ -21,40 +22,49 @@
 
 value_t GLOBAL_ENVIRONMENT;
 
-struct {
-	std::string name;
-	uint8_t arity;
-	primitive_t func;
-} 
-primitives[] = {
+primitive_descriptor_t primitives[] = {
 	// BOOLEANS
-	{ "and", 2, BP_and },
-	{ "or", 2, BP_or },
-	{ "not", 1, BP_not },
+	{ "and",   BP_and,   2, 2 },
+	{ "or",    BP_or,    2, 2 },
+	{ "not",   BP_not,   1, 1 },
 	// EQUIVALENCE
-	{ "eq?", 2, BP_eqP },
-	{ "eqv?", 2, BP_eqP },
+	{ "eq?",   BP_eqP,   2, 2 },
+	{ "eqv?",  BP_eqP,   2, 2 },
 	// PAIRS
-	{ "cons", 2, BP_cons },
-	{ "car", 1, BP_car },
-	{ "cdr", 1, BP_cdr },
+	{ "cons",  BP_cons,  2, 2 },
+	{ "car",   BP_car,   1, 1 },
+	{ "cdr",   BP_cdr,   1, 1 },
+	{ "list",  BP_list,  0, ARITY_ANY },
+	// CONTROL
+	{ "apply", BP_apply, 1, ARITY_ANY },
 	// TOMBSTONE
-	{ "", 0, 0 }
+	{ "min_fixnum", BP_min_fixnum, 0, 0 },
+	{ "max_fixnum", BP_max_fixnum, 0, 0 },
+
+	{ "",      0,        0, 0 }
 };
 
 
-void bind_primitive(value_t env,
-	                const std::string& name,
-	                uint8_t arity,
-	                primitive_t func) {
-	primitive_descriptor_t *descriptor = new primitive_descriptor_t();
-	descriptor->name = name;
-	descriptor->arity = arity;
-
-	value_t symbol = make_symbol(name);
-	value_t primitive = make_primitive(func, descriptor);
+void bind_primitive(value_t env, primitive_descriptor_t* descriptor) {
+	value_t symbol = make_symbol(descriptor->name);
+	value_t primitive = make_primitive(descriptor);
 	
 	environment_add(env, symbol, primitive);
+}
+
+void load_file(context_t* context, const char* fname) {
+	value_t input;
+	FILE *fp = fopen(fname, "r");
+	if (fp == NULL) {
+		error(1, 0, "Unable to load definitions file 'definitions.scm'");
+	}
+	scanner_push(fp);
+
+	while ( (input = read()) != END_OF_FILE ) {
+		context->next_expr = compile(input, make_list(OP_HALT, 0));
+		evaluate(context);
+	}
+	scanner_pop();
 }
 
 int main_repl(int argc, char ** argv) {
@@ -65,21 +75,17 @@ int main_repl(int argc, char ** argv) {
 	value_t global_env = make_environment(UNSPECIFIED);
 	GLOBAL_ENVIRONMENT = global_env;
 
-	environment_add(global_env, make_symbol("T"), BOOLEAN_TRUE);
-	environment_add(global_env, make_symbol("F"), BOOLEAN_FALSE);
-	
 	// Register primitives into toplevel environment.
-	for (int i = 0; primitives[i].func != 0; i++) {
-		bind_primitive(global_env, primitives[i].name,
-		                           primitives[i].arity,
-		                           primitives[i].func);
+	for (int i = 0; primitives[i].handler != 0; i++) {
+		bind_primitive(global_env, &primitives[i]);
 	}
 	
-	context_t* context = new context_t();
-	context->accumulator = UNSPECIFIED;
-	context->environment = global_env;
-	context->value_stack = EMPTY_LIST;
-	context->frame_stack = EMPTY_LIST;
+	context_t* context = new context_t(global_env);
+
+	// Register other built-ins, non primitives.
+	load_file(context, "definitions.scm");
+
+	scanner_push(stdin);
 	while(true) {
 		std::cerr << "> ";
 		input = read();

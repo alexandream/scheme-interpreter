@@ -6,6 +6,7 @@
 
 #include "formatter.h"
 #include "special.h"
+#include "fixnum.h"
 #include "symbol.h"
 #include "pair.h"
 #include "primitive.h"
@@ -17,6 +18,9 @@ std::string format(value_t value) {
 	// TODO: This must be a generic function. Not this mess.
 	 if (is_boolean(value)) {
 		result = boolean_format(value);
+	}
+	else if (is_fixnum(value)) {
+		result = fixnum_format(value);
 	}
 	else if (is_pair(value)) {
 		result = pair_format(value);

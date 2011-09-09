@@ -11,10 +11,6 @@
 (not #F)
 (not #T)
 
-T
-F
-(not T)
-(not F)
 
 (and #T (not #F))
 
@@ -32,10 +28,5 @@ F
 
 #T
 #F
-
-#T
-#F
-#F
-#T
 
 #T

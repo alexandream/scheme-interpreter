@@ -12,7 +12,7 @@ static token_t token_buf = { TK_NONE, "" };
 DIGIT                 [0-9]
 WHITE                 [ \n\t]+
 
-IDENT_INITIAL           [a-zA-Z?!$%*&/:<=>^_~]
+IDENT_INITIAL           [-a-zA-Z?!$%*&/:<=>^_~]
 IDENT_SUBSEQUENT        {IDENT_INITIAL}|[0-9]
 
 SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
@@ -26,7 +26,7 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 ")"                   return TK_RPAREN;
 "'"                   return TK_QUOTE;
 
-{DIGIT}               return TK_INTEGER;
+-?{DIGIT}+            return TK_INTEGER;
 
 {SYMBOL}              return TK_SYMBOL;
 
@@ -35,20 +35,25 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 
 <<EOF>>               return TK_EOF;
 .                     return TK_UNKNOWN;
+
 %%
 
-void scanner_init(FILE* fp) {
-	static bool initialized = false;
-	assert(!initialized);
-
-	if (fp == NULL) {
-		yyin = stdin;
-	}
-	else {
-		yyin = fp;
-	}
+void scanner_push(FILE* fp) {
+	yyin = fp;
+	YY_BUFFER_STATE bufstate = yy_create_buffer(yyin, YY_BUF_SIZE);
+	yypush_buffer_state(bufstate);
+	
 }
 
+
+int scanner_pop() {
+	yypop_buffer_state();
+	if (!YY_CURRENT_BUFFER) {
+		yyterminate();
+	}
+	return 0;
+}
+	
 token_t peek_token() {
 	if (token_buf.type == TK_NONE) {
 		token_buf.type = (token_types_t) yylex();

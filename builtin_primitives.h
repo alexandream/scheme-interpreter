@@ -2,16 +2,21 @@
 #define __BUILTIN_PRIMITIVES_H__
 
 #include "value.h"
+#include "evaluator.h"
 
-value_t BP_not(value_t params);
-value_t BP_and(value_t params);
-value_t BP_or(value_t params);
+void BP_not(context_t* context);
+void BP_and(context_t* context);
+void BP_or(context_t* context);
 
-value_t BP_eqP(value_t params);
+void BP_eqP(context_t* context);
 
-value_t BP_cons(value_t params);
-value_t BP_car(value_t params);
-value_t BP_cdr(value_t params);
+void BP_cons(context_t* context);
+void BP_car(context_t* context);
+void BP_cdr(context_t* context);
+void BP_list(context_t* context);
 
+void BP_apply(context_t* context);
 
+void BP_max_fixnum(context_t* context);
+void BP_min_fixnum(context_t* context);
 #endif

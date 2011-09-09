@@ -3,14 +3,21 @@
 #include <string>
 
 #include "value.h"
+#include "evaluator.h"
 extern const
 uint8_t PRIMITIVE_TYPE_MASK;
 
-typedef value_t (*primitive_t)(value_t);
+extern const
+uint8_t ARITY_ANY;
+
+
+typedef void (*primitive_t)(context_t*);
 
 struct primitive_descriptor_t {
 	std::string name;
-	uint8_t arity;
+	primitive_t handler;
+	uint8_t min_arity;
+	uint8_t max_arity;
 };
 
 
@@ -21,11 +28,10 @@ bool is_primitive(value_t value) {
 }
 
 
-value_t make_primitive(primitive_t func,
-                       primitive_descriptor_t* descriptor);
+value_t make_primitive(primitive_descriptor_t* descriptor);
 
 std::string primitive_format(value_t value);
 
-value_t primitive_apply(value_t, value_t);
+void primitive_apply(context_t* context, value_t func);
 
 #endif

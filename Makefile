@@ -13,5 +13,5 @@ test:
 	@echo "Building project..."
 	@make --no-print-directory > /dev/null
 	@echo "Running tests.\n"
-	@find tests -type f -exec ./tester '{}' %% ./main ';'
+	@find tests -type f -a -not -name '*.swp' -exec ./tester '{}' %% ./main ';'
 	@echo ""

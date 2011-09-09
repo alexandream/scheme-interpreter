@@ -6,6 +6,7 @@
 #include "reader.h"
 #include "pair.h"
 #include "scanner.h"
+#include "fixnum.h"
 #include "special.h"
 #include "symbol.h"
 
@@ -29,7 +30,10 @@ value_t read(void) {
 			get_token();
 			result = BOOLEAN_FALSE;
 			break;
-		
+		case TK_INTEGER:
+			get_token();
+			result = fixnum_make_from_string(input.lexeme);
+			break;
 		case TK_LPAREN:
 			get_token(); // consume TK_LPAREN;
 			result = read_list();
@@ -39,6 +43,7 @@ value_t read(void) {
 			result = read_quote_shortcut();
 			break;
 		case TK_EOF:
+			get_token(); // consume TK_EOF;
 			result = END_OF_FILE;
 			break;
 		
