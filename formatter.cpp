@@ -66,6 +66,8 @@ std::string format(value_t value) {
 			result = "@OP_RETURN";
 		else if (value == OP_BIND)
 			result = "@OP_BIND";
+		else if (value == OP_BIND_MACRO)
+			result = "@OP_BIND_MACRO";
 #endif 
 		else
 			error(1, 0, "Unable to format! Unknown value: 0x%016lX\n", value);

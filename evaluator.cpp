@@ -7,11 +7,12 @@
 #include "environment.h"
 #include "primitive.h"
 #include "function.h"
+#include "formatter.h"
 #include "reader.h"
 #include "special.h"
 #include "symbol.h"
 #include "pair.h"
-#include "printer.h"
+#include "macro.h"
 
 context_t::context_t(value_t environment) {
 	this->environment = environment;
@@ -67,6 +68,16 @@ void evaluate_op_constant(context_t* context, value_t args) {
 	context->accumulator = constant;
 }
 
+static inline
+void evaluate_op_assign(context_t* context, value_t args) {
+	value_t variable = pair_left(args);
+	value_t next = pair_left(pair_right(args));
+	
+	environment_set(context->environment, variable, context->accumulator);
+
+	context->next_expr = next;
+	context->accumulator = UNSPECIFIED;
+}
 static inline
 void evaluate_function_application(context_t* context, 
 	                               value_t func, 
@@ -139,6 +150,18 @@ void evaluate_op_bind(context_t* context, value_t args) {
 	context->accumulator = UNSPECIFIED;
 	context->next_expr = next;
 }
+
+static inline
+void evaluate_op_bind_macro(context_t* context, value_t args) {
+	value_t name = pair_left(args);
+	value_t next = pair_left(pair_right(args));
+
+	macro_set_rewriter(name, context->accumulator);
+
+	context->accumulator = UNSPECIFIED;
+	context->next_expr = next;
+}
+
 value_t evaluate(context_t* context) {
 	value_t op_code = pair_left(context->next_expr);
 	value_t args = pair_right(context->next_expr);
@@ -157,7 +180,7 @@ value_t evaluate(context_t* context) {
 			evaluate_op_test(context, args);
 		}
 		else if (op_code == OP_ASSIGN) {
-			error(1, 0, "Not yet implemented.");
+			evaluate_op_assign(context, args);
 		}
 		else if (op_code == OP_SAVE) {
 			error(1, 0, "Not yet implemented.");
@@ -180,7 +203,12 @@ value_t evaluate(context_t* context) {
 		else if (op_code == OP_BIND) {
 			evaluate_op_bind(context, args);
 		}
-
+		else if (op_code == OP_BIND_MACRO) {
+			evaluate_op_bind_macro(context, args);
+		}
+		else {
+			error(1, 0, "Unknown op code: %s", (format(op_code).c_str()));
+		}
 		op_code = pair_left(context->next_expr);
 		args = pair_right(context->next_expr);
 	}

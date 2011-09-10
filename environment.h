@@ -1,11 +1,14 @@
 #ifndef __ENVIRONMENT_H__
 #define __ENVIRONMENT_H__
 
+#include <map>
+
 #include "value.h"
 #include "special.h"
 extern const
 uint8_t ENVIRONMENT_TYPE_MASK;
 
+typedef std::map<value_t, value_t> binding_map_t;
 
 extern  
 value_t GLOBAL_ENVIRONMENT;

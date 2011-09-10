@@ -11,6 +11,7 @@ value_t BOOLEAN_TRUE,
         UNDEFINED,
         UNSPECIFIED,
 		END_OF_FILE,
+
         OP_HALT,
         OP_CONSTANT,
         OP_LOOKUP,
@@ -23,7 +24,9 @@ value_t BOOLEAN_TRUE,
         OP_APPLY,
         OP_ARGUMENT,
         OP_RETURN, 
-		OP_BIND;
+		OP_BIND,
+		OP_BIND_MACRO;
+
 static inline
 bool is_special(value_t value) {
 	return ((value & 0x0000000000000006) == 0x06);

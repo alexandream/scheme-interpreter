@@ -2,29 +2,36 @@
 
 #include "value.h"
 
+#include "macro.h"
 #include "pair.h"
 #include "special.h"
 #include "symbol.h"
-
 static
 value_t SYM_QUOTE = UNSPECIFIED,
         SYM_IF = UNSPECIFIED,
         SYM_DEFINE = UNSPECIFIED,
         SYM_LAMBDA = UNSPECIFIED,
-		SYM_BEGIN = UNSPECIFIED;
+		SYM_BEGIN = UNSPECIFIED,
+		SYM_SET1 = UNSPECIFIED,
+		SYM_DEFMACRO = UNSPECIFIED;
 
 
 value_t compile_if(value_t expr, value_t next);
 value_t compile_begin(value_t expr, value_t next);
+value_t compile_defmacro(value_t expr, value_t next);
+value_t compile_assignment(value_t expr, value_t next);
 value_t compile_sequence(value_t expr_list, value_t next);
 value_t compile_lambda(value_t expr, value_t next);
 value_t compile_quote(value_t expr, value_t next);
 value_t compile_application(value_t expr, value_t next);
 value_t compile_define(value_t args, value_t next);
 value_t compile_form(value_t expr, value_t next);
+value_t compile_macro_definition(value_t expr, value_t next);
 
 value_t compile(value_t expr, value_t next) {
 	value_t result;
+	
+	expr = macro_expand(expr);
 
 	if (is_symbol(expr)) {
 		result = make_list(OP_LOOKUP, expr, next, 0);
@@ -43,12 +50,15 @@ value_t compile(value_t expr, value_t next) {
 
 
 value_t compile_form(value_t expr, value_t next) {
+
 	if (SYM_QUOTE == UNSPECIFIED) {
 		SYM_QUOTE = make_symbol("quote");
 		SYM_IF = make_symbol("if");
 		SYM_DEFINE = make_symbol("define");
 		SYM_LAMBDA = make_symbol("lambda");
 		SYM_BEGIN = make_symbol("begin");
+		SYM_SET1 = make_symbol("set!");
+		SYM_DEFMACRO = make_symbol("define-rewriter");
 	}
 	
 	value_t head = pair_left(expr);
@@ -65,6 +75,12 @@ value_t compile_form(value_t expr, value_t next) {
 	else if (head == SYM_DEFINE) {
 		result = compile_define(pair_right(expr), next);
 	}
+	else if (head == SYM_SET1) {
+		result = compile_assignment(pair_right(expr), next);
+	}
+	else if (head == SYM_DEFMACRO) {
+		result = compile_defmacro(pair_right(expr), next);
+	}
 	// FIXME: This should be a macro. But we have no macro system so far.
 	else if (head == SYM_BEGIN) {
 		result = compile_begin(pair_right(expr), next);
@@ -76,6 +92,33 @@ value_t compile_form(value_t expr, value_t next) {
 }
 
 
+value_t compile_assignment(value_t expr, value_t next ) {
+	int32_t arguments = pair_linked_length(expr);
+	if (arguments != 2) {
+		error(1, 0, "Expected 2 arguments for 'set!', got %d", arguments);
+	}
+
+	value_t variable = pair_left(expr);
+	value_t expression = pair_left(pair_right(expr));
+	
+	value_t assignment = make_list(OP_ASSIGN, variable, next);
+
+	return compile(expression, assignment);
+}
+
+value_t compile_defmacro(value_t expr, value_t next) {
+	int32_t arguments = pair_linked_length(expr);
+	if (arguments != 2) {
+		error(1, 0, "Expected 2 arguments for 'define-rewriter', got %d", arguments);
+	}
+	value_t name = pair_left(expr);
+	value_t rewriter = pair_left(pair_right(expr));
+	
+	// TODO: Make sure the rewriter is a lambda of single parameter.
+
+	value_t bind = make_list(OP_BIND_MACRO, name, next, 0);
+	return compile(rewriter, bind);
+}
 value_t compile_lambda(value_t expr, value_t next) {
 	// TODO: Support implicit begin block inside lambda.
 	int32_t arguments = pair_linked_length(expr);

@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <map>
 #include <error.h>
 
 #include "environment.h"
@@ -10,7 +9,6 @@
 const
 uint8_t ENVIRONMENT_TYPE_MASK = 0x05;
 
-typedef std::map<value_t, value_t> binding_map_t;
 
 static inline
 binding_map_t* get_bindings(value_t env) {

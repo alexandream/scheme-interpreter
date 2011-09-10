@@ -24,7 +24,8 @@ value_t UNDEFINED         = 0x0000000000000006,
         OP_APPLY          = 0x000000000000007E,
         OP_ARGUMENT       = 0x0000000000000086,
         OP_RETURN         = 0x000000000000008E,
-		OP_BIND           = 0x0000000000000096;
+		OP_BIND           = 0x0000000000000096,
+        OP_BIND_MACRO     = 0x000000000000009E;
 
 
 value_t boolean_make_from_string(const std::string& str) {
