@@ -37,10 +37,13 @@ primitive_descriptor_t primitives[] = {
 	{ "list",  BP_list,  0, ARITY_ANY },
 	// CONTROL
 	{ "apply", BP_apply, 1, ARITY_ANY },
-	// TOMBSTONE
+	// TEST
 	{ "min_fixnum", BP_min_fixnum, 0, 0 },
 	{ "max_fixnum", BP_max_fixnum, 0, 0 },
-
+	// TYPE PREDICATE
+	{ "symbol?", BP_symbolP, 1, 1 },
+	{ "pair?",   BP_pairP,   1, 1 },
+	// TOMBSTONE
 	{ "",      0,        0, 0 }
 };
 

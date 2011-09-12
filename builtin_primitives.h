@@ -17,6 +17,9 @@ void BP_list(context_t* context);
 
 void BP_apply(context_t* context);
 
+void BP_symbolP(context_t* context);
+void BP_pairP(context_t* context);
+
 void BP_max_fixnum(context_t* context);
 void BP_min_fixnum(context_t* context);
 #endif

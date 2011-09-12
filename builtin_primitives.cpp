@@ -5,6 +5,7 @@
 #include "compiler.h"
 #include "primitive.h"
 #include "fixnum.h"
+#include "symbol.h"
 #include "special.h"
 #include "pair.h"
 
@@ -81,7 +82,18 @@ void BP_apply(context_t* context) {
 	context->next_expr = make_list(OP_APPLY, 0);
 
 }
+// TYPE PREDICATE PRIMITIVES
+//
+void BP_symbolP(context_t* context) {
+	value_t param = pair_left(context->value_stack);
+	BUILTIN_RETURN(context, wrap_boolean(is_symbol(param)));
+}
 
+void BP_pairP(context_t* context) {
+	value_t param = pair_left(context->value_stack);
+	BUILTIN_RETURN(context, wrap_boolean(is_pair(param)));
+
+}
 // TEST PRIMITIVES
 //
 void BP_max_fixnum(context_t* context) {
