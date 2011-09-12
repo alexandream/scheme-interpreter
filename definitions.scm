@@ -40,9 +40,35 @@
                           binds)))
         (append (append (list 'let newbinds) setters) body)))))
 
+(define list?
+  (lambda (l)
+    (if (pair? l)
+      (list? (cdr l))
+      (if (null? l)
+        #T
+        #F))))
+
+(define length
+  (lambda (l)
+    (letrec ((aux-length (lambda (lst n)
+                           (if (null? lst)
+                             n
+                             (aux-length (cdr lst) (fixnum+ n 1))))))
+      (aux-length l 0))))
+
 (define reverse
   (lambda (l)
     (if (null? l)
       '()
       (append (reverse (cdr l)) (cons (car l) '()) ))))
 
+
+(define filter
+  (lambda (f l)
+    (if (null? l)
+      '()
+      (let ((head (car l))
+            (tail (cdr l)))
+        (if (f head)
+          (cons head (filter f tail))
+          (filter f tail))))))
