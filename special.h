@@ -34,7 +34,7 @@ bool is_special(value_t value) {
 
 static inline 
 bool is_boolean(value_t value) {
-	return ((value & 0xFFFFFFFFFFFFFFF6) == 0x16);
+	return ((value & 0xFFFFFFFFFFFFFFF7) == 0x16);
 }
 
 static inline
