@@ -11,7 +11,6 @@ value_t SYM_QUOTE = UNSPECIFIED,
         SYM_IF = UNSPECIFIED,
         SYM_DEFINE = UNSPECIFIED,
         SYM_LAMBDA = UNSPECIFIED,
-		SYM_BEGIN = UNSPECIFIED,
 		SYM_SET1 = UNSPECIFIED,
 		SYM_DEFMACRO = UNSPECIFIED;
 
@@ -56,7 +55,6 @@ value_t compile_form(value_t expr, value_t next) {
 		SYM_IF = make_symbol("if");
 		SYM_DEFINE = make_symbol("define");
 		SYM_LAMBDA = make_symbol("lambda");
-		SYM_BEGIN = make_symbol("begin");
 		SYM_SET1 = make_symbol("set!");
 		SYM_DEFMACRO = make_symbol("define-rewriter");
 	}
@@ -80,10 +78,6 @@ value_t compile_form(value_t expr, value_t next) {
 	}
 	else if (head == SYM_DEFMACRO) {
 		result = compile_defmacro(pair_right(expr), next);
-	}
-	// FIXME: This should be a macro. But we have no macro system so far.
-	else if (head == SYM_BEGIN) {
-		result = compile_begin(pair_right(expr), next);
 	}
 	else {
 		result = compile_application(expr, next);
@@ -120,7 +114,6 @@ value_t compile_defmacro(value_t expr, value_t next) {
 	return compile(rewriter, bind);
 }
 value_t compile_lambda(value_t expr, value_t next) {
-	// TODO: Support implicit begin block inside lambda.
 	int32_t arguments = pair_linked_length(expr);
 	if (arguments < 2) {
 		error(1, 0, "Expected at least 2 arguments for 'lambda', got %d", arguments);
@@ -134,12 +127,6 @@ value_t compile_lambda(value_t expr, value_t next) {
 	return make_list(OP_CLOSURE, arg_list, compiled_body, next, 0);
 }
 
-// FIXME: This should be a macro. But we have no macro system so far.
-value_t compile_begin(value_t expr, value_t next) {
-	value_t lambda_form = make_pair(SYM_LAMBDA, make_pair(EMPTY_LIST, expr));
-	value_t substitute = make_list(lambda_form, 0);
-	return compile(substitute, next);
-}
 value_t compile_sequence(value_t expr_list, value_t next) {
 	// The desired output of this is:
 	//   compile_sequence( { exp1, exp2, exp3 }, next)

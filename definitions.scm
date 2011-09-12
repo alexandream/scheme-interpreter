@@ -13,6 +13,11 @@
       l2
       (cons (car l1) (append (cdr l1) l2)))))
 
+(define-rewriter begin
+  (lambda (args)
+    (list(append (list 'lambda '()) args))))
+
+
 (define-rewriter let
   (lambda (args)
     ((lambda (first rest)
