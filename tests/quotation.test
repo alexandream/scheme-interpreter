@@ -1,0 +1,29 @@
+<< SUITE Quotation
+
+<< TEST Expanded Notation
+(quote #T)
+(quote #F)
+(quote (lambda (a b c) (list a b c)))
+
+<< EXPECT
+#T
+#F
+(lambda (a b c) (list a b c))
+
+<< END
+
+<< TEST Shortcut Notation
+'123
+'alpha
+'()
+'(cons a b)
+'#F
+
+<< EXPECT
+123
+alpha
+()
+(cons a b)
+#F
+
+<< END

@@ -1,10 +1,13 @@
+<< SUITE Lambda Expressions
 
+<< TEST Boolean Operations
 ((lambda (a b c) (not a) (or b c)) #T #F #T)
 ((lambda (a b c) (not a) (or b c) (and b a)) #T #F #T)
 ((lambda (a b c) (not a) (or b c) (and b a)) #T #T #F)
 
-%%
-
+<< EXPECT
 #T
 #F
 #T
+
+<< END

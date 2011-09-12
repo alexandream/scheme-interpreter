@@ -1,0 +1,39 @@
+<< SUITE Boolean Basics
+
+<< TEST AND Truth Table.
+(and #F #F)
+(and #F #T)
+(and #T #F)
+(and #T #T)
+
+<< EXPECT
+#F
+#F
+#F
+#T
+
+<< END
+
+<< TEST OR Truth Table.
+(or #F #F)
+(or #F #T)
+(or #T #F)
+(or #T #T)
+
+<< EXPECT
+#F
+#T
+#T
+#T
+
+<< END
+
+<< TEST NOT Truth Table.
+(not #F)
+(not #T)
+
+<< EXPECT
+#T
+#F
+
+<< END
