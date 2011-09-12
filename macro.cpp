@@ -68,13 +68,16 @@ bool is_macro_expansion(value_t expression,
     return true;
 }
 
+#include "printer.h"
 static inline
 value_t expansion(value_t expression) {
     value_t name,
             args,
             rewriter;
     while (is_macro_expansion(expression, &name, &args, &rewriter)) {
+        //println(expression, "Expanding:");
         expression = macro_expand_1(rewriter, args);
+        //println(expression, "       To:");
     }
     return expression;
 
