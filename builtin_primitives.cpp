@@ -94,6 +94,18 @@ void BP_pairP(context_t* context) {
 	BUILTIN_RETURN(context, wrap_boolean(is_pair(param)));
 
 }
+// FIXNUM PRIMITIVES
+//
+void BP_fixnum_PLUS(context_t* context) {
+	int64_t result = 0;
+	int32_t nargs = context->value_stack_size;
+	value_t args = context->value_stack;
+	for (int i = 0; i < nargs; i++) {
+		result += unwrap_fixnum(pair_left(args));
+		args = pair_right(args);
+	}
+	BUILTIN_RETURN(context, wrap_fixnum(result));
+}
 // TEST PRIMITIVES
 //
 void BP_max_fixnum(context_t* context) {

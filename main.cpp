@@ -37,6 +37,8 @@ primitive_descriptor_t primitives[] = {
 	{ "list",  BP_list,  0, ARITY_ANY },
 	// CONTROL
 	{ "apply", BP_apply, 1, ARITY_ANY },
+	// FIXNUM
+	{ "fixnum+", BP_fixnum_PLUS, 0, ARITY_ANY },
 	// TEST
 	{ "min_fixnum", BP_min_fixnum, 0, 0 },
 	{ "max_fixnum", BP_max_fixnum, 0, 0 },
