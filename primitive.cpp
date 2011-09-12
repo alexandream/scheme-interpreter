@@ -21,10 +21,10 @@ uint8_t ARITY_ANY = 0xFF;
 std::string primitive_format(value_t value) {
 	std::stringstream sstream;
 
-	double_storage_t* storage = (double_storage_t*) unwrap_pointer(value);
+	single_storage_t* storage = (single_storage_t*) unwrap_pointer(value);
 	
 	primitive_descriptor_t* descriptor = 
-		(primitive_descriptor_t*) storage->second_slot;
+		(primitive_descriptor_t*) storage->first_slot;
 	
 
 	sstream << "Primitive Function \'" << descriptor->name 
