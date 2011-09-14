@@ -25,8 +25,8 @@ value_t make_symbol(const std::string& str) {
 	iter = symbol_pool.find(str);
 	if (iter == symbol_pool.end()) {
 		std::string *new_str = new std::string(str);
-		single_storage_t* storage = alloc_single_storage();
 		storage->header = make_header(false, SYMBOL_TYPE_MASK);
+		double_storage_t* storage = alloc_double_storage();
 		storage->first_slot = (uint64_t) new_str;
 		result = wrap_pointer(storage);
 		symbol_pool[str] = result;
@@ -39,7 +39,7 @@ value_t make_symbol(const std::string& str) {
 
 std::string symbol_format(value_t value) {
 	// XXX: Assumption #003
-	single_storage_t* storage = (single_storage_t*) unwrap_pointer(value);
+	double_storage_t* storage = (double_storage_t*) unwrap_pointer(value);
 	std::string *str = (std::string*) storage->first_slot;
 	return *str;
 }

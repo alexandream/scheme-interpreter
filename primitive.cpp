@@ -21,7 +21,7 @@ uint8_t ARITY_ANY = 0xFF;
 std::string primitive_format(value_t value) {
 	std::stringstream sstream;
 
-	single_storage_t* storage = (single_storage_t*) unwrap_pointer(value);
+	double_storage_t* storage = (double_storage_t*) unwrap_pointer(value);
 	
 	primitive_descriptor_t* descriptor = 
 		(primitive_descriptor_t*) storage->first_slot;
@@ -38,7 +38,7 @@ std::string primitive_format(value_t value) {
 value_t make_primitive(primitive_descriptor_t* descriptor) {
 	// make_primitive takes ownership of "descriptor" parameter. Has to live
 	// throughout entire session.
-	single_storage_t* storage = alloc_single_storage();
+	double_storage_t* storage = alloc_double_storage();
 
 	storage->header = make_header(true, PRIMITIVE_TYPE_MASK);
 	storage->first_slot = (uint64_t) descriptor;
@@ -48,7 +48,7 @@ value_t make_primitive(primitive_descriptor_t* descriptor) {
 
 
 void primitive_apply(context_t* context, value_t func) {
-	single_storage_t* storage = (single_storage_t*) unwrap_pointer(func);
+	double_storage_t* storage = (double_storage_t*) unwrap_pointer(func);
 	
 	primitive_descriptor_t* descriptor = 
 		(primitive_descriptor_t*) storage->first_slot;

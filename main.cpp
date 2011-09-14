@@ -115,6 +115,8 @@ int (*prog_pool[])(int, char**) = {
 int main(int argc, char** argv) {
 	int index = 0;
 
+	init_storage();
+
 	if (argc > 1) {
 		int i;
 		std::string arg(argv[1]);

@@ -32,7 +32,7 @@ uint8_t header_get_type(uint64_t header) {
 
 static inline
 uint64_t get_header(value_t value) {
-	return ((single_storage_t*) unwrap_pointer(value))->header;
+	return ((double_storage_t*) unwrap_pointer(value))->header;
 }
 
 static inline
