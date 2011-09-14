@@ -40,6 +40,7 @@ primitive_descriptor_t primitives[] = {
 	// FIXNUM
 	{ "fixnum+", BP_fixnum_PLUS, 0, ARITY_ANY },
 	// TEST
+	{ "collect", BP_collect, 0, 0 },
 	{ "min_fixnum", BP_min_fixnum, 0, 0 },
 	{ "max_fixnum", BP_max_fixnum, 0, 0 },
 	// TYPE PREDICATE

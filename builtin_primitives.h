@@ -23,4 +23,5 @@ void BP_pairP(context_t* context);
 void BP_fixnum_PLUS(context_t* context);
 void BP_max_fixnum(context_t* context);
 void BP_min_fixnum(context_t* context);
+void BP_collect(context_t* context);
 #endif

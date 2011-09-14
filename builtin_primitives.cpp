@@ -2,6 +2,7 @@
 
 #include "value.h"
 #include "builtin_primitives.h"
+#include "garbage_collector.h"
 #include "compiler.h"
 #include "primitive.h"
 #include "fixnum.h"
@@ -116,3 +117,7 @@ void BP_min_fixnum(context_t* context) {
 	BUILTIN_RETURN(context, FIXNUM_MIN);
 }
 
+void BP_collect(context_t* context) {
+	collect();
+	BUILTIN_RETURN(context, UNSPECIFIED);
+}

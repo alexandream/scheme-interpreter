@@ -29,8 +29,8 @@ std::string primitive_format(value_t value) {
 
 	sstream << "Primitive Function \'" << descriptor->name 
 	        << "\' receiving " << (unsigned int) descriptor->min_arity 
-			<< " to " << (unsigned int) descriptor->max_arity << " arguments."
-	        << std::endl;
+			<< " to " << (unsigned int) descriptor->max_arity << " arguments.";
+
 
 	return sstream.str();
 }

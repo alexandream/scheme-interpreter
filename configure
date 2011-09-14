@@ -65,7 +65,7 @@ $target: \${OBJS}
 @rules
 
 clean:
-\trm -f *.o $target scanner.cpp a.out
+\trm -f build/*.o $target scanner.cpp a.out
 
 EOF
 ;

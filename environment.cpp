@@ -1,20 +1,18 @@
 #include <assert.h>
+#include <string>
+#include <sstream>
 #include <error.h>
 
 #include "environment.h"
 #include "symbol.h"
 #include "pair.h"
 #include "special.h"
+#include "printer.h"
 
 const
 uint8_t ENVIRONMENT_TYPE_MASK = 0x05;
 
 
-static inline
-binding_map_t* get_bindings(value_t env) {
-	double_storage_t* storage = (double_storage_t*) unwrap_pointer(env);
-	return (binding_map_t*) unwrap_pointer(storage->second_slot);
-}
 
 static inline
 value_t get_parent(value_t env) {
@@ -25,7 +23,7 @@ value_t get_parent(value_t env) {
 void environment_add(value_t env, value_t symbol, value_t value) {
 	assert(is_symbol(symbol));
 	
-	binding_map_t* bindings = get_bindings(env);
+	binding_map_t* bindings = environment_get_all_bindings(env);
 
 	(*bindings)[symbol] = value;
 }
@@ -57,8 +55,8 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 		error(1, 0, "Number of variables and values to make new "
 				    "environment don't match.");
 	}
-
-	return wrap_pointer(storage);
+	value_t result = wrap_pointer(storage);
+	return result;
 }
 
 static inline
@@ -66,7 +64,7 @@ binding_map_t::iterator environment_fetch(value_t env, value_t symbol) {
 	assert(env);
 	assert(is_symbol(symbol));
 
-	binding_map_t* bindings = get_bindings(env);
+	binding_map_t* bindings = environment_get_all_bindings(env);
 	value_t parent = get_parent(env);
 
 	binding_map_t::iterator binding = bindings->find(symbol);
@@ -87,6 +85,19 @@ binding_map_t::iterator environment_fetch(value_t env, value_t symbol) {
 			return dummy;
 	}
 
+}
+
+std::string environment_format(value_t environment) {
+	std::ostringstream sstream;
+	sstream << "[ Environment (0x" << std::hex << environment << ") with bindings: ";
+	binding_map_t* bindings = environment_get_all_bindings(environment);
+	binding_map_t::iterator iter = bindings->begin();
+	while(iter != bindings->end()) {
+		sstream << symbol_format(iter->first) << " ";
+		iter++;
+	}
+	sstream << " ]";
+	return sstream.str();
 }
 
 void environment_set(value_t env, value_t symbol, value_t value) {

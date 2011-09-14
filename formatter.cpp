@@ -1,11 +1,13 @@
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <error.h>
 
 #include "value.h"
 
 #include "formatter.h"
 #include "special.h"
+#include "environment.h"
 #include "fixnum.h"
 #include "symbol.h"
 #include "pair.h"
@@ -34,6 +36,9 @@ std::string format(value_t value) {
 	else if (is_symbol(value)) {
 		result = symbol_format(value);
 	}
+     else if (is_environment(value)) {
+         result = environment_format(value);
+     }
 	else {
 		if (value == EMPTY_LIST) 
 			result = "()";
@@ -69,8 +74,12 @@ std::string format(value_t value) {
 		else if (value == OP_BIND_MACRO)
 			result = "@OP_BIND_MACRO";
 #endif 
-		else
-			error(1, 0, "Unable to format! Unknown value: 0x%016lX\n", value);
+		else {
+            std::ostringstream sstream;
+            sstream << "[Unknown:0x" << std::hex << value << "]";
+            result = sstream.str();
+        }
+
 	}
 	return result;
 }	

@@ -14,7 +14,7 @@
 #include "symbol.h"
 #include "pair.h"
 #include "macro.h"
-
+#include "printer.h"
 
 
 static context_list_t context_list;
@@ -60,7 +60,6 @@ static inline
 void evaluate_op_return(context_t* context, value_t args) {
 	value_t frame = pair_left(context->frame_stack);
 	context->frame_stack = pair_right(context->frame_stack);
-
 	context->environment = pair_left(frame);
 	context->value_stack = pair_left(pair_right(frame));
 	context->value_stack_size = unwrap_fixnum(pair_left(pair_right(pair_right(frame))));
@@ -70,7 +69,6 @@ static inline
 void evaluate_op_frame(context_t* context, value_t args) {
 	value_t ret = pair_left(args);
 	value_t next = pair_left(pair_right(args));
-
 	value_t frame = make_list(context->environment, context->value_stack,
 	                                                wrap_fixnum(context->value_stack_size),
 	                                                ret, 0);
