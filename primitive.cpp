@@ -40,7 +40,7 @@ value_t make_primitive(primitive_descriptor_t* descriptor) {
 	// throughout entire session.
 	double_storage_t* storage = alloc_double_storage();
 
-	storage->header = make_header(true, PRIMITIVE_TYPE_MASK);
+	storage->header = make_header(true, PRIMITIVE_TYPE_MASK, MARK_POLICY_NONE);
 	storage->first_slot = (uint64_t) descriptor;
 
 	return wrap_pointer(storage);

@@ -37,7 +37,7 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 	// FIXME: When we add support to garbage collection, we must inform the GC
 	// that this object is such that it's second slot must not be "marked", and
 	// that it must be deleted when this storage is reclaimed.
-	storage->header = make_header(false, ENVIRONMENT_TYPE_MASK);
+	storage->header = make_header(false, ENVIRONMENT_TYPE_MASK, MARK_POLICY_NONE);
 	
 	storage->first_slot = parent;
 	storage->second_slot = wrap_pointer((void*) bindings);

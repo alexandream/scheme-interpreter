@@ -14,6 +14,9 @@ Eight Bits : Reserved for Garbage Collector use. Must encode whether each of
 			 the storage slots is supposed to be marked during mark phase, and
 			 whether each of the slots is supposed to be manually deleted on
              collection.
+             First Bit: Marked
+             Second Bit: Always Marked
+			
 
 As of now, the following type flags are defined:
 

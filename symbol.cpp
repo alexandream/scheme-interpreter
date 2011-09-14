@@ -25,8 +25,8 @@ value_t make_symbol(const std::string& str) {
 	iter = symbol_pool.find(str);
 	if (iter == symbol_pool.end()) {
 		std::string *new_str = new std::string(str);
-		storage->header = make_header(false, SYMBOL_TYPE_MASK);
 		double_storage_t* storage = alloc_double_storage();
+		storage->header = make_header(false, SYMBOL_TYPE_MASK, MARK_POLICY_NONE);
 		storage->first_slot = (uint64_t) new_str;
 		result = wrap_pointer(storage);
 		symbol_pool[str] = result;

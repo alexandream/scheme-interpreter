@@ -24,7 +24,7 @@ value_t make_function(value_t env, value_t params, value_t body) {
 	
 	double_storage_t* storage = alloc_double_storage();
 
-	storage->header = make_header(true, FUNCTION_TYPE_MASK);
+	storage->header = make_header(true, FUNCTION_TYPE_MASK, MARK_POLICY_BOTH);
 	storage->first_slot = env;
 	storage->second_slot = make_pair(params, body);
 
