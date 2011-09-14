@@ -85,7 +85,7 @@ value_t expansion(value_t expression) {
 
 static inline
 value_t macro_expand_1(value_t rewriter, value_t args) {
-    context_t* context = new context_t(GLOBAL_ENVIRONMENT);
+    context_t* context = make_context(GLOBAL_ENVIRONMENT);
     context->accumulator = rewriter;
     context->value_stack_size = pair_linked_length(args);
     context->next_expr =
@@ -102,6 +102,8 @@ value_t macro_expand_1(value_t rewriter, value_t args) {
                             0),
                   0);
     evaluate(context);
-    return context->accumulator;
+	value_t result = context->accumulator;
+	dispose_context(context);
+    return result;
 }
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <list>
 
 #include <error.h>
 #include <assert.h>
@@ -14,6 +15,10 @@
 #include "pair.h"
 #include "macro.h"
 
+
+
+static context_list_t context_list;
+
 context_t::context_t(value_t environment) {
 	this->environment = environment;
 
@@ -21,6 +26,21 @@ context_t::context_t(value_t environment) {
 	this->value_stack = EMPTY_LIST;
 	this->value_stack_size = 0;
 	this->frame_stack = EMPTY_LIST;
+}
+
+context_t* make_context(value_t environment) {
+	context_t* result = new context_t(environment);
+	context_list.push_back(result);
+	return result;
+}
+
+context_list_t* list_active_contexts(void) {
+	return &context_list;
+}
+
+void dispose_context(context_t* context) {
+	context_list.remove(context);
+	delete context;
 }
 
 static inline

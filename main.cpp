@@ -85,7 +85,7 @@ int main_repl(int argc, char ** argv) {
 		bind_primitive(global_env, &primitives[i]);
 	}
 	
-	context_t* context = new context_t(global_env);
+	context_t* context = make_context(global_env);
 
 	// Register other built-ins, non primitives.
 	load_file(context, "definitions.scm");
