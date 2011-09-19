@@ -7,6 +7,7 @@
 
 #include "reader.h"
 #include "pair.h"
+#include "garbage_collector.h"
 #include "evaluator.h"
 #include "compiler.h"
 #include "printer.h"
@@ -68,7 +69,9 @@ void load_file(context_t* context, const char* fname) {
 
 	while ( (input = read()) != END_OF_FILE ) {
 		context->next_expr = compile(input, make_list(OP_HALT, 0));
+		println(context->next_expr, "Compiled input to: ");
 		evaluate(context);
+		collect();
 	}
 	scanner_pop();
 }
