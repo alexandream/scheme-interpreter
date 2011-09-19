@@ -45,4 +45,7 @@ std::string symbol_format(value_t value) {
 	return *str;
 }
 
+size_t get_symbol_pool_size(void) {
+	return symbol_pool.size();
+}
 

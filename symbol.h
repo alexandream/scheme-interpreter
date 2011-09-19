@@ -17,4 +17,5 @@ value_t make_symbol(const std::string& str);
 
 std::string symbol_format(value_t value);
 
+size_t get_symbol_pool_size(void);
 #endif
