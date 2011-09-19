@@ -115,8 +115,6 @@ void evaluate_function_application(context_t* context,
 static inline
 void evaluate_op_apply(context_t* context, value_t args) {
 	value_t func = context->accumulator;
-	// FIXME: Ugly hack to make the 'apply' procedure easy to implement. Gotta
-	// check this out later.
 	if (is_primitive(func)) {
 		primitive_apply(context, func);
 	}
@@ -125,6 +123,7 @@ void evaluate_op_apply(context_t* context, value_t args) {
 		evaluate_function_application(context, func, arg_list);
 	}
 	else {
+        println(func);
 		error(1, 0, "Trying to apply something that is neither a function nor a primitive.");
 	}
 }
