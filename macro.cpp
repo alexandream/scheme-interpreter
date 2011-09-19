@@ -27,6 +27,10 @@ value_t macro_expand(value_t expression) {
     }
 }
 
+binding_map_t* list_macro_rewriters(void) {
+    return &rewriters;
+}
+
 void macro_set_rewriter(value_t name, value_t rewriter) {
     assert(is_symbol(name));
     assert(is_function(rewriter) || is_primitive(rewriter));
