@@ -4,16 +4,20 @@
 #include "value.h"
 #include "special.h"
 #include "storage.h"
-
 #include "pointer.h"
 
-static const int BLOCK_SIZE = 4501;
+static const int BLOCK_SIZE = 2001;
 
 double_storage_t* ds_pool = NULL;
 
 uint64_t free_list;
 
 #include <stdio.h>
+
+double_storage_t* get_double_storage_pool(int* size) {
+    *size = BLOCK_SIZE;
+    return ds_pool;
+}
 
 double_storage_t* make_double_storage_pool(void) {
 	
@@ -35,11 +39,17 @@ double_storage_t* pop_free_ds(void) {
 }
 
 void init_storage(void) {
-	free_list = (value_t) make_double_storage_pool();
+    ds_pool = make_double_storage_pool();
+	free_list = (value_t) ds_pool;
 }
 
 double_storage_t* alloc_double_storage(void) {
 	return pop_free_ds();
 }
 
+void free_double_storage(double_storage_t* storage) {
+    storage->header = 0;
+    storage->first_slot = free_list;
+    free_list = (uint64_t) storage;
+}
 
