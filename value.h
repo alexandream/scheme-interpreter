@@ -11,7 +11,8 @@ uint8_t MARK_POLICY_NONE,
         MARK_POLICY_SECOND,
         MARK_POLICY_BOTH,
 		GC_ALWAYS_MARKED,
-		GC_HAS_MARK;
+		GC_HAS_MARK,
+		GC_IS_IN_USE;
 
 
 static inline
@@ -35,7 +36,7 @@ uint64_t make_header(bool immutable, uint8_t type, uint8_t mark_policy) {
 		result |= 0x8000000000000000;
 	}
 	result |= ((uint64_t) type) << 52;
-	result |= ((uint64_t) mark_policy) << GC_DATA_OFFSET;
+	result |= ((uint64_t) (mark_policy|GC_IS_IN_USE)) << GC_DATA_OFFSET;
 	return result;
 }
 
@@ -48,50 +49,57 @@ uint8_t header_get_type(uint64_t header) {
 #include "pointer.h"
 
 static inline
-uint64_t get_header(value_t value) {
-	return ((double_storage_t*) unwrap_pointer(value))->header;
+uint64_t* get_header(value_t value) {
+	return &(((double_storage_t*) unwrap_pointer(value))->header);
 }
 
 static inline
-void set_header(value_t value, uint64_t header) {
-	((double_storage_t*) unwrap_pointer(value))->header = header;
-}
-static inline
 uint8_t get_non_immediate_type(value_t value) {
-	return header_get_type(get_header(value));
+	// TODO: Adapt this for non-builtin types.
+	uint64_t* header = get_header(value);
+	return header_get_type(*header);
 }
 
 
 static inline 
-uint8_t get_gc_data(value_t value) {
-	return (uint8_t) (get_header(value) >> GC_DATA_OFFSET);
+uint8_t get_gc_data(uint64_t header) {
+	return (uint8_t) (header >> GC_DATA_OFFSET);
 }
 
 static inline
-void set_gc_data(value_t value, uint8_t gc_data) {
-	uint64_t new_header = get_header(value) & CLEAR_GC_DATA_MASK;
-	new_header |= (uint64_t) gc_data << GC_DATA_OFFSET;
-	set_header(value, new_header);
+void set_gc_data(uint64_t* header, uint8_t gc_data) {
+	*header &= CLEAR_GC_DATA_MASK;
+	*header |= (uint64_t) gc_data << GC_DATA_OFFSET;
 }
 static inline
-void set_gc_mark(value_t value) {
-	set_gc_data(value, get_gc_data(value) | GC_HAS_MARK);
+void set_gc_mark(uint64_t* header) {
+	*header |= (uint64_t) GC_HAS_MARK << GC_DATA_OFFSET;
+}
+
+static inline
+void clear_gc_mark(uint64_t* header) {
+	*header &= ~((uint64_t) GC_HAS_MARK << GC_DATA_OFFSET);
+}
+
+static inline
+bool has_gc_mark(uint64_t header) {
+	return (get_gc_data(header) & (GC_HAS_MARK|GC_ALWAYS_MARKED)) != 0;
+}
+
+static inline
+bool is_in_use(uint64_t header) {
+	return (get_gc_data(header) & GC_IS_IN_USE) != 0;
 }
 
 
 static inline
-bool has_gc_mark(value_t value) {
-	return (get_gc_data(value) & (GC_HAS_MARK)) > 0;
+uint64_t must_mark_first(uint64_t header) {
+	return get_gc_data(header) & MARK_POLICY_FIRST;
 }
 
 static inline
-uint64_t must_mark_first(value_t value) {
-	return get_gc_data(value) & MARK_POLICY_FIRST;
-}
-
-static inline
-uint64_t must_mark_second(value_t value) {
-	return get_gc_data(value) & MARK_POLICY_SECOND;
+uint64_t must_mark_second(uint64_t header) {
+	return get_gc_data(header) & MARK_POLICY_SECOND;
 }
 
 

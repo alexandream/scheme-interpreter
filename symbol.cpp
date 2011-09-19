@@ -17,6 +17,7 @@ symbol_pool_t symbol_pool;
 
 
 
+
 value_t make_symbol(const std::string& str) {
 	// XXX: Assumption #002
 	symbol_pool_t::iterator iter;
