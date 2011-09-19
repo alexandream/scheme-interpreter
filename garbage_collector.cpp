@@ -27,13 +27,18 @@ uint64_t mark_count,
          node_count;
 
 void do_mark_phase(void);
+void do_sweep_phase(void);
 void mark_context(context_t* context);
 void mark_environment(value_t value);
 void mark(value_t value);
 
 void collect(void) {
 	mark_count = 0;
+	sweep_count = 0;
+	node_count = 0;
 	do_mark_phase();
+	do_sweep_phase();
+	printf("Marked: %Ld (%lu in symbol list) nodes of %Ld. Freed %Ld.\n", mark_count, get_symbol_pool_size(), node_count, sweep_count);
 }
 
 void do_mark_phase(void) {
@@ -50,6 +55,25 @@ void do_mark_phase(void) {
 	for (iter2 = rewriters->begin(); iter2 != rewriters->end(); iter2++) {
 		value_t rewriter = iter2->second;
 		mark(rewriter);
+	}
+}
+
+void do_sweep_phase(void) {
+	int pool_size = 0;
+	double_storage_t* pool = get_double_storage_pool(&pool_size);
+	for(int i = 0; i < pool_size; i++) { 
+		uint64_t header = pool[i].header;
+		if (is_in_use(header)) {
+			node_count++;
+			if (!has_gc_mark(header)) {
+				sweep_count++;
+				finalize(wrap_pointer(&pool[i]));
+				free_double_storage(&pool[i]);
+			}
+			else {
+				clear_gc_mark(&(pool[i].header));
+			}
+		}
 	}
 }
 
