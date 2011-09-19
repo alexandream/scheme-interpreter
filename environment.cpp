@@ -58,6 +58,12 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 	value_t result = wrap_pointer(storage);
 	return result;
 }
+void environment_finalize(value_t environment) {
+	double_storage_t* storage = (double_storage_t*) 
+	                              unwrap_pointer(environment);
+	binding_map_t *bindings = (binding_map_t*) storage->second_slot;
+	delete bindings;
+}
 
 static inline
 binding_map_t::iterator environment_fetch(value_t env, value_t symbol) {

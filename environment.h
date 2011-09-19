@@ -34,6 +34,7 @@ binding_map_t* environment_get_all_bindings(value_t env) {
 
 std::string environment_format(value_t environment);
 value_t environment_get(value_t env, value_t symbol);
+void environment_finalize(value_t);
 void environment_set(value_t env, value_t symbol, value_t value);
 void environment_add(value_t env, value_t symbol, value_t value);
 
