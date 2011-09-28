@@ -6,5 +6,6 @@
 #include "value.h"
 
 std::string format(value_t);
+const char* get_type(value_t value);
 
 #endif

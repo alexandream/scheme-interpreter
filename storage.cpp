@@ -1,22 +1,30 @@
 #include <iostream>
+#include <list>
 #include <assert.h>
 
 #include "value.h"
 #include "special.h"
 #include "storage.h"
+#include "garbage_collector.h"
 #include "pointer.h"
 
-static const int BLOCK_SIZE = 2001;
+static const int BLOCK_SIZE = 1301;
 
 double_storage_t* ds_pool = NULL;
 
+
+value_list_t protected_pool;
+
 uint64_t free_list;
 
-#include <stdio.h>
 
 double_storage_t* get_double_storage_pool(int* size) {
     *size = BLOCK_SIZE;
     return ds_pool;
+}
+
+value_list_t* list_protected_values(void) {
+	return &protected_pool;
 }
 
 double_storage_t* make_double_storage_pool(void) {
@@ -31,6 +39,9 @@ double_storage_t* make_double_storage_pool(void) {
 }
 
 double_storage_t* pop_free_ds(void) {
+	if (free_list == 0)
+		collect();
+
 	assert(free_list != 0);
 	double_storage_t* result = (double_storage_t*) free_list;
 	free_list = result->first_slot;
@@ -53,3 +64,16 @@ void free_double_storage(double_storage_t* storage) {
     free_list = (uint64_t) storage;
 }
 
+void protect_value(value_t value) {
+	protected_pool.push_front(value);
+}
+void protect_storage(double_storage_t* storage) {
+	protected_pool.push_front(wrap_pointer(storage));
+}
+
+void unprotect_storage(int count) {
+	while (count > 0) {
+		protected_pool.pop_front();
+		count--;
+	}
+}

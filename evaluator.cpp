@@ -1,4 +1,3 @@
-#include <iostream>
 #include <list>
 
 #include <error.h>
@@ -14,7 +13,6 @@
 #include "symbol.h"
 #include "pair.h"
 #include "macro.h"
-#include "printer.h"
 
 
 static context_list_t context_list;
@@ -28,6 +26,14 @@ context_t::context_t(value_t environment) {
 	this->frame_stack = EMPTY_LIST;
 }
 
+//void context_t::show(void) {
+//	println(this->environment, "Environment: ");
+//	println(this->next_expr,   "Next  Expr.: ");
+//	println(this->accumulator, "Accumulator: ");
+//	println(this->value_stack, "Value Stack: ");
+//	println(this->frame_stack, "Frame Stack: ");
+//}
+//
 context_t* make_context(value_t environment) {
 	context_t* result = new context_t(environment);
 	context_list.push_back(result);
@@ -72,10 +78,13 @@ void evaluate_op_frame(context_t* context, value_t args) {
 	value_t frame = make_list(context->environment, context->value_stack,
 	                                                wrap_fixnum(context->value_stack_size),
 	                                                ret, 0);
+	protect_value(frame);
+		
 	context->value_stack = EMPTY_LIST;
 	context->value_stack_size = 0;
 	context->frame_stack = make_pair(frame, context->frame_stack);
 	context->next_expr = next;
+	unprotect_storage(1);
 }
 static inline
 void evaluate_op_constant(context_t* context, value_t args) {
@@ -104,12 +113,15 @@ void evaluate_function_application(context_t* context,
 	value_t env = make_environment(function_get_environment(func),
 								   params,
 								   args);
+	protect_value(env);
 	value_t body = function_get_body(func);
 
 	context->environment = env;
 	context->value_stack = EMPTY_LIST;
 	context->value_stack_size = 0;
 	context->next_expr = body;
+
+	unprotect_storage(1);
 }
 
 static inline
@@ -123,7 +135,6 @@ void evaluate_op_apply(context_t* context, value_t args) {
 		evaluate_function_application(context, func, arg_list);
 	}
 	else {
-        println(func);
 		error(1, 0, "Trying to apply something that is neither a function nor a primitive.");
 	}
 }

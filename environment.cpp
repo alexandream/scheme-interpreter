@@ -7,7 +7,6 @@
 #include "symbol.h"
 #include "pair.h"
 #include "special.h"
-#include "printer.h"
 
 const
 uint8_t ENVIRONMENT_TYPE_MASK = 0x05;
@@ -32,9 +31,8 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 	binding_map_t *bindings = new binding_map_t();
 	
 	double_storage_t* storage = alloc_double_storage();
-	// FIXME: When we add support to garbage collection, we must inform the GC
-	// that this object is such that it's second slot must not be "marked", and
-	// that it must be deleted when this storage is reclaimed.
+	// XXX: mark policy here is useless. Marking of environments is handled
+	// in a special way.
 	storage->header = make_header(false, ENVIRONMENT_TYPE_MASK, MARK_POLICY_NONE);
 	
 	storage->first_slot = parent;
@@ -56,6 +54,7 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 				    "environment don't match.");
 	}
 	value_t result = wrap_pointer(storage);
+	//printf("Making environment at 0x%Lx\n", result);
 	return result;
 }
 void environment_finalize(value_t environment) {

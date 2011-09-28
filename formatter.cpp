@@ -18,7 +18,7 @@ std::string format(value_t value) {
 	std::string result;
 
 	// TODO: This must be a generic function. Not this mess.
-	 if (is_boolean(value)) {
+	if (is_boolean(value)) {
 		result = boolean_format(value);
 	}
 	else if (is_fixnum(value)) {
@@ -36,9 +36,9 @@ std::string format(value_t value) {
 	else if (is_symbol(value)) {
 		result = symbol_format(value);
 	}
-     else if (is_environment(value)) {
-         result = environment_format(value);
-     }
+	else if (is_environment(value)) {
+		result = environment_format(value);
+	}
 	else {
 		if (value == EMPTY_LIST) 
 			result = "()";
@@ -75,12 +75,33 @@ std::string format(value_t value) {
 			result = "@OP_BIND_MACRO";
 #endif 
 		else {
-            std::ostringstream sstream;
-            sstream << "[Unknown:0x" << std::hex << value << "]";
-            result = sstream.str();
-        }
+			std::ostringstream sstream;
+			sstream << "[Unknown:0x" << std::hex << value;
+			if (!is_immediate(value)) {
+				sstream << " - " << *get_header(value);
+			}
+			sstream << "]";
+			result = sstream.str();
+		}
 
 	}
 	return result;
 }	
+
+
+const char* get_type(value_t value) {
+	if (is_pair(value)) 
+		return "PAIR";
+	if (is_primitive(value)) 
+		return "PRIMITIVE";
+	if (is_function(value)) 
+		return "FUNCTION";
+	if (is_symbol(value)) 
+		return "SYMBOL";
+	if (is_environment(value)) 
+		return "ENVIRONMENT";
+	if (is_immediate(value)) 
+		return "IMMEDIATE";
+	return "WTF?";
+}
 

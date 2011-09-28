@@ -59,16 +59,23 @@ int32_t pair_linked_length(value_t value) {
 
 value_t make_list(value_t first, ...) {
 	va_list args;
+	protect_value(first);
 	value_t list = make_pair(first, EMPTY_LIST);
+	unprotect_storage(1);
+
+	protect_value(list);
 	value_t last = list;
 	va_start(args, first);
 	value_t next = va_arg(args, value_t);
 	value_t link;
 	while (next != 0) {
+		protect_value(next);
 		link = make_pair(next, EMPTY_LIST);
+		unprotect_storage(1);
 		pair_set_right(last, link);
 		last = link;
 		next = va_arg(args, value_t);
 	}
+	unprotect_storage(1);
 	return list;
 }

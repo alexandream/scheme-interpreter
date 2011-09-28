@@ -36,6 +36,7 @@ value_t read(void) {
 			break;
 		case TK_LPAREN:
 			get_token(); // consume TK_LPAREN;
+			// FIXME: Protect memory from collection.
 			result = read_list();
 			break;
 		case TK_QUOTE:
@@ -71,8 +72,11 @@ value_t read_list(void) {
 	else {
 		// Don't consume anything. read() will take care of it.
 		value_t x = read();
+		protect_value(x);
 		value_t y = read_list();
+		protect_value(y);
 		result = make_pair(x, y);
+		unprotect_storage(2);
 	}
 	return result;
 }
@@ -81,6 +85,9 @@ static
 value_t read_quote_shortcut(void) {
 	value_t quote = make_symbol("quote");
 	value_t next = read();
+
+	protect_value(next);
 	value_t result = make_list(quote, next, 0);
+	unprotect_storage(1);
 	return result;
 }

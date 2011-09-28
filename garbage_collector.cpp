@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 
 #include "garbage_collector.h"
 
@@ -33,12 +34,13 @@ void mark_environment(value_t value);
 void mark(value_t value);
 
 void collect(void) {
+	std::cerr<< "START COLLECT" << std::endl;
 	mark_count = 0;
 	sweep_count = 0;
 	node_count = 0;
 	do_mark_phase();
 	do_sweep_phase();
-	printf("Marked: %Ld (%lu in symbol list) nodes of %Ld. Freed %Ld.\n", mark_count, get_symbol_pool_size(), node_count, sweep_count);
+	fprintf(stderr, "Marked: %Ld (%lu in symbol list) nodes of %Ld. Freed %Ld.\n", mark_count, get_symbol_pool_size(), node_count, sweep_count);
 }
 
 void do_mark_phase(void) {
@@ -56,12 +58,23 @@ void do_mark_phase(void) {
 		value_t rewriter = iter2->second;
 		mark(rewriter);
 	}
+
+	value_list_t* protected_list = list_protected_values();
+	value_list_t::iterator iter3;
+	for(iter3 = protected_list->begin(); 
+	    iter3 != protected_list->end();
+	    iter3++) {
+		value_t protected_value = *iter3;
+		mark(protected_value);
+	}
+
 }
 
+#include <stdio.h>
 void do_sweep_phase(void) {
 	int pool_size = 0;
 	double_storage_t* pool = get_double_storage_pool(&pool_size);
-	for(int i = 0; i < pool_size; i++) { 
+	for(int i = pool_size -1; i >= 0; i--) { 
 		uint64_t header = pool[i].header;
 		if (is_in_use(header)) {
 			node_count++;
@@ -77,11 +90,16 @@ void do_sweep_phase(void) {
 	}
 }
 
+
 void mark_context(context_t* context) {
+	//context->show();
 	mark(context->accumulator);
 	mark(context->value_stack);
 	mark(context->next_expr);
+	//puts("Begin environment.");
 	mark(context->environment);
+	//println(context->environment, "Environment!!! ");
+	//puts("End environment.");
 	mark(context->frame_stack);
 }
 
@@ -90,22 +108,26 @@ void mark(value_t value) {
 	// heap storage. Also ignore already marked values. Symbols are *always*
 	// marked.
 	if (is_immediate(value)) {
+		//printf("Ignoring immediate: 0x%Lx\n", value);
 		return;
 	}
 	uint64_t* header_ptr = get_header(value);
 	uint64_t header = *header_ptr;
 	if (has_gc_mark(header)) {
+		//printf("Ignoring already marked: 0x%Lx\n", value);
 		return;
 	}
 	
 	mark_count++;
 	set_gc_mark(header_ptr);
 	if (is_environment(value)) {
+		//printf("Marking environment: 0x%Lx\n", value);
 		// Environments have to be handled differently because they have an
 		// external collection of GC'd data in it (the bindings hash table).
 		mark_environment(value);
 	}
 	else {
+		//printf("Marking non-environment: 0x%Lx\n", value);
 		if (must_mark_first(header)) {
 			mark(pair_left(value));
 		}
@@ -116,8 +138,8 @@ void mark(value_t value) {
 }
 
 void mark_environment(value_t value) {
+	//printf("Marking environment: %Lx\n", value);
 	mark(pair_left(value));
-
 	binding_map_t* bindings = environment_get_all_bindings(value);
 	binding_map_t::iterator iter = bindings->begin();
 	while(iter != bindings->end()) {

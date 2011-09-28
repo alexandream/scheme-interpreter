@@ -1,4 +1,5 @@
 #include <error.h>
+#include <stdio.h>
 
 #include "value.h"
 
@@ -31,7 +32,7 @@ value_t compile(value_t expr, value_t next) {
 	value_t result;
 	
 	expr = macro_expand(expr);
-
+	protect_value(expr);
 	if (is_symbol(expr)) {
 		result = make_list(OP_LOOKUP, expr, next, 0);
 	}
@@ -44,6 +45,7 @@ value_t compile(value_t expr, value_t next) {
 	else {
 		result = make_list(OP_CONSTANT, expr, next, 0);
 	}
+	unprotect_storage(1);
 	return result;
 }
 
@@ -97,7 +99,11 @@ value_t compile_assignment(value_t expr, value_t next ) {
 	
 	value_t assignment = make_list(OP_ASSIGN, variable, next);
 
-	return compile(expression, assignment);
+	protect_value(assignment);
+	value_t result = compile(expression, assignment);
+	unprotect_storage(1);
+
+	return result;
 }
 
 value_t compile_defmacro(value_t expr, value_t next) {
@@ -111,7 +117,12 @@ value_t compile_defmacro(value_t expr, value_t next) {
 	// TODO: Make sure the rewriter is a lambda of single parameter.
 
 	value_t bind = make_list(OP_BIND_MACRO, name, next, 0);
-	return compile(rewriter, bind);
+	
+	protect_value(bind);
+	value_t result = compile(rewriter, bind);
+	unprotect_storage(1);
+	
+	return result;
 }
 value_t compile_lambda(value_t expr, value_t next) {
 	int32_t arguments = pair_linked_length(expr);
@@ -121,10 +132,17 @@ value_t compile_lambda(value_t expr, value_t next) {
 	
 	value_t arg_list = pair_left(expr);
 	value_t body = pair_right(expr);
+	
+	value_t return_expr = make_list(OP_RETURN, 0);
+	
+	protect_value(return_expr);
+	value_t compiled_body = compile_sequence(body, return_expr);
 
-	value_t compiled_body = compile_sequence(body, make_list(OP_RETURN, 0));
+	protect_value(compiled_body); 
+	value_t result = make_list(OP_CLOSURE, arg_list, compiled_body, next, 0);
 
-	return make_list(OP_CLOSURE, arg_list, compiled_body, next, 0);
+	unprotect_storage(2);
+	return result;
 }
 
 value_t compile_sequence(value_t expr_list, value_t next) {
@@ -145,7 +163,9 @@ value_t compile_sequence(value_t expr_list, value_t next) {
 		value_t expression = pair_left(expr_list);
 		value_t expr_tail = pair_right(expr_list);
 		value_t expr_next = compile_sequence(expr_tail, next);
+		protect_value(expr_next);
 		result = compile(expression, expr_next);
+		unprotect_storage(1);
 	}
 	return result;
 }
@@ -160,7 +180,12 @@ value_t compile_define(value_t args, value_t next) {
 	value_t expr = pair_left(pair_right(args));
 	
 	value_t bind = make_list(OP_BIND, symbol, next, 0);
-	return compile(expr, bind);
+
+	protect_value(bind);
+	value_t result = compile(expr, bind);
+
+	unprotect_storage(1);
+	return result;
 }
 value_t compile_if(value_t expr, value_t next) {
 	int32_t arguments = pair_linked_length(expr);
@@ -175,13 +200,20 @@ value_t compile_if(value_t expr, value_t next) {
 		alternative = pair_left(pair_right(options));
 	}
 	value_t compiled_consequence = compile(consequence, next);
+	protect_value(compiled_consequence);
+	
 	value_t compiled_alternative = compile(alternative, next);
+	protect_value(compiled_alternative);
 
 	value_t if_continuation = make_list(OP_TEST,
 	                                    compiled_consequence,
 	                                    compiled_alternative, 0);
+	protect_value(if_continuation);
 
-	return compile(condition, if_continuation);
+	value_t result = compile(condition, if_continuation);
+	unprotect_storage(3);
+
+	return result;
 }
 
 value_t compile_quote(value_t expr, value_t next) {
@@ -191,6 +223,7 @@ value_t compile_quote(value_t expr, value_t next) {
 		error(1, 0, "Expected 1 argument for 'quote', got %d.", arguments);
 	}
 	value_t quoted_obj = pair_left(expr);
+
 	return make_list(OP_CONSTANT, quoted_obj, next, 0);
 }
 
@@ -202,16 +235,23 @@ value_t compile_application(value_t expr, value_t next) {
 				    "got none.");
 	}
 	value_t oper = pair_left(expr);
+
 	value_t apply = make_list(OP_APPLY, 0);
-	
+	protect_value(apply);
+
 	value_t result = compile(oper, apply);
+	protect_value(result);
 	
 	value_t args = pair_right(expr);
 
 	int n_args = 0;
+
 	while (args != EMPTY_LIST) {
 		n_args++;
-		result = compile(pair_left(args), make_list(OP_ARGUMENT, result, 0));
+		value_t argument_operation = make_list(OP_ARGUMENT, result, 0);
+		protect_value(argument_operation);
+		result = compile(pair_left(args), argument_operation);
+		protect_value(result);
 		args = pair_right(args);
 	}
 	// Detecting tail calls.
@@ -221,7 +261,7 @@ value_t compile_application(value_t expr, value_t next) {
 		// before doing all the function-application code generated above.
 		result = make_list(OP_FRAME, next, result, 0);
 	}
-
+	unprotect_storage(2 + (2* n_args));
 	return result;
 }
 

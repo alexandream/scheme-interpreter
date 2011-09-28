@@ -31,7 +31,7 @@
           (car rest) (cdr rest))
          ((lambda (binds body) 
             (append (list (append (list 'lambda (map car binds)) body))
-                    (map (lambda (x) (car (cdr x))) binds)))
+                    (map (lambda (y) (car (cdr y))) binds)))
           first rest)))
      (car args) (cdr args))))
  
@@ -40,8 +40,8 @@
   (lambda (args)
     (let ((binds (car args))
           (body (cdr args)))
-      (let ((newbinds (map (lambda (x) (list (car x) #F)) binds))
-            (setters (map (lambda (x) (list 'set!  (car x) (car (cdr x))))
+      (let ((newbinds (map (lambda (z) (list (car z) #F)) binds))
+            (setters (map (lambda (w) (list 'set!  (car w) (car (cdr w))))
                           binds)))
         (append (append (list 'let newbinds) setters) body)))))
 

@@ -72,7 +72,6 @@ bool is_macro_expansion(value_t expression,
     return true;
 }
 
-#include "printer.h"
 static inline
 value_t expansion(value_t expression) {
     value_t name,
@@ -92,19 +91,28 @@ value_t macro_expand_1(value_t rewriter, value_t args) {
     context_t* context = make_context(GLOBAL_ENVIRONMENT);
     context->accumulator = rewriter;
     context->value_stack_size = pair_linked_length(args);
-    context->next_expr =
-        make_list(OP_FRAME,
-                  make_list(OP_HALT,0),
-                  make_list(OP_CONSTANT, 
-                            args,
-                            make_list(OP_ARGUMENT,
-                                      make_list(OP_CONSTANT,
-                                                rewriter,
-                                                make_list(OP_APPLY, 0),
-                                                0),
-                                      0),
-                            0),
-                  0);
+
+    value_t op_halt = make_list(OP_HALT, 0);
+    protect_value(op_halt); 
+
+    value_t op_apply = make_list(OP_APPLY, 0);
+    protect_value(op_apply);
+
+    value_t rewriter_constant = make_list(OP_CONSTANT, rewriter, op_apply, 0);
+    protect_value(rewriter_constant);
+
+    value_t args_argument = make_list(OP_ARGUMENT, rewriter_constant, 0);
+    protect_value(args_argument);
+
+    value_t args_constant = make_list(OP_CONSTANT, args, args_argument, 0);
+    protect_value(args_constant);
+    
+    value_t frame = make_list(OP_FRAME, op_halt, args_constant, 0);
+
+    context->next_expr = frame;
+
+    unprotect_storage(5);
+    
     evaluate(context);
 	value_t result = context->accumulator;
 	dispose_context(context);

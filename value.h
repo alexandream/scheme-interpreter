@@ -1,10 +1,11 @@
 #ifndef __VALUE_H__
 #define __VALUE_H__
-
+#include <list>
 #include <stdint.h>
 
 typedef uint64_t value_t;
 
+typedef std::list<value_t> value_list_t;
 extern const
 uint8_t MARK_POLICY_NONE,
         MARK_POLICY_FIRST,
@@ -23,7 +24,6 @@ bool is_immediate(value_t value) {
 #define GC_DATA_OFFSET 44
 #define CLEAR_GC_DATA_MASK ~((uint64_t) 0xFF << GC_DATA_OFFSET)
 
-#include <stdio.h>
 // Header:
 // abcd: a -> immutable, b c d -> reserved
 // T(8): T -> type info

@@ -21,13 +21,18 @@ value_t make_function(value_t env, value_t params, value_t body) {
 	if (!is_all_symbols(params)) {
 		error(1, 0, "Formal Parameter lists can only be composed of proper lists of symbols.");
 	}
-	
+	protect_value(params);
+	protect_value(body);
+	protect_value(env);
 	double_storage_t* storage = alloc_double_storage();
 
 	storage->header = make_header(true, FUNCTION_TYPE_MASK, MARK_POLICY_BOTH);
 	storage->first_slot = env;
-	storage->second_slot = make_pair(params, body);
 
+	protect_storage(storage);
+	storage->second_slot = make_pair(params, body);
+	unprotect_storage(4);
+	
 	return wrap_pointer(storage);
 }
 
@@ -35,7 +40,7 @@ std::string function_format(value_t value) {
 	std::stringstream sstream;
 	sstream << "User defined function at 0x" << std::hex
 	        << unwrap_pointer(value);
-
+	
 	return sstream.str();
 }
 /*

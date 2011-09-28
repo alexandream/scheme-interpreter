@@ -68,10 +68,13 @@ void load_file(context_t* context, const char* fname) {
 	scanner_push(fp);
 
 	while ( (input = read()) != END_OF_FILE ) {
-		context->next_expr = compile(input, make_list(OP_HALT, 0));
-		println(context->next_expr, "Compiled input to: ");
+		protect_value(input);
+		value_t op_halt = make_list(OP_HALT, 0);
+		protect_value(op_halt);
+
+		context->next_expr = compile(input, op_halt);
+		unprotect_storage(2);
 		evaluate(context);
-		collect();
 	}
 	scanner_pop();
 }
@@ -83,7 +86,6 @@ int main_repl(int argc, char ** argv) {
 
 	value_t global_env = make_environment(UNSPECIFIED);
 	GLOBAL_ENVIRONMENT = global_env;
-
 	// Register primitives into toplevel environment.
 	for (int i = 0; primitives[i].handler != 0; i++) {
 		bind_primitive(global_env, &primitives[i]);
@@ -98,14 +100,21 @@ int main_repl(int argc, char ** argv) {
 	while(true) {
 		std::cerr << "> ";
 		input = read();
+		protect_value(input);
 		if (input == END_OF_FILE) {
 			std::cout << std::endl;
+			unprotect_storage(1);
 			break;
 		}
-		context->next_expr = compile(input, make_list(OP_HALT, 0));
+	
+		value_t op_halt = make_list(OP_HALT, 0);
+		protect_value(op_halt);
+
+		context->next_expr = compile(input, op_halt);
 #ifdef DEBUG_COMPILER
 		std::cerr << "; " << format(context->next_expr) << std::endl;
 #endif
+		unprotect_storage(2);
 		result = evaluate(context);
 		println(result);
 	}
