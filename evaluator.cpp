@@ -180,6 +180,41 @@ void evaluate_op_bind(context_t* context, value_t args) {
 }
 
 static inline
+value_t make_continuation(value_t stack) {
+	value_t var = make_symbol("var");
+	value_t body = make_list(OP_REIFY, stack, var, 0);
+	protect_value(body);
+
+	value_t env = UNSPECIFIED;
+	value_t arg_list = make_list(var, 0);
+	protect_value(arg_list);
+
+	value_t continuation = make_function(env, arg_list, body);
+	unprotect_storage(2);
+
+	return continuation;
+}
+
+static inline
+void evaluate_op_save(context_t* context, value_t args) {
+	value_t next = pair_left(args);
+	
+	context->accumulator = make_continuation(context->frame_stack);
+
+	context->next_expr = next;
+}
+
+static inline
+void evaluate_op_reify(context_t* context, value_t args) {
+	value_t stack = pair_left(args);
+	value_t var = pair_left(pair_right(args));
+
+	context->accumulator = environment_get(context->environment, var);
+	context->next_expr = make_list(OP_RETURN, 0);
+	context->frame_stack = stack;
+}
+
+static inline
 void evaluate_op_bind_macro(context_t* context, value_t args) {
 	value_t name = pair_left(args);
 	value_t next = pair_left(pair_right(args));
@@ -211,10 +246,10 @@ value_t evaluate(context_t* context) {
 			evaluate_op_assign(context, args);
 		}
 		else if (op_code == OP_SAVE) {
-			error(1, 0, "Not yet implemented.");
+			evaluate_op_save(context, args);
 		}
 		else if (op_code == OP_REIFY) {
-			error(1, 0, "Not yet implemented.");
+			evaluate_op_reify(context, args);
 		}
 		else if (op_code == OP_FRAME) {
 			evaluate_op_frame(context, args);

@@ -8,7 +8,7 @@
 #include "garbage_collector.h"
 #include "pointer.h"
 
-static const int BLOCK_SIZE = 1301;
+static const int BLOCK_SIZE = 5001;
 
 double_storage_t* ds_pool = NULL;
 

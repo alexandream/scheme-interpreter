@@ -13,7 +13,8 @@ value_t SYM_QUOTE = UNSPECIFIED,
         SYM_DEFINE = UNSPECIFIED,
         SYM_LAMBDA = UNSPECIFIED,
 		SYM_SET1 = UNSPECIFIED,
-		SYM_DEFMACRO = UNSPECIFIED;
+		SYM_DEFMACRO = UNSPECIFIED,
+		SYM_CALLCC = UNSPECIFIED;
 
 
 value_t compile_if(value_t expr, value_t next);
@@ -23,6 +24,7 @@ value_t compile_assignment(value_t expr, value_t next);
 value_t compile_sequence(value_t expr_list, value_t next);
 value_t compile_lambda(value_t expr, value_t next);
 value_t compile_quote(value_t expr, value_t next);
+value_t compile_call_cc(value_t expr, value_t next);
 value_t compile_application(value_t expr, value_t next);
 value_t compile_define(value_t args, value_t next);
 value_t compile_form(value_t expr, value_t next);
@@ -59,6 +61,7 @@ value_t compile_form(value_t expr, value_t next) {
 		SYM_LAMBDA = make_symbol("lambda");
 		SYM_SET1 = make_symbol("set!");
 		SYM_DEFMACRO = make_symbol("define-rewriter");
+		SYM_CALLCC = make_symbol("call-with-current-continuation");
 	}
 	
 	value_t head = pair_left(expr);
@@ -80,6 +83,9 @@ value_t compile_form(value_t expr, value_t next) {
 	}
 	else if (head == SYM_DEFMACRO) {
 		result = compile_defmacro(pair_right(expr), next);
+	}
+	else if (head == SYM_CALLCC) {
+		result = compile_call_cc(pair_right(expr), next);
 	}
 	else {
 		result = compile_application(expr, next);
@@ -143,6 +149,36 @@ value_t compile_lambda(value_t expr, value_t next) {
 
 	unprotect_storage(2);
 	return result;
+}
+
+value_t compile_call_cc(value_t expr, value_t next) {
+	int32_t arguments = pair_linked_length(expr);
+	if (arguments != 1) {
+		error(1, 0, "Expected 1 argument for 'call/cc', got %d", arguments);
+	}
+	
+	
+	value_t op_apply = make_list(OP_APPLY, 0);
+	protect_value(op_apply);
+
+	value_t function = pair_left(expr);
+	value_t compiled_function = compile(function, op_apply);
+	protect_value(compiled_function);
+
+	value_t op_argument = make_list(OP_ARGUMENT, compiled_function, 0);
+	protect_value(op_argument);
+
+	value_t op_save = make_list(OP_SAVE, op_argument, 0);
+	protect_value(op_save);
+
+	value_t result = op_save;
+	if (pair_left(next) != OP_RETURN) {
+		result = make_list(OP_FRAME, next, result, 0);
+	}
+	unprotect_storage(4);
+
+	return result; 
+
 }
 
 value_t compile_sequence(value_t expr_list, value_t next) {

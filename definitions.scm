@@ -49,6 +49,9 @@
   (lambda (args)
     (list(append (list 'lambda '()) args))))
 
+(define-rewriter call/cc
+  (lambda (args)
+    (cons 'call-with-current-continuation args)))
 
 ;; Finally we'll have the binding forms. This is still ugly, but it's the 
 ;; last time. At least this time we have quasiquotation. :)
