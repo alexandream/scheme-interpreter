@@ -4,6 +4,8 @@
 #include "value.h"
 #include "evaluator.h"
 
+void BP_gensym(context_t* context);
+
 void BP_not(context_t* context);
 void BP_and(context_t* context);
 void BP_or(context_t* context);
@@ -19,6 +21,7 @@ void BP_apply(context_t* context);
 
 void BP_symbolP(context_t* context);
 void BP_pairP(context_t* context);
+void BP_unspecifiedP(context_t* context);
 
 void BP_fixnum_PLUS(context_t* context);
 void BP_max_fixnum(context_t* context);

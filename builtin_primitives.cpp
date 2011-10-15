@@ -1,4 +1,6 @@
 #include <error.h>
+#include <string>
+#include <sstream>
 
 #include "value.h"
 #include "builtin_primitives.h"
@@ -11,6 +13,8 @@
 #include "pair.h"
 
 
+static uint64_t gensym_count = 0;
+
 static
 void BUILTIN_RETURN(context_t* context, value_t value) {
 	context->accumulator = value;
@@ -22,7 +26,10 @@ void BUILTIN_RETURN(context_t* context, value_t value) {
 // BOOLEAN PRIMITIVES 
 //
 void BP_not(context_t* context) {
-	BUILTIN_RETURN(context, wrap_boolean(!unwrap_boolean(pair_left(context->value_stack))));
+    value_t param = pair_left(context->value_stack);
+	BUILTIN_RETURN(context, (param == BOOLEAN_FALSE)?
+                                         BOOLEAN_TRUE
+                                       : BOOLEAN_FALSE);
 }
 
 void BP_and(context_t* context) {
@@ -58,7 +65,6 @@ void BP_cons(context_t* context) {
 
 void BP_car(context_t* context) {
 	value_t oper = pair_left(context->value_stack);
-	
 	BUILTIN_RETURN(context, pair_left(oper));
 }
 
@@ -92,8 +98,15 @@ void BP_symbolP(context_t* context) {
 
 void BP_pairP(context_t* context) {
 	value_t param = pair_left(context->value_stack);
-	BUILTIN_RETURN(context, wrap_boolean(is_pair(param)));
+    value_t result = wrap_boolean(is_pair(param));
 
+	BUILTIN_RETURN(context, result);
+
+}
+
+void BP_unspecifiedP(context_t* context) {
+    value_t param = pair_left(context->value_stack);
+    BUILTIN_RETURN(context, wrap_boolean(param == UNSPECIFIED));
 }
 // FIXNUM PRIMITIVES
 //
@@ -116,6 +129,15 @@ void BP_max_fixnum(context_t* context) {
 void BP_min_fixnum(context_t* context) {
 	BUILTIN_RETURN(context, FIXNUM_MIN);
 }
+
+void BP_gensym(context_t* context) {
+	std::ostringstream sstream;
+	sstream << gensym_count++;
+	std::string symbol_string = sstream.str();
+
+	BUILTIN_RETURN(context, make_symbol(symbol_string + "-gensym"));
+}
+
 
 void BP_collect(context_t* context) {
 	collect();
