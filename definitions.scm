@@ -47,7 +47,7 @@
 
 (define-rewriter begin
   (lambda (args)
-    (list(append (list 'lambda '()) args))))
+    `((lambda () ,@args))))
 
 (define-rewriter call/cc
   (lambda (args)
@@ -56,31 +56,44 @@
 ;; Finally we'll have the binding forms. This is still ugly, but it's the 
 ;; last time. At least this time we have quasiquotation. :)
 (define-rewriter let
-  (lambda (args)
-    ((lambda (first rest)
-       (if (symbol? first)
-         ((lambda (binds body)
-            (list 'letrec 
-                  (list (list first (append (list 'lambda (map car binds)) body)))
-                  (append (list first) (map (lambda (x) (car (cdr x))) binds)))
- 
-            )
-          (car rest) (cdr rest))
-         ((lambda (binds body) 
-            (append (list (append (list 'lambda (map car binds)) body))
-                    (map (lambda (y) (car (cdr y))) binds)))
-          first rest)))
-     (car args) (cdr args))))
- 
+   (lambda (args)
+     ((lambda (first rest)
+        (if (symbol? first)
+          ((lambda (binds body)
+             `(letrec ((,first (lambda ,(map car binds) ,@body)))
+                (,first ,@(map (lambda (x) (car (cdr x))) binds))))
+           (car rest) (cdr rest))
+          ((lambda (binds body) 
+             `((lambda ,(map car binds) ,@body)
+               ,@(map (lambda (y) (car (cdr y))) binds)))
+           first rest)))
+      (car args) (cdr args))))
 
-(define-rewriter letrec
+(define-rewriter letrec  
+   (lambda (args)
+     (let ((binds (car args))
+           (body (cdr args)))
+       (let ((newbinds (map (lambda (z) (list (car z) #F)) binds))
+             (setters (map (lambda (w) (list 'set!  (car w) (car (cdr w))))
+                           binds)))
+         `(let ,newbinds ,@setters ,@body)))))
+
+(define-rewriter delay
   (lambda (args)
-    (let ((binds (car args))
-          (body (cdr args)))
-      (let ((newbinds (map (lambda (z) (list (car z) #F)) binds))
-            (setters (map (lambda (w) (list 'set!  (car w) (car (cdr w))))
-                          binds)))
-        (append (append (list 'let newbinds) setters) body)))))
+    (let ((memo (gensym))
+          (expression (car args)))
+      `(let ((,memo #U))
+         (lambda ()
+           (if (unspecified? ,memo)
+             (set! ,memo ((lambda () ,expression))))
+           ,memo)))))
+
+
+(define-rewriter force
+  (lambda (args)
+    (list (car args))))
+
+
 
 (define list?
   (lambda (l)
