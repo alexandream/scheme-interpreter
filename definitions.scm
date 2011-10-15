@@ -1,23 +1,57 @@
 (define null? (lambda (x) (eq? '() x)))
 
-(define map (lambda (func list)
-              (if (null? list)
-                '()
-                (cons (func (car list))
-                      (map func (cdr list))))))
-
-
 (define append 
   (lambda (l1 l2)
     (if (null? l1)
       l2
       (cons (car l1) (append (cdr l1) l2)))))
 
+;; Yeap... without the binding forms, using only lambda, this shit is ugly
+;; as hell. Too bad we don't have them yet, right? :)
+(define-rewriter quasiquote
+  (lambda (expr)
+   (((lambda (unquote-splicing? unquote?)   
+       ((lambda (expand-quasiquote)
+          (set! expand-quasiquote 
+            (lambda (expr)
+              (if (not (pair? expr))
+                (list 'quote expr)
+                (if (unquote? expr)
+                  (car (cdr expr))
+                  (if (unquote-splicing? (car expr))
+                    (list 'append (car (cdr (car expr))) 
+                          (expand-quasiquote (cdr expr)))
+                    (list 'cons 
+                          (expand-quasiquote (car expr)) 
+                          (expand-quasiquote (cdr expr))))))))
+          expand-quasiquote) #F))
+     ;; unquote-splicing?
+     (lambda (expr)
+       (if (pair? expr)
+         (eq? 'unquote-splicing (car expr))
+         #F))
+     ;; unquote?
+     (lambda (expr)
+       (if (pair? expr)
+         (eq? 'unquote (car expr))
+         #F)))
+    (car expr))))
+
+
+
+(define map (lambda (func list)
+              (if (null? list)
+                '()
+                (cons (func (car list))
+                      (map func (cdr list))))))
+
 (define-rewriter begin
   (lambda (args)
     (list(append (list 'lambda '()) args))))
 
 
+;; Finally we'll have the binding forms. This is still ugly, but it's the 
+;; last time. At least this time we have quasiquotation. :)
 (define-rewriter let
   (lambda (args)
     ((lambda (first rest)
@@ -66,7 +100,6 @@
     (if (null? l)
       '()
       (append (reverse (cdr l)) (cons (car l) '()) ))))
-
 
 (define filter
   (lambda (f l)
