@@ -22,9 +22,14 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 
 
 {WHITE}               /* Do Nothing */
+;.*                   /* Do Nothing */
 "("                   return TK_LPAREN;
 ")"                   return TK_RPAREN;
 "'"                   return TK_QUOTE;
+"`"                   return TK_QUASIQUOTE;
+",@"                  return TK_UNQUOTE_SPLICING;
+","                   return TK_UNQUOTE;
+
 
 -?{DIGIT}+            return TK_INTEGER;
 
@@ -32,6 +37,8 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 
 #[Ff]                 return TK_BOOLEAN_FALSE; 
 #[Tt]                 return TK_BOOLEAN_TRUE;            
+
+#[Uu]                 return TK_UNSPECIFIED;
 
 <<EOF>>               return TK_EOF;
 .                     return TK_UNKNOWN;

@@ -14,6 +14,12 @@ static
 value_t read_list(void);
 static
 value_t read_quote_shortcut(void);
+static
+value_t read_quasiquote_shortcut(void);
+static
+value_t read_unquote_splicing_shortcut(void);
+static
+value_t read_unquote_shortcut(void);
 
 value_t read(void) {
 	value_t result;
@@ -43,16 +49,32 @@ value_t read(void) {
 			get_token(); // consume TK_QUOTE;
 			result = read_quote_shortcut();
 			break;
+        case TK_QUASIQUOTE:
+            get_token();
+            result = read_quasiquote_shortcut();
+            break;
+        case TK_UNQUOTE_SPLICING:
+            get_token();
+            result = read_unquote_splicing_shortcut();
+            break;
+        case TK_UNQUOTE:
+            get_token();
+            result = read_unquote_shortcut();
+            break;
 		case TK_EOF:
 			get_token(); // consume TK_EOF;
 			result = END_OF_FILE;
 			break;
-		
+	    	
 		case TK_SYMBOL:
 			get_token();
 			result = make_symbol(input.lexeme);
 			break;
-
+        
+        case TK_UNSPECIFIED:
+            get_token();
+            result = UNSPECIFIED;
+            break;
 		default:
 			error(1, 0, "Unknown token with lexeme: %s\n",
 				  input.lexeme.c_str());
@@ -91,3 +113,37 @@ value_t read_quote_shortcut(void) {
 	unprotect_storage(1);
 	return result;
 }
+
+static
+value_t read_quasiquote_shortcut(void) {
+	value_t quasiquote = make_symbol("quasiquote");
+	value_t next = read();
+
+	protect_value(next);
+	value_t result = make_list(quasiquote, next, 0);
+	unprotect_storage(1);
+	return result;
+}
+
+static
+value_t read_unquote_splicing_shortcut(void) {
+	value_t unquote_splicing = make_symbol("unquote-splicing");
+	value_t next = read();
+
+	protect_value(next);
+	value_t result = make_list(unquote_splicing, next, 0);
+	unprotect_storage(1);
+	return result;
+}
+
+static
+value_t read_unquote_shortcut(void) {
+	value_t unquote = make_symbol("unquote");
+	value_t next = read();
+
+	protect_value(next);
+	value_t result = make_list(unquote, next, 0);
+	unprotect_storage(1);
+	return result;
+}
+

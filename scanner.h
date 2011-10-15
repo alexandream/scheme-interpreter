@@ -11,13 +11,18 @@ enum token_types_t {
    TK_LPAREN,
    TK_RPAREN,
    TK_QUOTE, 
+   TK_QUASIQUOTE,
+   TK_UNQUOTE_SPLICING,
+   TK_UNQUOTE,
 
    TK_INTEGER,
    TK_SYMBOL,
    TK_BOOLEAN_FALSE,
    TK_BOOLEAN_TRUE,
+   
+   TK_DOT,
 
-   TK_DOT
+   TK_UNSPECIFIED
 };
 
 struct token_t {
