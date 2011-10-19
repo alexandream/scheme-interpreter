@@ -1,0 +1,43 @@
+
+Tópicos abordados (em nenhuma ordem específica):
+- Macros:
+  - Aceitam funções transformadores escritas em Scheme pelo programador final.
+
+- O Compilador:
+  - Utiliza as macros - Estas tornam a compilação "customizável".
+  - Realiza Tail Call Elimination.
+  - O resultado é representado como um grafo (cada instrução recebe como
+    parâmetro o próximo trecho de código executar).
+  - Transformações posteriores para outras máquinas é relativamente simples.
+
+- O Interpretador:
+  - Estrutura baseada na máquina virtual SECD.
+  - Instruções para criação de closures que capturam o contexto em que foram
+    definidas.
+  - Instruções para a criação de continuations que capturam o estado da máquina
+    quando foram definidas.
+  - É possível voltar ao estado descrito por uma continuation anterior, com
+    duração ilimitada.
+
+- Gerência de memória:
+  - Algoritmo Mark & Sweep simples.
+  - Objetos de tamanho único.
+  - Alguns tipos possuem finalizadores para liberar recursos quando são
+    coletados.
+  - O algoritmo de marcação possue raízes na máquina virtual e no sistema de
+    macros.
+  - Todas as outras operações do interpretador são feitas sobre elementos que
+    são gerenciados pelo garbage collector.
+
+
+Outline preliminar da monografia:
+
+- Visão geral de Scheme e suas funcionalidades menos comuns em outras
+  linguagens.
+- Visão geral da estratégia utilizada para implementação:
+  - Descrição das fases e camadas do interpretador.
+- Descrição detalhada do modelo de gerência de memória utilizado.
+- Descrição da máquina virtual, seus registradores e suas instruções.
+- Descrição do processo de compilação e sua interação com o sistema de macros.
+
+  
