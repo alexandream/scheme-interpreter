@@ -1,4 +1,24 @@
 (define null? (lambda (x) (eq? '() x)))
+;;;
+;;; Fixnum relational operators.
+;;;
+(define >
+  (lambda (a1 a2)
+    (< a2 a1)))
+
+(define >=
+  (lambda (a1 a2)
+    (not (< a1 a2))))
+
+(define <=
+  (lambda (a1 a2)
+    (not (< a2 a1))))
+
+(define =
+  (lambda (a1 a2)
+    (if (not (< a1 a2))
+      (not (< a2 a1))
+      #F)))
 
 (define append 
   (lambda (l1 l2)
