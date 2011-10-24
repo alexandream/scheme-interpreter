@@ -133,7 +133,7 @@
     (letrec ((aux-length (lambda (lst n)
                            (if (null? lst)
                              n
-                             (aux-length (cdr lst) (fixnum+ n 1))))))
+                             (aux-length (cdr lst) (+ n 1))))))
       (aux-length l 0))))
 
 (define reverse
@@ -151,3 +151,52 @@
         (if (f head)
           (cons head (filter f tail))
           (filter f tail))))))
+
+(define list-tail
+  (lambda (x k)
+    (if (= k 0)
+      x
+      (list-tail (cdr x) (- k 1)))))
+
+(define dynamic-wind #F)
+(define call-with-current-continuation #F)
+(define call/cc #F)
+(let ((winders '()))
+  (letrec ((common-tail (lambda (x y)
+                          (let ((lx (length x)) (ly (length y)))
+                            (let loop ((x (if (> lx ly) (list-tail x (- lx ly)) x))
+                                       (y (if (> ly lx) (list-tail y (- lx ly)) y)))
+                              (if (eq? x y)
+                                x
+                                (loop (cdr x) (cdr y)))))))
+           (do-wind (lambda (new)
+                      (let ((tail (common-tail new winders)))
+                        (let f ((l winders))
+                          (if (not (eq? l tail))
+                            (begin
+                              (set! winders (cdr l))
+                              ((cdr (car l)))
+                              (f (cdr l)))))
+                        (let f ((l new))
+                          (if (not (eq? l tail))
+                            (begin
+                              (f (cdr l))
+                              ((car (car l)))
+                              (set! winders l))))))))
+  (set! call/cc
+    (lambda (f)
+      ($CALL-CC (lambda (k)
+           (f (let ((save winders))
+                (lambda (x)
+                  (if (not (eq? save winders)) (do-wind save))
+                  (k x))))))))
+
+  (set! call-with-current-continuation call/cc)
+  (set! dynamic-wind
+    (lambda (in body out)
+      (in)
+      (set! winders (cons (cons in out) winders))
+      (let ((ans (body)))
+        (set! winders (cdr winders))
+        (out)
+        ans)))))
