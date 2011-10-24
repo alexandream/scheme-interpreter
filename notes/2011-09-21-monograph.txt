@@ -1,5 +1,4 @@
-
-Tópicos abordados (em nenhuma ordem específica):
+Informações gerais do interpretador (em nenhuma ordem específica):
 - Macros:
   - Aceitam funções transformadores escritas em Scheme pelo programador final.
 
