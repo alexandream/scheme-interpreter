@@ -26,6 +26,11 @@
       l2
       (cons (car l1) (append (cdr l1) l2)))))
 
+(define map (lambda (func list)
+              (if (null? list)
+                '()
+                (cons (func (car list))
+                      (map func (cdr list))))))
 ;; Yeap... without the binding forms, using only lambda, this shit is ugly
 ;; as hell. Too bad we don't have them yet, right? :)
 (define-rewriter quasiquote
@@ -58,20 +63,10 @@
     (car expr))))
 
 
-
-(define map (lambda (func list)
-              (if (null? list)
-                '()
-                (cons (func (car list))
-                      (map func (cdr list))))))
-
 (define-rewriter begin
   (lambda (args)
     `((lambda () ,@args))))
 
-(define-rewriter call/cc
-  (lambda (args)
-    (cons 'call-with-current-continuation args)))
 
 ;; Finally we'll have the binding forms. This is still ugly, but it's the 
 ;; last time. At least this time we have quasiquotation. :)
@@ -88,6 +83,16 @@
                ,@(map (lambda (y) (car (cdr y))) binds)))
            first rest)))
       (car args) (cdr args))))
+
+(define-rewriter let* 
+   (lambda (args)
+     (let ((bindings (car args))
+           (body (cdr args)))
+       (if (null? bindings)
+         `(let () ,@body)
+         (let ((first-bind (car bindings)))
+           `(let ((,(car first-bind) ,(car (cdr first-bind))))
+              (let* ,(cdr bindings) ,@body)))))))
 
 (define-rewriter letrec  
    (lambda (args)
@@ -109,9 +114,9 @@
            ,memo)))))
 
 
-(define-rewriter force
-  (lambda (args)
-    (list (car args))))
+(define force
+  (lambda (promise)
+    (promise)))
 
 
 
