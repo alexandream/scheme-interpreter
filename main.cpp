@@ -26,6 +26,7 @@ value_t GLOBAL_ENVIRONMENT;
 primitive_descriptor_t primitives[] = {
 	// UTILS
 	{ "gensym", BP_gensym, 0, 0 },
+    { "macro-expand", BP_macro_expand, 1, 1},
 	// BOOLEANS
 	{ "and",   BP_and,   2, 2 },
 	{ "or",    BP_or,    2, 2 },
@@ -42,12 +43,15 @@ primitive_descriptor_t primitives[] = {
 	// CONTROL
 	{ "apply", BP_apply, 1, ARITY_ANY },
 	// FIXNUM
-	{ "fixnum+", BP_fixnum_PLUS, 0, ARITY_ANY },
+	{ "+", BP_fixnum_PLUS, 0, ARITY_ANY },
+	{ "-", BP_fixnum_MINUS, 0, ARITY_ANY },
+	{ "<", BP_fixnum_LTHAN, 2, 2 },
 	
 	// TEST
 	{ "collect",    BP_collect,    0, 0 },
 	{ "min_fixnum", BP_min_fixnum, 0, 0 },
 	{ "max_fixnum", BP_max_fixnum, 0, 0 },
+	{ "echo",    BP_echo, 1, 2 },
 
 	// TYPE PREDICATE
 	{ "symbol?",      BP_symbolP,      1, 1 },
