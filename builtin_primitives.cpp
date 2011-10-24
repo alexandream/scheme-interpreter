@@ -120,6 +120,28 @@ void BP_fixnum_PLUS(context_t* context) {
 	}
 	BUILTIN_RETURN(context, wrap_fixnum(result));
 }
+void BP_fixnum_MINUS(context_t* context) {
+	int64_t result = 0;
+	int32_t nargs = context->value_stack_size;
+	value_t args = context->value_stack;
+	if (nargs > 0) {
+		result = unwrap_fixnum(pair_left(args));
+		args = pair_right(args);
+		nargs--;
+	}
+	for (int i = 0; i < nargs; i++) {
+		result -= unwrap_fixnum(pair_left(args));
+		args = pair_right(args);
+	}
+	BUILTIN_RETURN(context, wrap_fixnum(result));
+}
+void BP_fixnum_LTHAN(context_t* context) {
+	value_t args = context->value_stack;
+	int32_t arg1 = unwrap_fixnum(pair_left(args));
+	int32_t arg2 = unwrap_fixnum(pair_left(pair_right(args)));
+
+	BUILTIN_RETURN(context, wrap_boolean(arg1 < arg2));
+}
 // TEST PRIMITIVES
 //
 void BP_max_fixnum(context_t* context) {
