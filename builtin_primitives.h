@@ -5,6 +5,7 @@
 #include "evaluator.h"
 
 void BP_gensym(context_t* context);
+void BP_macro_expand(context_t* context);
 
 void BP_not(context_t* context);
 void BP_and(context_t* context);
@@ -31,4 +32,5 @@ void BP_fixnum_LTHAN(context_t* context);
 void BP_max_fixnum(context_t* context);
 void BP_min_fixnum(context_t* context);
 void BP_collect(context_t* context);
+void BP_echo(context_t* context);
 #endif

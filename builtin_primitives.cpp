@@ -5,9 +5,11 @@
 #include "value.h"
 #include "builtin_primitives.h"
 #include "garbage_collector.h"
+#include "macro.h"
 #include "compiler.h"
 #include "primitive.h"
 #include "fixnum.h"
+#include "printer.h"
 #include "symbol.h"
 #include "special.h"
 #include "pair.h"
@@ -160,8 +162,20 @@ void BP_gensym(context_t* context) {
 	BUILTIN_RETURN(context, make_symbol(symbol_string + "-gensym"));
 }
 
+void BP_macro_expand(context_t* context) {
+    value_t arg = pair_left(context->value_stack);
+    BUILTIN_RETURN(context, macro_expand(arg));
+}
 
 void BP_collect(context_t* context) {
 	collect();
 	BUILTIN_RETURN(context, UNSPECIFIED);
 }
+
+
+void BP_echo(context_t* context) {
+	value_t arg = pair_left(context->value_stack);
+	println(arg);
+	BUILTIN_RETURN(context, UNSPECIFIED);
+}
+
