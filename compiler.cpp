@@ -61,7 +61,7 @@ value_t compile_form(value_t expr, value_t next) {
 		SYM_LAMBDA = make_symbol("lambda");
 		SYM_SET1 = make_symbol("set!");
 		SYM_DEFMACRO = make_symbol("define-rewriter");
-		SYM_CALLCC = make_symbol("call-with-current-continuation");
+		SYM_CALLCC = make_symbol("$CALL-CC");
 	}
 	
 	value_t head = pair_left(expr);

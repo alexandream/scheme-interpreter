@@ -2,6 +2,9 @@
 
 #include <error.h>
 #include <assert.h>
+#include <stdio.h>
+
+#include "printer.h"
 
 #include "evaluator.h"
 #include "environment.h"
@@ -26,14 +29,14 @@ context_t::context_t(value_t environment) {
 	this->frame_stack = EMPTY_LIST;
 }
 
-//void context_t::show(void) {
-//	println(this->environment, "Environment: ");
-//	println(this->next_expr,   "Next  Expr.: ");
-//	println(this->accumulator, "Accumulator: ");
-//	println(this->value_stack, "Value Stack: ");
-//	println(this->frame_stack, "Frame Stack: ");
-//}
-//
+void context_t::show(void) {
+	println(this->environment, "Environment: ");
+	println(this->next_expr,   "Next  Expr.: ");
+	println(this->accumulator, "Accumulator: ");
+	println(this->value_stack, "Value Stack: ");
+	println(this->frame_stack, "Frame Stack: ");
+}
+
 context_t* make_context(value_t environment) {
 	context_t* result = new context_t(environment);
 	context_list.push_back(result);
@@ -252,6 +255,9 @@ value_t evaluate(context_t* context) {
 			evaluate_op_reify(context, args);
 		}
 		else if (op_code == OP_FRAME) {
+            //printf("Evaluating OP_FRAME: %LX with next: %LX\n",
+            //       context->next_expr,
+            //       pair_left(args));    
 			evaluate_op_frame(context, args);
 		}
 		else if (op_code == OP_APPLY) {

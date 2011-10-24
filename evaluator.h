@@ -15,7 +15,7 @@ struct context_t {
 
 	value_t frame_stack;
 	context_t(value_t environment);
-//	void show(void);
+	void show(void);
 };
 
 typedef std::list<context_t*> context_list_t;

@@ -78,9 +78,7 @@ value_t expansion(value_t expression) {
             args,
             rewriter;
     while (is_macro_expansion(expression, &name, &args, &rewriter)) {
-        //println(expression, "Expanding:");
         expression = macro_expand_1(rewriter, args);
-        //println(expression, "       To:");
     }
     return expression;
 
@@ -112,7 +110,6 @@ value_t macro_expand_1(value_t rewriter, value_t args) {
     context->next_expr = frame;
 
     unprotect_storage(5);
-    
     evaluate(context);
 	value_t result = context->accumulator;
 	dispose_context(context);
