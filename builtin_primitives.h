@@ -22,6 +22,7 @@ void BP_apply(context_t* context);
 
 void BP_symbolP(context_t* context);
 void BP_pairP(context_t* context);
+void BP_booleanP(context_t* context);
 void BP_unspecifiedP(context_t* context);
 
 void BP_fixnum_PLUS(context_t* context);

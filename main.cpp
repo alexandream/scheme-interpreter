@@ -28,8 +28,6 @@ primitive_descriptor_t primitives[] = {
 	{ "gensym", BP_gensym, 0, 0 },
     { "macro-expand", BP_macro_expand, 1, 1},
 	// BOOLEANS
-	{ "and",   BP_and,   2, 2 },
-	{ "or",    BP_or,    2, 2 },
 	{ "not",   BP_not,   1, 1 },
 	// EQUIVALENCE
 	{ "eq?",   BP_eqP,   2, 2 },
@@ -56,6 +54,7 @@ primitive_descriptor_t primitives[] = {
 	// TYPE PREDICATE
 	{ "symbol?",      BP_symbolP,      1, 1 },
 	{ "pair?",        BP_pairP,        1, 1 },
+	{ "boolean?",     BP_booleanP,     1, 1 },
 	{ "unspecified?", BP_unspecifiedP, 1, 1 },
 	// TOMBSTONE
 	{ "",      0,        0, 0 }

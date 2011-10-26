@@ -106,6 +106,12 @@ void BP_pairP(context_t* context) {
 
 }
 
+void BP_booleanP(context_t* context) {
+	value_t param = pair_left(context->value_stack);
+	value_t result = wrap_boolean(is_boolean(param));
+	BUILTIN_RETURN(context, result);
+}
+
 void BP_unspecifiedP(context_t* context) {
     value_t param = pair_left(context->value_stack);
     BUILTIN_RETURN(context, wrap_boolean(param == UNSPECIFIED));
