@@ -155,7 +155,6 @@ static inline
 void evaluate_op_lookup(context_t* context, value_t args) {
 	value_t variable = pair_left(args);
 	value_t next = pair_left(pair_right(args));
-
 	context->next_expr = next;
 	context->accumulator = environment_get(context->environment, variable);
 }

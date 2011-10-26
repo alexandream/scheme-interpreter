@@ -14,13 +14,8 @@
 const
 uint8_t FUNCTION_TYPE_MASK = 0x04;
 
-static inline
-bool is_all_symbols(value_t params);
 
 value_t make_function(value_t env, value_t params, value_t body) {
-	if (!is_all_symbols(params)) {
-		error(1, 0, "Formal Parameter lists can only be composed of proper lists of symbols.");
-	}
 	protect_value(params);
 	protect_value(body);
 	protect_value(env);
@@ -64,14 +59,3 @@ value_t function_apply(value_t func, value_t param_list, value_t env) {
 }
 */
 
-static inline
-bool is_all_symbols(value_t arg_list) {
-	value_t iter = arg_list;
-	while (is_pair(iter)) {
-		if (!is_symbol(pair_left(iter))) {
-			return false;
-		}
-		iter = pair_right(iter);
-	}
-	return iter == EMPTY_LIST;
-}

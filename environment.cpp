@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #include <string>
 #include <sstream>
 #include <error.h>
@@ -48,10 +49,16 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 		names = pair_right(names);
 		values = pair_right(values);
 	}
-
-	if (is_pair(names) || is_pair(values)) {
-		error(1, 0, "Number of variables and values to make new "
-				    "environment don't match.");
+	if (is_symbol(names)) {
+		(*bindings)[names] = values;
+	}
+	else if (is_pair(values)) {
+		error(1, 0, "Received more arguments than parameters to make"
+				"new environment");
+	}
+	else if (is_pair(names)) {
+		error(1, 0, "Received more parameters than arguments to make new"
+		            "environment");
 	}
 	value_t result = wrap_pointer(storage);
 	//printf("Making environment at 0x%Lx\n", result);
