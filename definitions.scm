@@ -43,6 +43,21 @@
       `($DEFINE ,(car (car args))
                 (lambda ,(cdr (car args)) ,@(cdr args))))))
 
+(define-rewriter and
+  (lambda (args)
+    (if (null? args)
+      #T
+      `(if ,(car args)
+         (and ,@(cdr args))
+         #F))))
+
+(define-rewriter or
+  (lambda (args)
+    (if (null? args)
+      #F
+      `(if ,(car args)
+         #T
+         (or ,@(cdr args))))))
 
 (define-rewriter begin
   (lambda (args)
