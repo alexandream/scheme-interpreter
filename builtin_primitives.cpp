@@ -76,6 +76,18 @@ void BP_cdr(context_t* context) {
 	BUILTIN_RETURN(context, pair_right(oper));
 }
 
+void BP_set_carB(context_t* context) {
+	value_t pair = pair_left(context->value_stack);
+	value_t value = pair_left(pair_right(context->value_stack));
+	pair_set_left(pair, value);
+	BUILTIN_RETURN(context, UNSPECIFIED);
+}
+void BP_set_cdrB(context_t* context) {
+	value_t pair = pair_left(context->value_stack);
+	value_t value = pair_left(pair_right(context->value_stack));
+	pair_set_right(pair, value);
+	BUILTIN_RETURN(context, UNSPECIFIED);
+}
 void BP_list(context_t* context) {
 	BUILTIN_RETURN(context, context->value_stack);
 }

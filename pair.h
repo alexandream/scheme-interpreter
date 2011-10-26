@@ -34,6 +34,11 @@ value_t pair_right(value_t pair) {
 }
 
 static inline
+void pair_set_left(value_t pair, value_t val) {
+	((double_storage_t*) unwrap_pointer(pair))->first_slot = val;
+}
+
+static inline
 void pair_set_right(value_t pair, value_t val) {
 	((double_storage_t*) unwrap_pointer(pair))->second_slot = val;
 }

@@ -33,10 +33,12 @@ primitive_descriptor_t primitives[] = {
 	{ "eq?",   BP_eqP,   2, 2 },
 	{ "eqv?",  BP_eqP,   2, 2 },
 	// PAIRS
-	{ "cons",  BP_cons,  2, 2 },
-	{ "car",   BP_car,   1, 1 },
-	{ "cdr",   BP_cdr,   1, 1 },
-	{ "list",  BP_list,  0, ARITY_ANY },
+	{ "cons",     BP_cons,     2, 2 },
+	{ "car",      BP_car,      1, 1 },
+	{ "cdr",      BP_cdr,      1, 1 },
+	{ "set-car!", BP_set_carB, 2, 2 },
+	{ "set-cdr!", BP_set_cdrB, 2, 2 },
+	{ "list",     BP_list,     0, ARITY_ANY },
 	
 	// CONTROL
 	{ "apply", BP_apply, 1, ARITY_ANY },

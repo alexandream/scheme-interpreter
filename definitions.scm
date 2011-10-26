@@ -145,6 +145,14 @@
         #T
         #F)))
 
+(define (make-list n . xs)
+  (letrec ((make-list-aux (lambda (n elem)
+                            (if (= n 0)
+                              '()
+                              (cons elem (make-list-aux (- n 1) elem))))))
+    (make-list-aux n (if (pair? xs) (car xs) #U))))
+
+
 (define (length l)
     (letrec ((aux-length (lambda (lst n)
                            (if (null? lst)
