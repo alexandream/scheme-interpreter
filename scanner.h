@@ -16,6 +16,7 @@ enum token_types_t {
    TK_UNQUOTE,
 
    TK_INTEGER,
+   TK_STRING,
    TK_SYMBOL,
    TK_BOOLEAN_FALSE,
    TK_BOOLEAN_TRUE,

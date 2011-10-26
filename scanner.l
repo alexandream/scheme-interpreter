@@ -29,7 +29,7 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 "`"                   return TK_QUASIQUOTE;
 ",@"                  return TK_UNQUOTE_SPLICING;
 ","                   return TK_UNQUOTE;
-
+\"(\\.|[^"])*\"       return TK_STRING;
 
 -?{DIGIT}+            return TK_INTEGER;
 

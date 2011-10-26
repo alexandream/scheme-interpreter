@@ -9,6 +9,7 @@
 #include "fixnum.h"
 #include "special.h"
 #include "symbol.h"
+#include "string.h"
 
 static
 value_t read_list(void);
@@ -65,7 +66,10 @@ value_t read(void) {
 			get_token(); // consume TK_EOF;
 			result = END_OF_FILE;
 			break;
-	    	
+	    case TK_STRING:
+			get_token();
+			result = string_preprocess(input.lexeme);
+			break;
 		case TK_SYMBOL:
 			get_token();
 			result = make_symbol(input.lexeme);

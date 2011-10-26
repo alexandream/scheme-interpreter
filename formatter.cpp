@@ -10,6 +10,7 @@
 #include "environment.h"
 #include "fixnum.h"
 #include "symbol.h"
+#include "string.h"
 #include "pair.h"
 #include "primitive.h"
 #include "function.h"
@@ -36,6 +37,9 @@ std::string format(value_t value) {
 	else if (is_symbol(value)) {
 		result = symbol_format(value);
 	}
+    else if (is_string(value)) {
+        result = string_format(value);
+    }
 	else if (is_environment(value)) {
 		result = environment_format(value);
 	}
