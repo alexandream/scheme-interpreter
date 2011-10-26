@@ -57,7 +57,7 @@ value_t compile_form(value_t expr, value_t next) {
 	if (SYM_QUOTE == UNSPECIFIED) {
 		SYM_QUOTE = make_symbol("quote");
 		SYM_IF = make_symbol("if");
-		SYM_DEFINE = make_symbol("define");
+		SYM_DEFINE = make_symbol("$DEFINE");
 		SYM_LAMBDA = make_symbol("lambda");
 		SYM_SET1 = make_symbol("set!");
 		SYM_DEFMACRO = make_symbol("define-rewriter");

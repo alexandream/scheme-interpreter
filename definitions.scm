@@ -1,36 +1,10 @@
-(define null? (lambda (x) (eq? '() x)))
-;;;
-;;; Fixnum relational operators.
-;;;
-(define >
-  (lambda (a1 a2)
-    (< a2 a1)))
+($DEFINE null? (lambda (x) (eq? '() x)))
 
-(define >=
-  (lambda (a1 a2)
-    (not (< a1 a2))))
-
-(define <=
-  (lambda (a1 a2)
-    (not (< a2 a1))))
-
-(define =
-  (lambda (a1 a2)
-    (if (not (< a1 a2))
-      (not (< a2 a1))
-      #F)))
-
-(define append 
+($DEFINE append 
   (lambda (l1 l2)
     (if (null? l1)
       l2
       (cons (car l1) (append (cdr l1) l2)))))
-
-(define map (lambda (func list)
-              (if (null? list)
-                '()
-                (cons (func (car list))
-                      (map func (cdr list))))))
 ;; Yeap... without the binding forms, using only lambda, this shit is ugly
 ;; as hell. Too bad we don't have them yet, right? :)
 (define-rewriter quasiquote
@@ -62,11 +36,23 @@
          #F)))
     (car expr))))
 
+(define-rewriter define
+  (lambda (args)
+    (if (symbol? (car args))
+      `($DEFINE ,@args)
+      `($DEFINE ,(car (car args))
+                (lambda ,(cdr (car args)) ,@(cdr args))))))
+
 
 (define-rewriter begin
   (lambda (args)
     `((lambda () ,@args))))
 
+(define (map func list)
+              (if (null? list)
+                '()
+                (cons (func (car list))
+                      (map func (cdr list)))))
 
 ;; Finally we'll have the binding forms. This is still ugly, but it's the 
 ;; last time. At least this time we have quasiquotation. :)
@@ -113,51 +99,66 @@
              (set! ,memo ((lambda () ,expression))))
            ,memo)))))
 
+(define (force promise)
+    (promise))
 
-(define force
-  (lambda (promise)
-    (promise)))
+;;;
+;;; Fixnum relational operators.
+;;;
+(define (> a1 a2)
+  (< a2 a1))
+
+(define (>= a1 a2)
+    (not (< a1 a2)))
+
+(define (<= a1 a2)
+    (not (< a2 a1)))
+
+(define (= a1 a2)
+    (if (not (< a1 a2))
+      (not (< a2 a1))
+      #F))
 
 
-
-(define list?
-  (lambda (l)
+;;;
+;;; Auxiliary list operations.
+;;;
+(define (list? l)
     (if (pair? l)
       (list? (cdr l))
       (if (null? l)
         #T
-        #F))))
+        #F)))
 
-(define length
-  (lambda (l)
+(define (length l)
     (letrec ((aux-length (lambda (lst n)
                            (if (null? lst)
                              n
                              (aux-length (cdr lst) (+ n 1))))))
-      (aux-length l 0))))
+      (aux-length l 0)))
 
-(define reverse
-  (lambda (l)
+(define (reverse l)
     (if (null? l)
       '()
-      (append (reverse (cdr l)) (cons (car l) '()) ))))
+      (append (reverse (cdr l)) (cons (car l) '()) )))
 
-(define filter
-  (lambda (f l)
+(define (filter f l)
     (if (null? l)
       '()
       (let ((head (car l))
             (tail (cdr l)))
         (if (f head)
           (cons head (filter f tail))
-          (filter f tail))))))
+          (filter f tail)))))
 
-(define list-tail
-  (lambda (x k)
+(define (list-tail x k)
     (if (= k 0)
       x
-      (list-tail (cdr x) (- k 1)))))
+      (list-tail (cdr x) (- k 1))))
 
+;;;
+;;; Dynamic wind.
+;;;
 (define dynamic-wind #F)
 (define call-with-current-continuation #F)
 (define call/cc #F)
