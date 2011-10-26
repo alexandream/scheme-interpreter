@@ -99,10 +99,22 @@ value_t read_list(void) {
 		// Don't consume anything. read() will take care of it.
 		value_t x = read();
 		protect_value(x);
-		value_t y = read_list();
-		protect_value(y);
-		result = make_pair(x, y);
-		unprotect_storage(2);
+		next = peek_token();
+		if (next.type == TK_DOT) {
+			get_token();
+			value_t xs = read();
+			protect_value(xs);
+			next = get_token();
+			assert(next.type == TK_RPAREN);
+			result = make_pair(x, xs);
+			unprotect_storage(2);
+		}
+		else {
+			value_t y = read_list();
+			protect_value(y);
+			result = make_pair(x, y);
+			unprotect_storage(2);
+		}
 	}
 	return result;
 }

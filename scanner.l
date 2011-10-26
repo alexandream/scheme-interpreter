@@ -23,6 +23,7 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 
 {WHITE}               /* Do Nothing */
 ;.*                   /* Do Nothing */
+"."                   return TK_DOT;
 "("                   return TK_LPAREN;
 ")"                   return TK_RPAREN;
 "'"                   return TK_QUOTE;
