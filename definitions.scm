@@ -216,3 +216,46 @@
         (set! winders (cdr winders))
         (out)
         ans)))))
+
+;;;
+;;; Parameters
+;;;
+(define (make-parameter value . rest)
+  (let* ((converter (if (null? rest)
+                      (lambda (x) x)
+                      (car rest)))
+         (value     (converter value)))
+    (lambda args
+      (if (null? args)
+        value
+        (set! value (converter (car args)))))))
+
+(define-rewriter parameterize 
+  (lambda (args)
+    (let ((info (map (lambda (x) (list (car x)
+                                     (gensym)
+                                     (car (cdr x))))
+                   (car args)))
+        (body (cdr args)))
+    (let ((binds  (map (lambda (x) `(,(car (cdr x)) (,(car x)))) info))
+          (sets   (map (lambda (x) `(,(car x) ,(car (cdr (cdr x))))) info))
+          (resets (map (lambda (x) `(,(car x) ,(car (cdr x)))) info)))
+      `(let ,binds
+         (dynamic-wind
+           (lambda () ,@sets)
+           (lambda () ,@body)
+           (lambda () ,@resets)))))))
+
+(define *current-exception-handlers* (make-parameter (list #F)))
+
+(define (with-exception-handler handler thunk)
+    (with-exception-handlers (cons handler (*current-exception-handlers*))
+                             thunk))
+
+(define (with-exception-handlers handler-list thunk)
+  (parameterize ((*current-exception-handlers* handler-list))
+    (thunk)))
+
+
+    
+
