@@ -39,7 +39,7 @@ value_t read(void) {
 			break;
 		case TK_INTEGER:
 			get_token();
-			result = fixnum_make_from_string(input.lexeme);
+			result = fixnum_preprocess(input.lexeme);
 			break;
 		case TK_LPAREN:
 			get_token(); // consume TK_LPAREN;

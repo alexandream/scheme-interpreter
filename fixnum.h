@@ -9,6 +9,7 @@ value_t FIXNUM_MAX,
         FIXNUM_MIN;
 
 value_t fixnum_make_from_string(const std::string& str);
+value_t fixnum_preprocess(const std::string& original_str);
 std::string fixnum_format(value_t value);
 
 static inline

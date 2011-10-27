@@ -11,12 +11,15 @@ static token_t token_buf = { TK_NONE, "" };
 
 DIGIT                 [0-9]
 WHITE                 [ \n\t]+
-
+SIGN				  (\+|-)
 IDENT_INITIAL           [-+a-zA-Z?!$%*&/:<=>^_~]
 IDENT_SUBSEQUENT        {IDENT_INITIAL}|[0-9]
 
 SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
-
+DECNUM                  {SIGN}?{DIGIT}+
+BINNUM                  {SIGN}?[0-1]+
+OCTNUM                  {SIGN}?[0-7]+
+HEXNUM                  {SIGN}?({DIGIT}|[a-fA-F])+
 
 %%
 
@@ -32,7 +35,14 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 ","                   return TK_UNQUOTE;
 \"(\\.|[^"])*\"       return TK_STRING;
 
--?{DIGIT}+            return TK_INTEGER;
+"#d"?"#e"?{DECNUM}    return TK_INTEGER;
+"#e"?"#d"?{DECNUM}    return TK_INTEGER;
+"#x""#e"?{HEXNUM}     return TK_INTEGER;
+"#e""#x"?{HEXNUM}     return TK_INTEGER;
+"#o""#e"?{OCTNUM}     return TK_INTEGER;
+"#e"?"#o"{OCTNUM}     return TK_INTEGER;
+"#b""#e"?{BINNUM}     return TK_INTEGER;
+"#e"?"#b"{BINNUM}     return TK_INTEGER;
 
 {SYMBOL}              return TK_SYMBOL;
 
