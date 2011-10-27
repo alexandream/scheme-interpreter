@@ -117,23 +117,6 @@
 (define (force promise)
     (promise))
 
-;;;
-;;; Fixnum relational operators.
-;;;
-(define (> a1 a2)
-  (< a2 a1))
-
-(define (>= a1 a2)
-    (not (< a1 a2)))
-
-(define (<= a1 a2)
-    (not (< a2 a1)))
-
-(define (= a1 a2)
-    (if (not (< a1 a2))
-      (not (< a2 a1))
-      #F))
-
 
 ;;;
 ;;; Auxiliary list operations.
@@ -178,6 +161,109 @@
     (if (= k 0)
       x
       (list-tail (cdr x) (- k 1))))
+
+
+(define (list-ref x k)
+    (car (list-tail x k)))
+
+(define (list-set! lst n val)
+  (set-car! (list-tail lst n) val))
+
+(define (member obj lst . rest)
+  (let ((compare (if (pair? rest) 
+                   (car rest)
+                   equal?)))
+    (letrec ((member-aux (lambda (obj lst cmp)
+                           (if (null? lst)
+                             #F
+                             (if (cmp (car lst) obj)
+                               lst
+                               (member-aux obj (cdr lst) cmp))))))
+      (member-aux obj lst compare))))
+
+(define (memq obj lst)
+  (member obj lst eq?))
+
+(define (memv obj lst)
+  (member obj lst eqv?))
+
+(define (assoc obj alist . rest)
+  (let ((compare (if (pair? rest)
+                   (car rest)
+                   equal?)))
+    (letrec ((assoc-aux (lambda (obj alist cmp)
+                          (if (null? alist)
+                            #F
+                            (if (cmp (car (car alist)) obj)
+                              (car alist)
+                              (assoc-aux obj (cdr alist) cmp))))))
+      (assoc-aux obj alist compare))))
+
+(define (assq obj alist)
+  (assoc obj alist eq?))
+
+(define (assv obj alist)
+  (assoc obj alist eqv?))
+
+(define (list-copy lst)
+  (if (null? lst)
+    '()
+    (cons (car lst) (list-copy (cdr lst)))))
+
+;;;
+;;; Numeric functions.
+;;;
+(define (identity x) x)
+(define number? integer?)
+(define rational? integer?)
+(define complex? integer?)
+(define real? integer?)
+(define exact? integer?)
+(define (inexact? x) #F)
+(define exact-integer? integer?)
+(define finite? integer?)
+(define (infinite? x) #F)
+(define (nan? x) #F)
+
+(define (zero? x) (= x 0))
+(define (positive? x) (> x 0))
+(define (negative? x) (< x 0))
+
+(define numerator identity)
+(define (denominator x) 1)
+(define floor identity)
+(define ceiling identity)
+(define truncate identity)
+(define round identity)
+(define (rationalize x y) x)   
+
+(define max #U)
+(define min #U)
+(let ((aux-min-max (lambda (x xs f)
+                     (let loop ((x x) (xs xs))
+                       (if (null? xs)
+                         x
+                         (let ((y (car xs)))
+                           (loop (if (f x y) 
+                                   x 
+                                   y)
+                                 (cdr xs))))))))
+  (set! max (lambda (x . xs)
+              (aux-min-max x xs >)))
+  (set! min (lambda (x . xs)
+              (aux-min-max x xs <))))
+
+(define (even? x)
+  (zero? (modulo x 2)))
+
+(define (odd? x)
+  (not (even? x)))
+
+
+(define real-part identity)
+(define (imag-part x) 0)
+(define magnitute identity)
+(define (angle x) 0)
 
 ;;;
 ;;; Dynamic wind.
@@ -254,6 +340,9 @@
            (lambda () ,@body)
            (lambda () ,@resets)))))))
 
+;;;
+;;; Exception Handling System
+;;;
 (define *current-exception-handlers* (make-parameter (list #F)))
 
 (define (with-exception-handler handler thunk)
@@ -263,6 +352,22 @@
 (define (with-exception-handlers handler-list thunk)
   (parameterize ((*current-exception-handlers* handler-list))
     (thunk)))
+
+(define (error message . objs)
+  ;; TODO: Implement error.
+  #U)
+
+(define (raise obj)
+  (let ((handlers (*current-exception-handlers*)))
+    (with-exception-handlers (cdr handlers)
+      (lambda ()
+        ((car handlers) obj)
+        (error "Exception Handler should not return, but it did"
+               (car handlers)
+               obj)))))
+
+
+        
 
 
     

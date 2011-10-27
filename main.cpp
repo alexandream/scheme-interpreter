@@ -30,8 +30,9 @@ primitive_descriptor_t primitives[] = {
 	// BOOLEANS
 	{ "not",   BP_not,   1, 1 },
 	// EQUIVALENCE
-	{ "eq?",   BP_eqP,   2, 2 },
-	{ "eqv?",  BP_eqP,   2, 2 },
+	{ "eq?",    BP_eqP,   2, 2 },
+	{ "eqv?",   BP_eqP,   2, 2 },
+    { "equal?", BP_eqP,   2, 2 },
 	// PAIRS
 	{ "cons",     BP_cons,     2, 2 },
 	{ "car",      BP_car,      1, 1 },
@@ -43,9 +44,16 @@ primitive_descriptor_t primitives[] = {
 	// CONTROL
 	{ "apply", BP_apply, 1, ARITY_ANY },
 	// FIXNUM
-	{ "+", BP_fixnum_PLUS, 0, ARITY_ANY },
-	{ "-", BP_fixnum_MINUS, 0, ARITY_ANY },
-	{ "<", BP_fixnum_LTHAN, 2, 2 },
+	{ "+",       BP_fixnum_PLUS,  0, ARITY_ANY },
+	{ "*",       BP_fixnum_MUL,   0, ARITY_ANY },
+	{ "-",       BP_fixnum_MINUS, 1, ARITY_ANY },
+	{ "/",       BP_fixnum_DIV,   1, ARITY_ANY },
+	{ "modulo",  BP_fixnum_MOD,   2, 2 },
+	{ "<",       BP_fixnum_LT,    0, ARITY_ANY },
+	{ ">",       BP_fixnum_GT,    0, ARITY_ANY },
+	{ "<=",      BP_fixnum_LTE,   0, ARITY_ANY },
+	{ ">=",      BP_fixnum_GTE,   0, ARITY_ANY },
+	{ "=",       BP_fixnum_EQ,    0, ARITY_ANY },
 	
 	// TEST
 	{ "collect",    BP_collect,    0, 0 },
@@ -58,6 +66,7 @@ primitive_descriptor_t primitives[] = {
 	{ "pair?",        BP_pairP,        1, 1 },
 	{ "boolean?",     BP_booleanP,     1, 1 },
 	{ "unspecified?", BP_unspecifiedP, 1, 1 },
+	{ "integer?",     BP_fixnumP,      1, 1 },
 	// TOMBSTONE
 	{ "",      0,        0, 0 }
 };

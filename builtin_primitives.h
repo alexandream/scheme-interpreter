@@ -26,10 +26,19 @@ void BP_symbolP(context_t* context);
 void BP_pairP(context_t* context);
 void BP_booleanP(context_t* context);
 void BP_unspecifiedP(context_t* context);
+void BP_fixnumP(context_t* context);
 
 void BP_fixnum_PLUS(context_t* context);
 void BP_fixnum_MINUS(context_t* context);
-void BP_fixnum_LTHAN(context_t* context);
+void BP_fixnum_MUL(context_t* context);
+void BP_fixnum_DIV(context_t* context);
+void BP_fixnum_MOD(context_t* context);
+
+void BP_fixnum_LT(context_t* context);
+void BP_fixnum_GT(context_t* context);
+void BP_fixnum_LTE(context_t* context);
+void BP_fixnum_GTE(context_t* context);
+void BP_fixnum_EQ(context_t* context);
 
 
 void BP_max_fixnum(context_t* context);
