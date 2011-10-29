@@ -10,6 +10,8 @@ static token_t token_buf = { TK_NONE, "" };
 
 
 DIGIT                 [0-9]
+HEXDIGIT              ({DIGIT}|[a-fA-F])
+
 WHITE                 [ \n\t]+
 SIGN				  (\+|-)
 IDENT_INITIAL           [-+a-zA-Z?!$%*&/:<=>^_~]
@@ -19,8 +21,8 @@ SYMBOL                  {IDENT_INITIAL}{IDENT_SUBSEQUENT}*
 DECNUM                  {SIGN}?{DIGIT}+
 BINNUM                  {SIGN}?[0-1]+
 OCTNUM                  {SIGN}?[0-7]+
-HEXNUM                  {SIGN}?({DIGIT}|[a-fA-F])+
-
+HEXNUM                  {SIGN}?{HEXDIGIT}+
+CHARACTER               [-0-9A-Za-z<>~{}`!@%&*()+=_,.:/'#$ ^]|\\|\"|\?|;|\[|\]
 %%
 
 
@@ -45,6 +47,10 @@ HEXNUM                  {SIGN}?({DIGIT}|[a-fA-F])+
 "#e"?"#b"{BINNUM}     return TK_INTEGER;
 
 {SYMBOL}              return TK_SYMBOL;
+
+"#\\"[a-zA-Z]+        return TK_CHARACTER;
+"#\\"{CHARACTER}      return TK_CHARACTER;
+"#\\x"{HEXNUM}+       return TK_CHARACTER;
 
 #[Ff]                 return TK_BOOLEAN_FALSE; 
 #[Tt]                 return TK_BOOLEAN_TRUE;            

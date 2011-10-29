@@ -11,6 +11,7 @@
 #include "fixnum.h"
 #include "symbol.h"
 #include "string.h"
+#include "character.h"
 #include "pair.h"
 #include "primitive.h"
 #include "function.h"
@@ -43,6 +44,9 @@ std::string format(value_t value) {
 	else if (is_environment(value)) {
 		result = environment_format(value);
 	}
+    else if (is_character(value)) {
+        result = character_format(value);
+    }
 	else {
 		if (value == EMPTY_LIST) 
 			result = "()";

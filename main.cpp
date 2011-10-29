@@ -42,19 +42,36 @@ primitive_descriptor_t primitives[] = {
 	{ "list",     BP_list,     0, ARITY_ANY },
 	
 	// CONTROL
-	{ "apply", BP_apply, 1, ARITY_ANY },
+	{ "apply", BP_apply, 2, ARITY_ANY },
 	// FIXNUM
 	{ "+",       BP_fixnum_PLUS,  0, ARITY_ANY },
 	{ "*",       BP_fixnum_MUL,   0, ARITY_ANY },
 	{ "-",       BP_fixnum_MINUS, 1, ARITY_ANY },
 	{ "/",       BP_fixnum_DIV,   1, ARITY_ANY },
-	{ "modulo",  BP_fixnum_MOD,   2, 2 },
 	{ "<",       BP_fixnum_LT,    0, ARITY_ANY },
 	{ ">",       BP_fixnum_GT,    0, ARITY_ANY },
 	{ "<=",      BP_fixnum_LTE,   0, ARITY_ANY },
 	{ ">=",      BP_fixnum_GTE,   0, ARITY_ANY },
 	{ "=",       BP_fixnum_EQ,    0, ARITY_ANY },
-	
+
+	{ "truncate-remainder",  BP_fixnum_truncate_remainder,   2, 2 },
+    { "truncate-quotient",   BP_fixnum_truncate_quotient,    2, 2 },
+	{ "floor-remainder",  BP_fixnum_floor_remainder,   2, 2 },
+    { "floor-quotient",   BP_fixnum_floor_quotient,    2, 2 },
+	{ "ceiling-remainder",  BP_fixnum_ceil_remainder,   2, 2 },
+    { "ceiling-quotient",   BP_fixnum_ceil_quotient,    2, 2 },
+	{ "round-remainder",  BP_fixnum_round_remainder,   2, 2 },
+    { "round-quotient",   BP_fixnum_round_quotient,    2, 2 },
+	{ "euclid-remainder",  BP_fixnum_euclid_remainder,   2, 2 },
+    { "euclid-quotient",   BP_fixnum_euclid_quotient,    2, 2 },
+    
+    { "number->string", BP_fixnum_to_string,   1, 2 },
+    { "string->number", BP_fixnum_from_string, 1, 2 },
+
+    // SYMBOL
+    { "symbol->string", BP_symbol_to_string,   1, 1 },
+    { "string->symbol", BP_symbol_from_string, 1, 1 },
+
 	// TEST
 	{ "collect",    BP_collect,    0, 0 },
 	{ "min_fixnum", BP_min_fixnum, 0, 0 },
@@ -67,6 +84,7 @@ primitive_descriptor_t primitives[] = {
 	{ "boolean?",     BP_booleanP,     1, 1 },
 	{ "unspecified?", BP_unspecifiedP, 1, 1 },
 	{ "integer?",     BP_fixnumP,      1, 1 },
+    { "procedure?",   BP_procedureP,   1, 1 },
 	// TOMBSTONE
 	{ "",      0,        0, 0 }
 };
@@ -120,6 +138,7 @@ int main_repl(int argc, char ** argv) {
 	while(true) {
 		std::cerr << "> ";
 		input = read();
+        printf("0x%016Lx\n", input);
 		protect_value(input);
 		if (input == END_OF_FILE) {
 			std::cout << std::endl;

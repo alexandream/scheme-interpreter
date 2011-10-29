@@ -1,0 +1,311 @@
+Primitive Expression Types:
+  x Variable References
+  x Literal Expressions (quote and ')
+  x Procedure Calls 
+  x Procedure Definition (lambda)
+  x Conditional (if)
+  x Assignment (set!)
+
+Derived Expression Types:
+  - cond
+  - case
+  x and
+  x or
+
+  x let
+  x let*
+  x letrec
+  - letrec*
+
+  x begin
+  - do
+  x delay
+  x parameterize
+  - guard
+  x quasiquote (and `)
+  - case-lambda
+  - Reader Labels (#<n>= & #<n>#)
+  
+  - let-syntax
+  - letrec-syntax
+  - syntax-rules
+  - syntax-error
+  
+  x toplevel define
+  - internal define
+  - define-syntax
+  
+  - define-record-type
+  - module
+
+Reader Syntax For Numbers:
+  x Radix prefixes (#b, #o, #d, #x)
+  x Exactness prefixes (#e) (#i is unsupported) 
+
+Standard Procedures:
+  x number?
+  x complex?
+  x real?
+  x rational?
+  x integer?
+  x exact?
+  x inexact?
+  x exact-integer?
+  x finite?
+  x infinite?
+  x nan?
+  x equal (=) (variadic)
+  x less-than (<) (variadic)
+  x greater-than (>) (variadic)
+  x less-than-or-equal (<=) (variadic)
+  x greater-than-or-equal (>=) (variadic)
+  x zero?
+  x positive?
+  x negative?
+  x odd?
+  x even?
+  x max 
+  x min
+  x add (+) (variadic)
+  x sub (-) (variadic)
+  x mul (*) (variadic)
+  x div (/) (variadic)
+  x abs
+  - floor/ (OUT! - Depends on multi-valued)
+  x floor-quotient
+  x floor-remainder
+  - ceiling/ (OUT! - Depends on multi-valued)
+  x ceiling-quotient
+  x ceilint-remainder
+  - truncate/ (OUT! - Depends on multi-valued)
+  x truncate-quotient
+  x truncate-remainder
+  - round/ (OUT! - Depends on multi-valued)
+  x round-quotient
+  x round-remainder
+  - euclidean/ (OUT! - Depends on multi-valued)
+  x euclidian-quotient
+  x euclidian-remainder
+  x quotient
+  x remainder
+  x modulo
+  x gcd
+  x lcm
+  x numerator
+  x denominator
+  x floor
+  x ceiling
+  x truncate
+  x round
+  x rationalize
+
+  - exp  (OUT! Depends on inexact module)
+  - log  (OUT! Depends on inexact module)
+  - sin  (OUT! Depends on inexact module)
+  - cos  (OUT! Depends on inexact module)
+  - tan  (OUT! Depends on inexact module)
+  - asin (OUT! Depends on inexact module)
+  - acos (OUT! Depends on inexact module)
+  - atan (OUT! Depends on inexact module)
+
+  - exact-integer-sqrt (OUT! Depends on multi-values module)
+  x expt
+
+  - make-rectangular (OUT! Depends on complex module)
+  - make-polar       (OUT! Depends on complex module)
+  x real-part 
+  x imag-part
+  x magnitude
+  x angle
+
+  - exact->inexact (OUT! makes no sense on an all exact system.)
+  - inexact->exact (OUT! makes no sense on an all exact system.)
+
+  x number->string
+  x string->number (only integers on range, #F for all else)
+  
+  x boolean?
+  x not
+  x pair
+  x cons
+  x car
+  x cdr
+  x set-car!
+  x set-cdr!
+  x null?
+  x list?
+  x make-list
+  x list
+  x length
+  x append
+  x reverse
+  x list-tail
+  x list-ref
+  x list-set!
+
+  x memq
+  x memv
+  x member (two or three args)
+  x assq
+  x assv
+  x assoc
+  x list-copy
+  
+  x symbol?
+  x symbol->string
+  x string->symbol
+  
+  - char?
+  - char=?
+  - char<?
+  - char>?
+  - char<=?
+  - char>=?
+
+  - char-ci=?
+  - char-ci<?
+  - char-ci>?
+  - char-ci<=?
+  - char-ci>=?
+
+  - char-alphabetic?
+  - char-numeric?
+  - char-whitespace?
+  - char-upper-case?
+  - char-lower-case?
+  - char->integer (has to return bigger than 0x10FFFF)
+  - integer->char
+
+  - char-upcase   (check to see if it's implementable...)
+  - char-downcase (check to see if it's implementable...)
+  - char-foldcase (check to see if it's implementable...)
+
+  - string?
+  - make-string
+  - string
+  - string-length
+  - string-ref
+  - string-set!
+  - string=?
+  - string-ci=?
+  - string-ni=? (same as string=? for ASCII)
+  - string<?
+  - string>?
+  - string<=?
+  - string>=?
+
+  - string-ci<?
+  - string-ci>?
+  - string-ci<=?
+  - string-ci>=?
+  - string-ni<?  (same as string<? for ASCII)
+  - string-ni>?  (same as string>? for ASCII)
+  - string-ni<=? (same as string<=? for ASCII)
+  - string-ni>=? (same as string>=? for ASCII)
+
+  - string-upcase
+  - string-downcase
+  - string-foldcase
+
+  - substring
+  - string-append
+  - string->list
+  - list->string
+  - string-copy 
+  - string-fill?
+  
+  - vector?
+  - make-vector
+  - vector
+  - vector-length
+  - vector-ref
+  - vector-set!
+  - vector->list
+  - list->vector  (list->vector list) => (apply vector list)
+  - vector->string (vector->string vec) => (list->string (vector->list vec))
+  - string->vector (string->vector str) => (list->vector (string->list str))
+  - vector-copy
+  - vector-fill!
+  
+  - blob?
+  - make-blob
+  - blob-length
+  - blob-u8-ref
+  - blob-u8-set!
+  - blob-copy
+  - blob-copy!
+  - partial-blob (blob start end)
+  - partial-blob-copy! (from start end to at)
+
+  x procedure?
+  x apply
+  x map (gotta make it multi-list enabled)
+  - string-map
+  - vector-map
+  x for-each
+  - string-for-each
+  - vector-for-each
+  x delay
+  x force
+  x call-with-current-continuation
+  - values
+  - call-with-values
+  x dynamic-wind
+  x make-parameter
+  x parameterize
+  x with-exception-handler
+  x raise
+  - raise-continuable
+  - error
+
+  - eval
+  - scheme-report-environment
+  - null-environment
+  - interaction-environment
+
+  - call-with-input-file (they don't make a dynamic-wind with close file... 
+  - call-with-output-file      ... but they close it when returning)
+  - input-port?
+  - output-port?
+  - port?
+  - character-port?
+  - binary-port?
+  - port-open?
+  - current-input-port
+  - current-output-port
+  - current-error-port
+  - with-input-from-file
+  - with-output-to-file
+  - open-input-file
+  - open-output-file
+  - close-input-port
+  - close-output-port
+  - open-input-string
+  - open-output-string
+  - get-output-string
+  
+  - read (optional port)
+  - read-char (optional port)
+  - peek-char (optional port)
+  - eof-object?
+  - char-ready? (optional port)
+  - read-u8 (optional port)
+  - peek-u8 (optional port)
+  - u8-ready (optional port)
+
+  - write (optional port)
+  - display (optional port) 
+  - newline (optional port)
+  - write-char (optional-port, writes a char without escaping)
+  - write-u8 (optional-port)
+
+  - load
+  - include 
+  - file-exists
+  - delete-file
+  - command-line
+  - get-environment-variable
+  - get-environment-variables
+  - current-second
+  - current-jiffy
+  - jiffies-per-second

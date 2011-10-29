@@ -63,12 +63,40 @@
   (lambda (args)
     `((lambda () ,@args))))
 
-(define (map func list)
-              (if (null? list)
-                '()
-                (cons (func (car list))
-                      (map func (cdr list)))))
+(define (memq obj lst)
+  (if (null? lst)
+    #F
+    (or (eq? obj (car lst))
+        (memq obj (cdr lst)))))
 
+(define map #U)
+;; Crazy definition of map without let/letrec or whatever. Needed an auxiliary
+;; function that I didn't want to keep on the toplevel environment. Hence this
+;; odd way of defining it.
+((lambda (map-one map-many)
+   (set! map-one (lambda (f lis)
+                   (if (null? lis)
+                     '()
+                     ((lambda (results) 
+                       (cons results
+                             (map-one f (cdr lis)))) 
+                      (f (car lis))))))
+
+   (set! map-many (lambda (f lists)
+                    (if (memq '() lists)
+                      '()
+                      ((lambda (results)
+                         (cons results
+                               (map-many f (map-one cdr lists))))
+                       (apply f (map-one car lists))))))
+   (set! map (lambda (f first-list . other-lists)
+               (if (null? other-lists)
+                 (map-one f first-list)
+                 (map-many f (cons first-list other-lists)))))) #U #U)
+
+(define (for-each proc list1 . lists)
+  (apply map proc list1 lists)
+  #U)
 ;; Finally we'll have the binding forms. This is still ugly, but it's the 
 ;; last time. At least this time we have quasiquotation. :)
 (define-rewriter let
@@ -237,6 +265,12 @@
 (define round identity)
 (define (rationalize x y) x)   
 
+(define (even? x)
+  (zero? (modulo x 2)))
+
+(define (odd? x)
+  (not (even? x)))
+
 (define max #U)
 (define min #U)
 (let ((aux-min-max (lambda (x xs f)
@@ -253,12 +287,29 @@
   (set! min (lambda (x . xs)
               (aux-min-max x xs <))))
 
-(define (even? x)
-  (zero? (modulo x 2)))
+(define (abs x) 
+  (if (< x 0)
+    (- x)
+    x))
 
-(define (odd? x)
-  (not (even? x)))
+(define quotient truncate-quotient)
+(define remainder truncate-remainder)
+(define modulo floor-remainder)
 
+(define (gcd m n)
+  (if (zero? n) 
+    m
+    (gcd n (remainder m n))))
+
+(define (lcm m n)
+  (quotient (abs (* m n))
+            (gcd m n)))
+
+(define (expt m n)
+  (let expt-aux ((m m) (n n) (a 1))
+    (if (zero? n) 
+      a
+      (expt-aux m (- n 1) (* a m)))))
 
 (define real-part identity)
 (define (imag-part x) 0)

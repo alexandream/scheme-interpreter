@@ -12,6 +12,7 @@ value_t string_preprocess(const std::string& str);
 std::string string_format(value_t value);
 
 value_t wrap_string(const std::string& str);
+std::string unwrap_string(value_t value);
 void string_finalize(value_t);
 
 static inline

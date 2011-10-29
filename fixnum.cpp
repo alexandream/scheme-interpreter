@@ -1,5 +1,8 @@
 #include <string>
 #include <sstream>
+#include <error.h>
+#include <assert.h>
+#include <stdio.h>
 
 #include "fixnum.h"
 #include "value.h"
@@ -8,12 +11,38 @@ const
 value_t FIXNUM_MAX = wrap_fixnum(0x3FFFFFFFFFFFFFFF),
         FIXNUM_MIN = wrap_fixnum(0xC000000000000000);
 
-std::string fixnum_format(value_t value) {
-	// XXX: Assertion #003
-	
+std::string fixnum_format(value_t value, char radix) {
+	assert(is_fixnum(value));
 	std::ostringstream sstream;
-	sstream << unwrap_fixnum(value);
-	return sstream.str();
+    int64_t fixnum = unwrap_fixnum(value); 
+    std::string result;
+	switch(radix) {
+        case 'd':
+            sstream << fixnum;
+            result = sstream.str();
+            break;
+        case 'o':
+            sstream << std::oct << fixnum;
+            result = std::string("#o") + sstream.str();
+            break;
+        case 'x':
+            sstream << std::hex << fixnum;
+            result = std::string("#x") + sstream.str();
+            break;
+        case 'b':
+            result = "#b";
+            while(fixnum > 0) {
+                result.insert( 2, 1, (fixnum % 2 == 0) ? '0'
+                                                       : '1');
+                fixnum /= 2;
+            }
+            
+            break;
+        default:
+            error(1, 0, "Invalid radix.");
+            break;
+    }
+	return result;
 }
 
 

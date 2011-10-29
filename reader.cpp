@@ -10,6 +10,7 @@
 #include "special.h"
 #include "symbol.h"
 #include "string.h"
+#include "character.h"
 
 static
 value_t read_list(void);
@@ -74,10 +75,14 @@ value_t read(void) {
 			get_token();
 			result = make_symbol(input.lexeme);
 			break;
-        
+           
         case TK_UNSPECIFIED:
             get_token();
             result = UNSPECIFIED;
+            break;
+        case TK_CHARACTER:
+            get_token();
+            result = character_preprocess(input.lexeme);
             break;
 		default:
 			error(1, 0, "Unknown token with lexeme: %s\n",

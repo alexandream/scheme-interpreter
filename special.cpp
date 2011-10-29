@@ -27,7 +27,6 @@ value_t UNDEFINED         = 0x0000000000000006,
 		OP_BIND           = 0x0000000000000096,
         OP_BIND_MACRO     = 0x000000000000009E;
 
-
 value_t boolean_make_from_string(const std::string& str) {
 	// ATTENTION: This assumes that checking whether the string
 	// represents a boolean or not was already done by an upper

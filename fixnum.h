@@ -10,7 +10,7 @@ value_t FIXNUM_MAX,
 
 value_t fixnum_make_from_string(const std::string& str);
 value_t fixnum_preprocess(const std::string& original_str);
-std::string fixnum_format(value_t value);
+std::string fixnum_format(value_t value, char radix='d');
 
 static inline
 bool is_fixnum(value_t value) {

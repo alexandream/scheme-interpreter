@@ -7,6 +7,7 @@
 #include "environment.h"
 #include "symbol.h"
 #include "pair.h"
+#include "printer.h"
 #include "special.h"
 
 const
@@ -38,7 +39,6 @@ value_t make_environment(value_t parent, value_t names, value_t values) {
 	
 	storage->first_slot = parent;
 	storage->second_slot = wrap_pointer((void*) bindings);
-
 	while (is_pair(names) && is_pair(values)) {
 		value_t name = pair_left(names);
 		value_t value = pair_left(values);
