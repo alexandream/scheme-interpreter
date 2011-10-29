@@ -3,7 +3,8 @@
 #include <list>
 
 #include "value.h"
-
+#include "special.h"
+#include "pair.h"
 
 struct context_t {
 	value_t accumulator;
@@ -17,6 +18,14 @@ struct context_t {
 	context_t(value_t environment);
 	void show(void);
 };
+
+static inline
+void BUILTIN_RETURN(context_t* context, value_t value) {
+	context->accumulator = value;
+	context->value_stack = EMPTY_LIST;
+	context->value_stack_size = 0;
+	context->next_expr = make_list(OP_RETURN, 0);
+}
 
 typedef std::list<context_t*> context_list_t;
 
