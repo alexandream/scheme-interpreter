@@ -168,17 +168,17 @@ Standard Procedures:
   x char-ci<=?
   x char-ci>=?
 
-  - char-alphabetic?
-  - char-numeric?
-  - char-whitespace?
-  - char-upper-case?
-  - char-lower-case?
-  - char->integer (has to return bigger than 0x10FFFF)
-  - integer->char
+  x char-alphabetic?
+  x char-numeric?
+  x char-whitespace?
+  x char-upper-case?
+  x char-lower-case?
+  x char->integer 
+  x integer->char
 
-  - char-upcase   (check to see if it's implementable...)
-  - char-downcase (check to see if it's implementable...)
-  - char-foldcase (check to see if it's implementable...)
+  x char-upcase   (check to see if it's implementable...)
+  x char-downcase (check to see if it's implementable...)
+  x char-foldcase (check to see if it's implementable...)
 
   - string?
   - make-string

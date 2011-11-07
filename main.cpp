@@ -44,16 +44,34 @@ primitive_descriptor_t primitives[] = {
 	// CONTROL
 	{ "apply", BP_apply, 2, ARITY_ANY },
 	// FIXNUM
+	// -- Mathematical operations
 	{ "+",       BP_fixnum_PLUS,  0, ARITY_ANY },
 	{ "*",       BP_fixnum_MUL,   0, ARITY_ANY },
 	{ "-",       BP_fixnum_MINUS, 1, ARITY_ANY },
 	{ "/",       BP_fixnum_DIV,   1, ARITY_ANY },
+	// -- Relational operators
 	{ "<",       BP_fixnum_LT,    0, ARITY_ANY },
 	{ ">",       BP_fixnum_GT,    0, ARITY_ANY },
 	{ "<=",      BP_fixnum_LTE,   0, ARITY_ANY },
 	{ ">=",      BP_fixnum_GTE,   0, ARITY_ANY },
 	{ "=",       BP_fixnum_EQ,    0, ARITY_ANY },
+	// -- Quotient/Remainder/Modulo
+	{ "truncate-remainder",  BP_fixnum_truncate_remainder,   2, 2 },
+    { "truncate-quotient",   BP_fixnum_truncate_quotient,    2, 2 },
+	{ "floor-remainder",     BP_fixnum_floor_remainder,      2, 2 },
+    { "floor-quotient",      BP_fixnum_floor_quotient,       2, 2 },
+	{ "ceiling-remainder",   BP_fixnum_ceil_remainder,       2, 2 },
+    { "ceiling-quotient",    BP_fixnum_ceil_quotient,        2, 2 },
+	{ "round-remainder",     BP_fixnum_round_remainder,      2, 2 },
+    { "round-quotient",      BP_fixnum_round_quotient,       2, 2 },
+	{ "euclid-remainder",    BP_fixnum_euclid_remainder,     2, 2 },
+    { "euclid-quotient",     BP_fixnum_euclid_quotient,      2, 2 },
+    // -- Conversion to/from string
+    { "number->string", BP_fixnum_to_string,   1, 2 },
+    { "string->number", BP_fixnum_from_string, 1, 2 },
+
 	// CHARACTER
+	// -- Relational operators
 	{ "char=?",     BP_char_eqP,     2, 2 },
 	{ "char<?",     BP_char_ltP,     2, 2 },
 	{ "char>?",     BP_char_gtP,     2, 2 },
@@ -64,21 +82,19 @@ primitive_descriptor_t primitives[] = {
 	{ "char-ci>?",  BP_char_ci_gtP,  2, 2 },
 	{ "char-ci<=?", BP_char_ci_lteP, 2, 2 },
 	{ "char-ci>=?", BP_char_ci_gteP, 2, 2 },
-	
-	
-	{ "truncate-remainder",  BP_fixnum_truncate_remainder,   2, 2 },
-    { "truncate-quotient",   BP_fixnum_truncate_quotient,    2, 2 },
-	{ "floor-remainder",  BP_fixnum_floor_remainder,   2, 2 },
-    { "floor-quotient",   BP_fixnum_floor_quotient,    2, 2 },
-	{ "ceiling-remainder",  BP_fixnum_ceil_remainder,   2, 2 },
-    { "ceiling-quotient",   BP_fixnum_ceil_quotient,    2, 2 },
-	{ "round-remainder",  BP_fixnum_round_remainder,   2, 2 },
-    { "round-quotient",   BP_fixnum_round_quotient,    2, 2 },
-	{ "euclid-remainder",  BP_fixnum_euclid_remainder,   2, 2 },
-    { "euclid-quotient",   BP_fixnum_euclid_quotient,    2, 2 },
-    
-    { "number->string", BP_fixnum_to_string,   1, 2 },
-    { "string->number", BP_fixnum_from_string, 1, 2 },
+	// -- Category predicates
+	{ "char-alphabetic?", BP_char_alphabeticP, 1, 1 },
+	{ "char-numeric?",    BP_char_numericP,    1, 1 },
+	{ "char-whitespace?", BP_char_whitespaceP, 1, 1 },
+	{ "char-upper-case?", BP_char_upper_caseP, 1, 1 },
+	{ "char-lower-case?", BP_char_lower_caseP, 1, 1 },
+	// -- Case handling
+	{ "char-upcase",   BP_char_upcase,   1, 1 },
+	{ "char-downcase", BP_char_downcase, 1, 1 },
+	{ "char-foldcase", BP_char_downcase, 1, 1 },
+	// -- Conversion to/from integer
+	{ "char->integer", BP_char_2_integer, 1, 1 },
+	{ "integer->char", BP_integer_2_char, 1, 1 },
 
     // SYMBOL
     { "symbol->string", BP_symbol_to_string,   1, 1 },
