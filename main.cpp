@@ -96,6 +96,15 @@ primitive_descriptor_t primitives[] = {
 	{ "char->integer", BP_char_2_integer, 1, 1 },
 	{ "integer->char", BP_integer_2_char, 1, 1 },
 
+	// STRING
+	// -- Constructors
+	{ "make-string",  BP_make_string, 1, 2 },
+	{ "string",       BP_string,      0, ARITY_ANY },
+	// -- Accessors
+	{ "string-length", BP_string_length, 1, 1 },
+	{ "string-ref",    BP_string_ref,    2, 2 },
+	{ "string-set!",   BP_string_setB,   3, 3 },
+
     // SYMBOL
     { "symbol->string", BP_symbol_to_string,   1, 1 },
     { "string->symbol", BP_symbol_from_string, 1, 1 },
@@ -114,6 +123,8 @@ primitive_descriptor_t primitives[] = {
 	{ "integer?",     BP_fixnumP,      1, 1 },
     { "procedure?",   BP_procedureP,   1, 1 },
 	{ "char?",        BP_charP,        1, 1 },
+	{ "string?",      BP_stringP,      1, 1 },
+
 	// TOMBSTONE
 	{ "",      0,        0, 0 }
 };

@@ -19,10 +19,13 @@ value_t wrap_string(const std::string& str) {
     return wrap_pointer(storage);
 }
 std::string unwrap_string(value_t value) {
-    double_storage_t* storage = (double_storage_t*) unwrap_pointer(value);
-    return *((std::string*) storage->first_slot);
+    return *(unwrap_internal_string(value));
 }
-            
+
+std::string* unwrap_internal_string(value_t value) {           
+    double_storage_t* storage = (double_storage_t*) unwrap_pointer(value);
+    return ((std::string*) storage->first_slot);
+}
 
 std::string string_format(value_t value) {
     std::stringstream sstream;

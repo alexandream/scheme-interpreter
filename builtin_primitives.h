@@ -5,6 +5,7 @@
 #include "pair_library.h"
 #include "misc_library.h"
 #include "character_library.h"
+#include "string_library.h"
 
 
 

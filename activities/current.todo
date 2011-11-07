@@ -180,12 +180,12 @@ Standard Procedures:
   x char-downcase (check to see if it's implementable...)
   x char-foldcase (check to see if it's implementable...)
 
-  - string?
-  - make-string
-  - string
-  - string-length
-  - string-ref
-  - string-set!
+  x string?
+  x make-string
+  x string
+  x string-length
+  x string-ref
+  x string-set!
   - string=?
   - string-ci=?
   - string-ni=? (same as string=? for ASCII)
@@ -212,7 +212,7 @@ Standard Procedures:
   - string->list
   - list->string
   - string-copy 
-  - string-fill?
+  - string-fill!
   
   - vector?
   - make-vector
