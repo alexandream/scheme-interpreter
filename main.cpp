@@ -53,7 +53,19 @@ primitive_descriptor_t primitives[] = {
 	{ "<=",      BP_fixnum_LTE,   0, ARITY_ANY },
 	{ ">=",      BP_fixnum_GTE,   0, ARITY_ANY },
 	{ "=",       BP_fixnum_EQ,    0, ARITY_ANY },
-
+	// CHARACTER
+	{ "char=?",     BP_char_eqP,     2, 2 },
+	{ "char<?",     BP_char_ltP,     2, 2 },
+	{ "char>?",     BP_char_gtP,     2, 2 },
+	{ "char<=?",    BP_char_lteP,    2, 2 },
+	{ "char>=?",    BP_char_gteP,    2, 2 },
+	{ "char-ci=?",  BP_char_ci_eqP,  2, 2 },
+	{ "char-ci<?",  BP_char_ci_ltP,  2, 2 },
+	{ "char-ci>?",  BP_char_ci_gtP,  2, 2 },
+	{ "char-ci<=?", BP_char_ci_lteP, 2, 2 },
+	{ "char-ci>=?", BP_char_ci_gteP, 2, 2 },
+	
+	
 	{ "truncate-remainder",  BP_fixnum_truncate_remainder,   2, 2 },
     { "truncate-quotient",   BP_fixnum_truncate_quotient,    2, 2 },
 	{ "floor-remainder",  BP_fixnum_floor_remainder,   2, 2 },
@@ -85,6 +97,7 @@ primitive_descriptor_t primitives[] = {
 	{ "unspecified?", BP_unspecifiedP, 1, 1 },
 	{ "integer?",     BP_fixnumP,      1, 1 },
     { "procedure?",   BP_procedureP,   1, 1 },
+	{ "char?",        BP_charP,        1, 1 },
 	// TOMBSTONE
 	{ "",      0,        0, 0 }
 };
@@ -138,7 +151,6 @@ int main_repl(int argc, char ** argv) {
 	while(true) {
 		std::cerr << "> ";
 		input = read();
-        printf("0x%016Lx\n", input);
 		protect_value(input);
 		if (input == END_OF_FILE) {
 			std::cout << std::endl;

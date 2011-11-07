@@ -155,18 +155,18 @@ Standard Procedures:
   x symbol->string
   x string->symbol
   
-  - char?
-  - char=?
-  - char<?
-  - char>?
-  - char<=?
-  - char>=?
+  x char?
+  x char=?
+  x char<?
+  x char>?
+  x char<=?
+  x char>=?
 
-  - char-ci=?
-  - char-ci<?
-  - char-ci>?
-  - char-ci<=?
-  - char-ci>=?
+  x char-ci=?
+  x char-ci<?
+  x char-ci>?
+  x char-ci<=?
+  x char-ci>=?
 
   - char-alphabetic?
   - char-numeric?
