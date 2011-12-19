@@ -1,0 +1,36 @@
+Traduções utilizadas:
+
+* tail-calls:         chamadas terminais.
+* toplevel:           o nível superior.
+* explicit renaming:  renomeação explícita.
+* static environment: contexto estático
+
+Descrever o que são:
+- R7RS.
+- Formas aplicativas.
+- Macros não higiênicas e seus problemas -- usar "or" como exemplo.
+  * Referencia em [1] e [2]
+  Código utilizado para exemplificar:
+     ;; versão ingênua para referência futura.
+     ;; retirado de [2]
+     (define-rewriter or2
+       (lambda (expressao)
+         (let ((primeiro (cadr expressao))
+               (segundo  (caddr expressao)))
+            
+           `(let ((temp ,primeiro))
+              (if temp 
+                temp
+                ,segundo)))))
+
+
+Referências:
+
+1 -       Título: Hygienic Macro Expansion;
+         Autores: Kohlbecker, Friedman, Felleisen, Duba;
+    Publicado em: LFP '86 Proceedings of the 1986 ACM conference on 
+                  LISP and functional programming  
+
+2 -       Título: Syntactic Abstraction in Scheme
+         Autores: Dybvig, Hieb, Bruggeman
+    Publicado em: Lisp and Symbolic Computation Volume 5 Issue 4, Dec. 1992  

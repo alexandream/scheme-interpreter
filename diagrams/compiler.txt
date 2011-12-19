@@ -1,0 +1,11 @@
+
+Durante a etapa de compilação traduzimos uma expressão simbólica (S-Expression) representando código Scheme para uma S-Expression representando a implementação deste código nas instruções utilizadas pela máquina virtual.
+
+A estratégia de implementação utilizada é a mais ingênua possível. Com efeito, esta implementação não mantém informações de análise estática relacionadas a escopo, o que a faz incapaz de representar o mecanismo de macros definido pela linguagem Scheme. A implementação de um mecanismo alternativo de macros procedurais, compatível com os mecanismos tradicionais de outras linguagens da família Lisp, além de uma descrição das mudanças necessárias para se implementar o mecanismo de macros descrito por Scheme, são discutidos posteriormente na seção ${COMPILER-MACROS}.
+
+Dez tipos de expressão são reconhecidos pelo compilador: Referência a variável, constantes,  expressões literais, criação de procedimentos, condicionais, atribuições, definições, definições de macro, obtenção de continuação e aplicação de função. A partir destes tipos primitivos de expressão, com a ajuda do mecanismo de macros, todas as outras estruturas da linguagem são construídas, simplificando significativamente o projeto do compilador.
+
+O processo de compilação inicia-se com dois parâmetros: a expressão a ser compilada e a próxima etapa da computação que está sendo efetuada. Quando estamos realizando a compilação de uma expressão no escopo mais alto, esta próxima etapa normalmente é um pedaço de código pré compilado correspondendo à instrução Halt.
+
+
+

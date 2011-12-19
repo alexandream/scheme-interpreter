@@ -1,0 +1,84 @@
+#########################
+## Fatos e Referências ##
+#########################
+
+### Fatos:
+
+Scheme foi criado com o intuito de explorar e compreender as ramificações do "Actor Model" descrito por Carl Hewitt [1]
+
+O minimalismo resultante no projeto de Scheme foi um fato acidental, observado após o término, em que funcionalidades complexas foram identificadas como composições ou variações de outras funcionalidades existentes. [1]
+
+Este mesmo minimalismo foi motivo posterior para a utilização de Scheme como linguagem voltada para o ensino de programação e para a utilização como base exploratória para novos conceitos em linguagens de programação.
+
+### Referências:
+
+1 - Gerald Jay Sussman e Guy L. Steele, Jr. "The First Report on Scheme Revisited" de Dezembro de 1998;
+
+2 - Structure and Interpretation of Computer Programs.
+3 - How to Design Programs
+
+4 - Programming Languages Application and Interpretation
+5 - Essentials of Programming Languages
+
+6 - http://www.schemers.com/schools.html, obtido em 25-11-2011
+
+7 - ftp://ftp.parc.xerox.com/pub/mops/tiny/tiny-announce.text, obtido em 25-11-2011
+8 - Designing Meroon V3, Christian Queinnec 1993.
+9 - Scheming With Objects, Ken Dickey 1992. Disponível em http://www-2.cs.cmu.edu/afs/cs/project/ai-repository/ai/lang/scheme/oop/yasos/swob.txt
+##############
+## Conteúdo ##
+##############
+
+-- Uma apresentação de Scheme.
+
+Scheme é uma linguagem de programação da família Lisp, minimalista e multi-paradigma, embora com um grande foco em programação funcional. Como um dialeto Lisp, difere significativa dos demais dialetos mais conhecidos da família (Common Lisp e Emacs Lisp) por sua utilização de um modelo de escopo totalmente léxico, continuações como objetos de primeira classe, espaço de nomes compartilhado entre funções e variáveis. Também se destaca por ser tradicionalmente minimalista, preferindo primitivas poderosas e altamente ortogonais, que podem ser compostas de modo a criar novas expressões, a funcionalidades especializadas. 
+
+Estas características tornam Scheme especialmente apropriada para o ensino de conceitos de linguagens de programação e computação, assim como a facilidade de implementar novos conceitos e funcionalidades sobre a linguagem a tornam uma boa base para o estudo exploratório de novos conceitos de linguagens de programação. Isto é evidenciado pela profusão de cursos iniciais de computação e programação que adotam Scheme como linguagem, inclusive em cursos de nível médio[2][3][6], bem como diversas publicações na área de projeto de linguagens de programação e design de interpretadores baseados em Scheme[4][5].
+
+Curiosamente praticamente todas estas características são meros acidentes no processo de desenvolvimento da linguagem. A publicação do modelo de computação chamado "Actor Model", proposto por Carl Hewitt instigou Gerald Jay Sussman e Guy L. Steele Jr a implementá-lo, em um dialeto Lisp, numa tentativa de compreender melhor o modelo proposto e suas implicações. Esta implementação, publicada ao longo de diversos memorandos entre 1975 e 1980, resultou na linguagem de programação Scheme.[1]
+
+Como resultado deste empreendimento, Sussman e Steele acabaram por descobrir que o modelo proposto por Hewitt podia ser diretamente traduzido para o modelo de computação já bastante conhecido à época chamada Cálculo Lambda e sua implementação como um dialeto Lisp seria bastante direta[1], bastando que os modelos de computação utilizados para Lisp à época fossem estendidos com um modelo de escopo léxico (em contraste com o escopo dinâmico utilizado por todos os dialetos Lisp da época) e o conceito de Continuações como objetos de primeira classe.
+
+Em especial, o modelo de escopo dinâmico utilizado nos dialetos Lisp até então fazia com que a família Lisp divergisse consideravelmente do Cálculo Lambda por seu tratamento de variáveis livres. A adoção do escopo léxico por Scheme criou na família Lisp uma linguagem compatível com um subconjunto significativo do formalismo descrito no Cálculo Lambda e uma ótima plataforma para expressar e analisar conseqüências de modelos descritos no Cálculo Lambda.[1]
+
+A seguir, é descrito um subconjunto das funcionalidades de Scheme de forma a familiarizar o leitor com a linguagem e facilitar a compreensão da subsequente discussão de sua implementação e as estratégias utilizadas.
+
+-- Descrição da linguagem e suas funcionalidades. 
+
+Tal como no modelo computacional do Cálculo Lambda, variáveis em Scheme não possuem tipo. O tipo é uma propriedade do valor armazenado na variável, com a checagem dos tipos feita em tempo de execução. A linguagem vem equipada com um conjunto modesto de tipos e permite ao programador criar seus próprios tipos disjuntos dos tipos existentes. Não existe o conceito de classe, como em linguagens orientadas a objeto, em Scheme, embora este conceito tenha sido diversas vezes implementado em termos das primitivas da linguagem [7][8][9]
+
+Como descrito na seção anterior, Scheme é considerada uma linguagem minimalista. Isto pode ser verificado na forma como primitivas comuns em outras linguagens se mostram ausentes em Scheme, sendo substituídas por construções compostas de primitivas mais abrangentes. Como exemplo, no lugar de expressões de retorno, mecanismos de exceções e interrupções de estruturas de laço, temos apenas as primitivas de obter a continuação atual e aplicar uma continuação. Até mesmo as estruturas de laço, mencionadas há pouco, não são primitivas em Scheme: são meros padrões de utilização das primitivas de criar um nova função e aplicação de funções.
+
+Para que esta utilização de funções como estruturas de laço, utilizando recursão, não esgote a memória de uma implementação arbitrária, qualquer implementação Scheme é obrigada a realizar a eliminação dos registros de ativação de chamadas terminais (/tail-calls/): aplicações de função nas quais o resultado da função chamada será, também, o resultado da função chamadora. Uma descrição mais fácil de compreender pode ser vista na figura ${fig:tail-call-elimination}.
+
+{$do-fig:tail-call-elimination}
+
+Quando uma implementação Scheme se depara com uma aplicação de chamada de função terminal, esta, obrigatoriamente, deve evitar criar um novo registro de ativação e reutilizar o registro de ativação da função em vigor como o registro de ativação da função prestes a ser chamada. Desta forma, recursões em que a chamada recursiva em si é considerada terminal utilizam quantidade constante de memória na pilha de ativações de funções.
+
+Como membro da família Lisp, código Scheme é representado textualmente por listas de elementos separados por espaço em branco, agrupados por parênteses, que denotam um formato abstrato conhecido como Expressões-S (abreviação de Expressões Simbólicas). Expressões-S podem ser definidas recursivamente da seguinte forma:
+ - Um elemento atômico (número, símbolo ou outro literal da linguagem) é uma Expressão-S;
+ - Uma lista de Expressões-S é uma Expressão-S;
+
+Organizada em Expressões-S, Scheme adota a notação polonesa (ou notação de prefixo), com as listas representando operações em que o primeiro elemento da lista é o operador, que pode ser uma função ou uma forma sintática, e os demais elementos são parâmetros para a operação. A distinção entre funções e formas sintáticas pode ser traçada com base na fase da computação em que são avaliados e na estratégia de avaliação de parâmetros, como visto na tabela ${table:functions-vs-special-forms}.
+
+${do-table:function-vs-special-forms}
+
+Scheme herda dos Lisps anteriores um grande número de operações sobre listas, e a utilização de Expressões-S (estruturas baseadas em listas) faz com que seja fácil manipular representações em Expressão-S de código Scheme, utilizando a própria linguagem. Esta propriedade, aliada à capacidade do programador de definir código de funções ou substituições a serem aplicadas no código anteriormente à compilação ou interpretação, leva a um poderoso sistema de macros que permite ao programador criar novas formas sintáticas que são convertidas para formas primitivas da linguagem. Desta maneira, o fato de ser uma linguagem minimalista não interfere com a expressividade do programador final, que em geral lida com expressões mais complexas abstraídas por trás de formas sintáticas derivadas.
+
+Como mencionado anteriormente, Scheme foge da tradição entre linguagens anteriores da família Lisp por adotar um modelo de escopo léxico, estático, em que o escopo de uma variável pode sempre ser determinado pela simples análise do texto do programa. Partindo do ponto em que a variável é referenciada, utilizando escopo léxico, e voltando na estrutura do código é sempre possível encontrar o ponto em que esta é declarada ou, caso não seja possível (ou seja, esta variável é uma variável livre no contexto atual), esta tem de ser uma variável global -- ou um erro por parte do programador, visto que então a variável não estaria declarada em lugar algum.
+
+Tradicionalmente, no entanto, dialetos Lisp implementavam uma estratégia de escopo dinâmico em que uma variável livre estava vinculada à declaração da mais recente variável de mesmo nome no contexto dinâmico da pilha de chamadas anteriores. A diferença entre as estratégias de escopo léxico e dinâmico pode ser analisada na figura ${fig:dynamic-vs-lexical-scope}. 
+
+A mudança para o escopo léxico, associada à possibilidade de criação e manipulação de funções como objetos em tempo de execução, faz com que seja possível gerar /closures/, ou seja: pequenas funções que capturam o vínculo de variáveis como estavam no momento em que a função foi declarada em tempo de execução e carregam estes vínculos consigo, podendo manipulá-los e modificá-los como quiser. 
+
+${do-fig: dynamic-vs-lexical-scope}
+
+A utilização do escopo léxico em Scheme, de acordo com os seus criadores [1], fez com que o tratamento de variáveis livres em um a expressão fosse semanticamente análogo ao dado no formalismo do Cálculo Lambda, fornecendo um bom modelo computacional para experimentação com o Cálculo Lambda. Novamente de acordo com os criadores da linguagem [1], esta proximidade com o Cálculo Lambda foi um dos motivos principais para a utilização futura, não prevista por eles, de Scheme como uma linguagem de ensino e experimentação de conceitos de linguagens de programação.
+
+Já mencionamos antes a questão do minimalismo na linguagem e como a existência de um sistema de macros poderoso permite que sejam definidos na linguagem apenas operadores sintáticos primitivos, que podem ser utilizados para compor operadores mais complexos. Esta composição se dá por meio do sistema de macros que é descrito nos parágrafos a seguir.
+
+Tradicionalmente, os dialetos Lisp utilizavam-se de um sistema poderoso mas simples de macros. As macros eram definidas apenas como funções como outras quaisquer que tinham sua interpretação não em tempo de execução, junto com o programa, mas durante a compilação do código -- permitindo ao programador de certa forma programar o comportamento do compilador frente a novos operadores sintáticos. De fato, o poder atribuído a este mecanismo de macros se origina simplesmente nos fatos de a linguagem de programação possuir uma grande gama de operações sobre Expressões-S e a representação interna do código ser feita também na forma de Expressões-S.
+
+Este mecanismo simples de macros, no entanto, sofre de um problema que 
+
+

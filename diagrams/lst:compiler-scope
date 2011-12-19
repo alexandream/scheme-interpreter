@@ -1,0 +1,11 @@
+
+
+(define (minha-func x y)
+  ;; Aqui o valor de "if" é o valor do operador sintático primitivo.
+  (if (> x 10)
+    (let ((if (+ x y)))
+       ;; Aqui o valor de "if" é a soma dos parâmetros x e y
+       (* if if))
+    (* x y)))
+    
+
