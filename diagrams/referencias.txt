@@ -1,0 +1,24 @@
+
+1 - Gerald Jay Sussman e Guy L. Steele, Jr. 
+    "The First Report on Scheme Revisited" de Dezembro de 1998;
+
+2 - Structure and Interpretation of Computer Programs.
+3 - How to Design Programs
+
+4 - Programming Languages Application and Interpretation
+5 - Essentials of Programming Languages
+
+6 - http://www.schemers.com/schools.html, obtido em 25-11-2011
+
+7 - R5RS ...
+8 - R6RS ...
+
+9 - "Implementors' intentions concerning R6RS", Marc Freeley 26-10-2007
+    http://lists.r6rs.org/pipermail/r6rs-discuss/2007-October/003351.html 
+    obtido em 21-11-2011
+
+10 - scheme report anouncement.
+
+11 - R7RS-small draft 3
+
+    

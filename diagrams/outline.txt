@@ -1,0 +1,93 @@
+* Capítulo 1 -- Visão Geral do Trabalho.
+
+  * Rápida introdução conceitual sobre a linguagem Scheme.
+
+  * Descrição dos objetivos declarados de Scheme, em especial os relevantes.
+
+  * Comentário rápido sobre a ratificação iminente do R7RS.
+
+  * Declaração da proposta, implementação simples de uma prova de conceito do 
+    draft mais recente, utilizando estratégias documentadas na literatura.
+
+  * Estrutura dos demais capítulos.
+
+
+* Capítulo 2 -- Sobre Scheme, relatórios anteriores, outras implementações.
+
+  * Glossário de termos utilizados.
+
+  * Descrição da linguagem Scheme e suas características notáveis.
+
+  * Histórico de fracasso sobre R6RS e motivações para o desenvolvimento do
+    R7RS-small.
+
+  * Referências e comentários sobre objetivos das duas outras implementações 
+    conhecidas até o momento: chibi-scheme e r7rs-bridge.
+
+
+* Capítulo 3 -- Estrutura geral da implementação, Estratégias utilizadas.
+  
+  * Diagrama de camadas da implementação.
+
+  * Diagrama de seqüências de uma iteração no interpretador.
+
+  * Visão geral da implementação, com uma rápida explicação das estratégias
+    utilizadas para o mecanismo de gerência de memória, compilação, 
+    interpretação e tradução de macros.
+
+
+* Capítulo 3.1 -- Gerência de memória.
+  
+  * Descrição da estrutura básica utilizada para manutenção de memória.
+
+  * Descrição do algoritmo e suas características básicas.
+
+
+* Capítulo 3.2 -- Máquina Virtual.
+  
+  * Descrição da máquina SECD.
+
+  * Registradores.
+
+  * Operações.
+
+  * Relações com o mecanismo de gerência de memória.
+
+
+* Capítulo 3.3 -- Compilador.
+
+  * Estratégia utilizada.
+
+  * Operadores primitivos conhecidos.
+
+  * Menção ao mecanismo de tradução de macros.
+
+  * Lista de traduções realizadas.
+
+  * Discussão sobre falhas no sistema de compilação e uma solução possível. 
+
+
+* Capítulo 3.4 -- Macros.
+
+  * O que são macros em Lisp.
+  
+  * Macros não higiênicas versus macros higiênicas.
+
+  * Discussão sobre falhas no sistema de macros e uma solução possível.
+
+
+* Capítulo 4 -- O que escrever aqui?...
+
+
+* Capítulo 5 -- Conclusões
+
+
+
+* Referências interessantes:
+  * "R7RS small in R6RS library", Okumura Yuki 24/11/2011
+    http://lists.scheme-reports.org/pipermail/scheme-reports/2011-November/001648.html
+    http://github.com/okuoku/r7rs-bridge
+  
+  * "Implementors' intentions concerning R6RS", Marc Feeley 26/10/2007
+     http://lists.r6rs.org/pipermail/r6rs-discuss/2007-October/003351.html
+
