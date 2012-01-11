@@ -21,4 +21,18 @@
 
 11 - R7RS-small draft 3
 
-    
+12 - ftp://ftp.parc.xerox.com/pub/mops/tiny/tiny-announce.text, obtido em 25-11-2011
+13 - Designing Meroon V3, Christian Queinnec 1993.
+14 - Scheming With Objects, Ken Dickey 1992. Disponível em http://www-2.cs.cmu.edu/afs/cs/project/ai-repository/ai/lang/scheme/oop/yasos/swob.txt
+
+15 - http://code.google.com/p/chibi-scheme/
+
+16 - "R7RS small in R6RS library", Okumura Yuki em 24/11/2011
+     http://lists.scheme-reports.org/pipermail/scheme-reports/2011-November/001648.html
+     obtido em 17/12/2011
+
+17 - Richard Jones & Lins, Garbage Collection.
+
+18 - GNU Flex ...
+
+19 - Three Implementation Models for Scheme ...
