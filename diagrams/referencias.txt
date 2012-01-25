@@ -36,3 +36,10 @@
 18 - GNU Flex ...
 
 19 - Three Implementation Models for Scheme ...
+
+20 - Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I.
+     John McCarthy, Communications of the ACM Volume 3 Issue 4 April 1960.
+
+
+21 - Garbage Collection: Algorithms for Automatic Dynamic Memory Management.
+     Richard Jones, Rafael D. Lins, 1996.

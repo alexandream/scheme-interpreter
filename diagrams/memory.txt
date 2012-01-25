@@ -1,0 +1,50 @@
+Embora não seja exatamente um requerimento da R7RS-small, escolhemos por implementar um mecanismo de gerência de memória automatizado, o que definiu em diversas formas as escolhas utilizadas para representação dos valores em tempo de execução nesta implementação. Além disso, historicamente Lisp está tão intimamente ligada à gerência automatica de memória[20] que uma implementação que não contemplasse esta faceta não 
+
+Em especial, existem dois tipos de valores, divididos por necessitarem ou não de alocação de memória dinâmica. Entre os valores que não necessitam de alocação de memória dinâmica, que chamaremos daqui em diante de valores imediatos, encontram-se os inteiros, booleanos, caracteres e alguns valores especiais como o marcador de lista vazia. Estes, são implementados na forma de "ponteiros etiquetados" (tagged pointers), em que os dados ocupam os 62 bits mais significativos de uma palavra de 64 bits, e os 2 bits menos significativos são utilizados para identificar os valores como imediatos, identificação preliminar do tipo e diferenciar estes valores dos demais ponteiros no sistema.
+
+Os demais, como funções, strings, pares e quaisquer estruturas de dados complexas, são implementados seguindo uma estrutura de dados comum a todos, de forma a simplificar a implementação do mecanismo de gerência de memória. Nestes, os 2 bits menos significativos têm obrigatóriamente o valor zero, criando a necessidade de um alinhamento de 4 bytes para cada objeto alocado em memória. A estrutura utilizada para estes valores complexos é a descrita a seguir:
+
+Uma palavra de 64 bits é utilizada para manter informações de tipo, dados relacionados à gerência de memória e se o objeto armazenado pode ser modificado. Entre estes, devemos ressaltar os dados de gerência de memória que indicam:
+
+* se o objeto foi visitado pelo sistema de gerência de memória durante a coleta
+  (GC_HAS_MARK);
+
+*  se o objeto está em uso pelo sistema (GC_IS_IN_USE);
+
+*  se o mecanismo de gerência de memória deve analisar seu filho esquerdo
+   (MARK_POLICY_FIRST) e/ou seu filho direito (MARK_POLICY_SECOND);
+
+*  ou se a memória para este objeto nunca deve ser liberada (GC_ALWAYS_MARKED).
+
+Além destas informações, um conjunto de bits é utilizado para manter a informação sobre o tipo destes objetos, para questões de despacho de funções e checagem de tipos. Oito bits foram utilizados para este fim, embora devido ao grande espaço não utilizado na estrutura mais possam ser utilizados para estender o mecanismo de tipos caso seja necessário.
+
+Em seguida, duas outras palavras de 64 bits são utilizadas para armazenar as demais partes da estrutura de dados. Estas duas palavras (que referenciaremos por "slots") armazenam valores arbitrários do sistema, usando a mesma técnica de tagged pointers mencionada anteriormente, em que valores imediatos são armazenados diretamente e valores complexos são armazenados como ponteiros para outras estruturas idênticas à que estamos descrevendo. 
+
+Tendo em vista que não estamos preocupados em otimização, mas em clareza, esta estrutura simples representa diretamente a estrutura de dados mais utilizada em um dialeto Lisp: a "célula cons" que é utilizada para, entre outras coisas, representar listas. Uma célula cons nada mais é que um par de dois outros valores quaisquer da linguagem.
+
+Todos os demais valores expressos na linguagem, que não possam ser representados por valores imediatos, são representados utilizando esta estrutura de armazenamento duplo em slots. Em alguns casos apenas um dos slots de armazenamento é utilizado, em outros casos ambos.
+
+Dado que todos os valores armazenados por meio de alocações dinâmicas possuem o mesmo formato e é trivialmente possível identificar ponteiros para outros objetos na estrutura utilizada, fica simples implementar um mecanismo de gerência de memória. O algoritmo utilizado é o mesmo descrito por John McCarthy em sua implementação de Lisp[20], e consiste dos seguintes passos:
+
+* Inicialize a memória como um bloco de elementos "livres", prontos a serem
+  utilizados;
+ 
+* Configure este bloco de forma que o segundo slot de cada elemento aponte para o próximo, formando uma lista encadeada de elementos livres;
+ 
+* A cada nova alocação necessária, obtenha um elemento da lista de elementos
+  livres;
+ 
+* Quando não houver mais elementos livres, identifique os elementos que estão
+  em uso e marque-os;
+ 
+* Após marcar os elementos em uso, varra a área de memória utilizada retornando
+  todos os elementos que não estão sendo utilizados para a lista de elementos
+  livres.
+
+Para identificar os elementos que estão em uso, basta seguir as cadeias de referências dos slots da estrutura descrita acima, a partir dos registradores da máquina virtual e de algumas outras estruturas auxiliares, marcando todos os elementos encontrados como sendo utilizados.
+
+Dado que os elementos são alocados dentro de um ou mais blocos conhecidos de memória, é fácil iterar por todos os elementos alocados, reinserindo-os na lista de elementos livres se não estiverem marcados e desmarcando os que estiverem, para deixar o estado geral da memória pronto para outro ciclo de coleta.
+
+Por questões de otimização uma flag (GC_ALWAYS_MARKED) indica objetos que não são varridos por gerenciarem a própria memória e nunca serem desalocados após serem criados. E por haver valores que não ocupam ambos os slots, ou ainda por haver valores que guardam dados que não são controlados pela gerência de memória nestes slots, algumas flags (MARK_POLICY_FIRST, MARK_POLICY_SECOND) controlam se é necessário continuar o percurso por cada um dos slots de um elemento.
+
+Este modelo simples de gerência de memória, conhecido como Mark & Sweep pelas duuas fases utilizadas[21], é suficiente para garantir que a máquina virtual utilize plenamente toda a memória disponível antes de terminar por falta de memória.
