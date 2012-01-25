@@ -9,7 +9,7 @@
 
 5 - O capítulo 2 (seção 2.1) precisa de mais informações sobre as funcionalidades notáveis de Scheme como continuações de primeira classe, macros, closures, etc.
 
-6 - Escrever o capítulo sobre o algoritmo de garbage collection.
+6 - Rever o capítulo sobre o algoritmo de garbage collection.
 
 7 - Terminar a discussão sobre o compilador.
 
