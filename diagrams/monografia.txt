@@ -43,9 +43,15 @@ Não existe em Scheme, também, o conceito de classes, como em linguagens orient
 
 O Minimalismo de Scheme pode ser verificado na forma como primitivas comuns em outras linguagens se mostram ausentes, sendo substituídas por construções compostas de primitivas mais abrangentes. Por exemplo, no lugar de expressões de retorno, mecanismos de exceções e interrupções de estruturas de laço (como /break/ e /continue/), temos apenas as primitivas de obter a continuação atual e aplicar uma continuação. Até mesmo as estruturas de laço, mencionadas há pouco, não são primitivas em Scheme: são meros padrões de utilização das primitivas de criar uma nova função e aplicação de funções.
 
-Para que esta utilização de funções como estruturas de laço, utilizando recursão, não esgote a memória de uma implementação arbitrária (por exemplo, esgotando a pilha utilizada para manter a cadeia de chamadas), qualquer implementação Scheme é obrigada a realizar a eliminação dos registros de ativação de chamadas terminais (/tail-calls/): aplicações de função nas quais o resultado da função chamada será, também, o resultado da função chamadora. Uma descrição mais fácil de compreender pode ser vista na figura ${fig:tail-call-elimination}.
+Para que esta utilização de funções como estruturas de laço, utilizando recursão, não esgote a memória de uma implementação arbitrária (por exemplo, esgotando a pilha utilizada para manter a cadeia de chamadas), qualquer implementação Scheme é obrigada a realizar a eliminação dos registros de ativação de chamadas terminais (/tail-calls/): aplicações de função nas quais o resultado da função chamada será, também, o resultado da função chamadora. Como exemplo, observemos a execução de uma função simples, que retorna a soma de dois números naturais utilizando apenas as operações de incremento e decremento, com e sem eliminação de chamadas terminais.
 
-# TODO [2]: Criar a figura abaixo.
+    (define (add op1 op2)
+      (if (zero? op1)
+        op2
+        (add (dec op1) (inc op2))))
+
+Esta função é obviamente recursiva, mas a chamada recursiva aparece em uma posição terminal. Na figura ${fig:tail-call-elimination} vemos como seria o consumo de memória utilizado para armazenar os registros de ativação em duas implementações hipotéticas com e sem eliminação de chamadas terminais.
+
 {$do-fig:tail-call-elimination}
 
 Quando uma implementação Scheme se depara com uma aplicação de chamada de função terminal, esta, obrigatoriamente, deve evitar criar um novo registro de ativação e reutilizar o registro de ativação da função em vigor como o registro de ativação da função prestes a ser chamada. Desta forma, recursões em que a chamada recursiva em si é considerada terminal utilizam quantidade constante de memória na pilha de ativações de funções.
@@ -100,7 +106,7 @@ Uma representação simplificada do interpretador, então, pode ser feita como n
 
 ${do-fig:visao-geral-implementacao}
 
-Os módulos descritos acima são implementados sobre o sistema de Gerência de Memória. A Gerência de Memória é baseada em uma implementação simples do algoritmo de Mark & Sweep [17], em que a memória livre é armazenada como uma lista encadeada de nós de memória de tamanho único (neste caso, 12 bytes). Com a ajuda de um conhecimento mais íntimo da máquina virtual em questão, o sistema de gerência de memória pode então, quando necessário, identificar quais nós de memória estão em uso e liberar para uso posterior todos os demais. Na seção 3.1 detalharemos o sistema de memória, embora uma compreensão completa do mesmo só seja possível após indicarmos quais partes da máquina virtual estão envolvidas no processo de identificar quais nós de memória estão em uso.
+Os módulos descritos acima são implementados sobre o sistema de Gerência de Memória. A Gerência de Memória é baseada em uma implementação simples do algoritmo de Mark & Sweep [17], em que a memória livre é armazenada como uma lista encadeada de nós de memória de tamanho único (neste caso, 24 bytes). Com a ajuda de um conhecimento mais íntimo da máquina virtual em questão, o sistema de gerência de memória pode então, quando necessário, identificar quais nós de memória estão em uso e liberar para uso posterior todos os demais. Na seção 3.1 detalharemos o sistema de memória, embora uma compreensão completa do mesmo só seja possível após indicarmos quais partes da máquina virtual estão envolvidas no processo de identificar quais nós de memória estão em uso.
 
 Podemos ter então, quebrando o trabalho do compilador em seus sub módulos separadamente, uma visão geral da arquitetura do Interpretador, em como os módulos se relacionam na figura ${fig:camadas}
 
@@ -140,7 +146,9 @@ Em seguida, duas outras palavras de 64 bits são utilizadas para armazenar as de
 
 Tendo em vista que não estamos preocupados em otimização, mas em clareza, esta estrutura simples representa diretamente a estrutura de dados mais utilizada em um dialeto Lisp: a "célula cons" que é utilizada para, entre outras coisas, representar listas. Uma célula cons nada mais é que um par de dois outros valores quaisquer da linguagem.
 
-Todos os demais valores expressos na linguagem, que não possam ser representados por valores imediatos, são representados utilizando esta estrutura de armazenamento duplo em slots. Em alguns casos apenas um dos slots de armazenamento é utilizado, em outros casos ambos.
+Todos os demais valores expressos na linguagem, que não possam ser representados por valores imediatos, são representados utilizando esta estrutura de armazenamento duplo em slots. Em alguns casos apenas um dos slots de armazenamento é utilizado, em outros casos ambos. Na figura ${fig:memory} podemos ver alguns exemplos de como a memória é estruturada quando representamos (A) uma string; (B) uma função primitiva; (C) uma lista com um símbolo e alguns valores imediatos.
+
+${do-fig:memory}
 
 Dado que todos os valores armazenados por meio de alocações dinâmicas possuem o mesmo formato e é trivialmente possível identificar ponteiros para outros objetos na estrutura utilizada, fica simples implementar um mecanismo de gerência de memória. O algoritmo utilizado é o mesmo descrito por John McCarthy em sua implementação de Lisp[20], e consiste dos seguintes passos:
 
@@ -153,11 +161,11 @@ Dado que todos os valores armazenados por meio de alocações dinâmicas possuem
   livres;
  
 * Quando não houver mais elementos livres, identifique os elementos que estão
-  em uso e marque-os;
+  em uso e marque-os (fase de marcação);
  
 * Após marcar os elementos em uso, varra a área de memória utilizada retornando
   todos os elementos que não estão sendo utilizados para a lista de elementos
-  livres.
+  livres (fase de varredura).
 
 Para identificar os elementos que estão em uso, basta seguir as cadeias de referências dos slots da estrutura descrita acima, a partir dos registradores da máquina virtual e de algumas outras estruturas auxiliares, marcando todos os elementos encontrados como sendo utilizados.
 
@@ -165,9 +173,9 @@ Dado que os elementos são alocados dentro de um ou mais blocos conhecidos de me
 
 Por questões de otimização uma flag (GC_ALWAYS_MARKED) indica objetos que não são varridos por gerenciarem a própria memória e nunca serem desalocados após serem criados. E por haver valores que não ocupam ambos os slots, ou ainda por haver valores que guardam dados que não são controlados pela gerência de memória nestes slots, algumas flags (MARK_POLICY_FIRST, MARK_POLICY_SECOND) controlam se é necessário continuar o percurso por cada um dos slots de um elemento.
 
-Este modelo simples de gerência de memória, conhecido como Mark & Sweep pelas duuas fases utilizadas[21], é suficiente para garantir que a máquina virtual utilize plenamente toda a memória disponível antes de terminar por falta de memória.
+Este modelo simples de gerência de memória, conhecido como Mark & Sweep pelas duuas fases utilizadas[17], é suficiente para garantir que a máquina virtual utilize plenamente toda a memória disponível antes de terminar por falta de memória.
 
-# TODO [6]: Rever esta seção.
+
 
 -- 3.2 Leitor
 
@@ -263,13 +271,28 @@ A instrução _ARGUMENT_ (${fig:op_argument}) armazena na pilha do registrador S
 
 ${do-fig:op_argument}
 
-# TODO [8]: Descrever as instruções abaixo.
-HALT
-RETURN
-SAVE
-REIFY
-APPLY
-BIND_MACRO
-CLOSURE
+A instrução _APPLY_ (${fig:op_apply}) inicia uma chamada a uma função ou primitiva e não recebe parâmetro algum. Utiliza como indicador de qual função ou primitiva a ser chamado o valor atual do Acumulador. 
 
+${do-fig:op_apply}
 
+Caso o valor no acumulador represente uma primitiva, a instrução simplesmente passa ao código da primtiiva a lista de parâmetros e mais nada. No entanto, se o valor no acumulador representar uma função ou closure definida pelo usuário um novo contexto de escopo baseado no valor dos argumentos e os parâmetros da função e substitui o valor do registrador Code pelo código da função em questão.
+
+A instrução _RETURN_ (${fig:op_return}) restaura um frame anteriormente salvo pela instrução _FRAME_. Não recebe parâmetro algum e configura os valores dos registradores Stack, Environment, Code e Dump para os valores contidos no primeiro elemento da pilha armazenada no registrador Dump. Mantém o registrador Acumulador intacto.
+
+${do-fig:op_return}
+
+A instrução _REIFY_ (${fig:op_reify}) é utilizada para restaurar a computação ao ponto de uma continuação previamente obtida. Recebe como parâmetros _dump_ e _valor_, que representam, respectivamente, o conteúdo do registrador Dump no momento da criação da continuação e o valor a ser restaurado para o Acumulador quando a continuação for restaurada. O efeito final da instrução, é o de retornar ao ponto em que a continuação foi criada, restaurando os valores presentes no primeiro elemento da pilha em Dump, deixando _valor_ no acumulador.
+
+${do-fig:op_reify}
+
+A instrução _SAVE_ (${fig:op_save}) é responsável por criar uma referência para a continuação da computação atual. Com a arquitetura utilizada pela máquina virtual, uma continuação é simplesmente uma closure de apenas um parâmetro, contendo o valor atual do registrador Dump encapsulado, cujo único efeito é chamar a instrução _REIFY_ com parâmetros o valor do registrador Dump quando a continuação foi criada e o valor do único parâmetro da closure. Esta closure é então armazenada no Acumulador.
+
+${do-fig:op_save}
+
+A instrução _CLOSURE_ (${fig:op_closure}) cria uma nova closure, uma função em que o contexto na qual foi criada é acessível. Recebe como parâmetros _argumentos_, _corpo_ e _proximo_ que são, respectivamente, uma lista contendo os parâmetros formais da closure a ser criada, o código compilado do corpo da função e o código que deve ser executado ao fim desta instrução. A nova closure criada é armazenada no Acumulador e o registrador Code é configurado com o valor de _próximo_.
+
+${do-fig:op_closure}
+
+A instrução _BIND_MACRO_ é uma variante próxima da instrução _BIND_, usada apenas para mitigar uma deficiência do compilador: a falta de um mecanismo em tempo de compilação para gerenciar macros. Esta instrução recebe dois parâmetros (_nome_ e _proximo_) e espera que o acumulador contenha código para uma macro. Como resultado, guarda em um contexto geral de macros uma referência para o código da macro sob o nome recebido como _nome_ e substitui o valor em Code pelo valor de _proximo_.
+
+A última instrução, _HALT_, simplesmente indica à máquina virtual que o processamento está terminado, e que o valor no Acumulador deve ser retornado como resultado da computação. Não recebe parâmetro algum, e não altera registrador algum.

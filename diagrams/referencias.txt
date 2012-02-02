@@ -31,7 +31,8 @@
      http://lists.scheme-reports.org/pipermail/scheme-reports/2011-November/001648.html
      obtido em 17/12/2011
 
-17 - Richard Jones & Lins, Garbage Collection.
+17 - Garbage Collection: Algorithms for Automatic Dynamic Memory Management.
+     Richard Jones, Rafael D. Lins, 1996.
 
 18 - GNU Flex ...
 
@@ -41,5 +42,3 @@
      John McCarthy, Communications of the ACM Volume 3 Issue 4 April 1960.
 
 
-21 - Garbage Collection: Algorithms for Automatic Dynamic Memory Management.
-     Richard Jones, Rafael D. Lins, 1996.

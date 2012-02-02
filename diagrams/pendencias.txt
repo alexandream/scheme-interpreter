@@ -1,7 +1,7 @@
 
 1 - Descrever, no capítulo 1, durante a descrição da estrutura de capítulos posteriores, o conteúdo dos capítulos 4 e 5.
 
-2 - Criar a figura que descreve exemplos de tail-call elimination para o segundo capítulo.
+## 2 - Criar a figura que descreve exemplos de tail-call elimination para o segundo capítulo.
 
 3 - Criar a tabela que descreve as diferenças entre funções e formas sintáticas no capítulo 2.
 
@@ -9,8 +9,7 @@
 
 5 - O capítulo 2 (seção 2.1) precisa de mais informações sobre as funcionalidades notáveis de Scheme como continuações de primeira classe, macros, closures, etc.
 
-6 - Rever o capítulo sobre o algoritmo de garbage collection.
+## 6 - Rever o capítulo sobre o algoritmo de garbage collection.
 
 7 - Terminar a discussão sobre o compilador.
 
-8 - Descrever as instruções que faltam na seção sobre a máquina virtual.
