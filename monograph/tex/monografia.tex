@@ -1,0 +1,530 @@
+\documentclass[brazil,pagestart=firstchapter]{abnt}
+
+% This does not accept all Unicode chars (for instance: I²C gives an error)
+%\usepackage[utf8]{inputenc}
+
+% This adds support for Unicode chars.
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+% But should be avoided:
+% http://tex.stackexchange.com/questions/13067/utf8x-vs-utf8-inputenc
+
+\usepackage[brazil]{babel}
+
+% http://tex.stackexchange.com/questions/664/why-should-i-use-usepackaget1fontenc
+% http://texblog.net/latex-archive/fonts/symbols/
+\usepackage[T1]{fontenc}
+
+% Use another font:
+% http://tex.stackexchange.com/questions/553/what-packages-do-people-load-by-default-in-latex/951#951
+%\usepackage{lmodern}
+
+% 'microtype' improves LaTeX line-breaking algorithm by using
+% microtypographic features of the font
+% http://tex.stackexchange.com/questions/349/what-is-the-practical-difference-between-latex-and-pdflatex/358#358
+\usepackage{microtype}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Acronyms and abbreviations
+
+% Simple and effective acronym package:
+\usepackage[printonlyused,withpage]{acronym}
+
+% This one from abntex does not work correctly:
+% http://comments.gmane.org/gmane.comp.tex.brazilian/13365
+%\usepackage{tabela-simbolos}
+
+% "nomencl" is quite annoying to use, specially when compared to "acronym".
+% "nomencl" requires an external file and some extra commands.
+% "acronym", on the other hand, just works out of the box!
+%\usepackage{nomencl}
+%\makenomenclature
+% http://en.wikibooks.org/wiki/LaTeX/Indexing#Abbreviation_list
+% http://franz.kollmann.in/latex/latex.html#abbr
+% latexmk needs a custom dependency for this package
+% http://magic.aladdin.cs.cmu.edu/2007/11/06/continuous-latex-compilation-using-latexmk/
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Other packages
+
+% http://en.wikibooks.org/wiki/LaTeX/Advanced_Mathematics
+\usepackage{amsmath}
+\DeclareMathOperator{\angulo}{ang}
+
+% Adding \textsubscript{}
+% LaTeX already has \textsuperscript, but lacks \textsubscript.
+% http://en.wikibooks.org/wiki/LaTeX/Formatting#Text_mode_superscript_and_subscript
+\usepackage{fixltx2e}
+
+% Better handling of space after a custom command.
+% http://tex.stackexchange.com/questions/17730/newcommand-and-spacing
+\usepackage{xspace}
+
+% This package detects footnotes that are split over several pages, and
+% writes a warning to the log file.
+\usepackage{fnbreak}
+
+% http://tex.stackexchange.com/questions/32208/footnote-runs-onto-second-page
+% http://www.tex.ac.uk/cgi-bin/texfaq2html?label=splitfoot
+%\interfootnotelinepenalty=10000
+
+% Avoid floats and figures from crossing a section boundary
+% http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions#Keeping_floats_in_their_place
+\usepackage[section]{placeins}
+
+% Required for including graphics
+\usepackage{graphicx}
+
+\usepackage{sidecap}
+% Inserting PDF pages from other documents
+\usepackage{pdfpages}
+
+% SI Units
+% https://bitbucket.org/josephwright/siunitx/issue/100/undefined-control-sequence-bit-and-byte
+
+% To find the total number of pages
+%\usepackage{lastpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Embedding source-code
+
+%\usepackage{color}
+%\usepackage{xcolor}
+
+% LaTeX, as delivered, offers no means of handling bold "teletype" fonts
+% http://www.tex.ac.uk/cgi-bin/texfaq2html?label=bold-extras
+% http://tex.stackexchange.com/questions/33039/using-ttfamily-with-bfseries-or-how-to-enable-bold-in-fixed-width-font
+% And the solution is to load another fixed-width font:
+%\usepackage{courier}
+%\usepackage{couriers}
+%\usepackage{beramono}
+% Either load all fonts from this pack:
+\usepackage{txfonts}
+% Or load only the typewriter one.
+%\renewcommand{\ttdefault}{txtt}
+
+% For inserting source-code
+\usepackage{listings}
+
+% Translating "Listing"
+\renewcommand{\lstlistingname}{Listagem}
+\newcommand{\sctt}[1]{\textsc{\texttt{#1}}}
+
+% Setting the default options
+\lstset{
+	basicstyle=\ttfamily\footnotesize,
+	numberstyle=\scriptsize,
+	numbers=left,
+	escapeinside={(*@}{@*)},
+	tabsize=4,
+	breaklines=true,
+	breakatwhitespace=true,
+	showspaces=false,
+	showstringspaces=false,
+	showlines=false,
+	captionpos=b
+}
+%	extendedchars=true,
+%	inputencoding=utf8x,
+%	numbersep=5pt,
+%	frame=shadowbox,
+%	frameround=rrrt,
+%	rulecolor=\color{black},
+%	rulesepcolor=\color{black},
+% These don't seem to work if the caption is at the bottom
+%	abovecaptionskip=\parskip,
+%	belowcaptionskip=\parskip
+
+
+% AVISO!!!  (copiado de outro projeto, mas não se aplica aqui)
+% Dentro dos exemplos de código-fonte abaixo, coloquei um "tab" de
+% indentação por estar dentro de um "frame", e "espaços" para a
+% indentação do código de exemplo. Isto foi necessário porque os tabs
+% estavam sendo ignorados dentro do códigos de exemplo.
+
+\lstnewenvironment{ccode}[1][]
+{\lstset{language=C,
+	#1}
+}{}
+
+\lstnewenvironment{pythoncode}[1][]
+{\lstset{language=Python,
+	#1}
+}{}
+
+\lstnewenvironment{shellcode}[1][]
+{\lstset{language=bash,
+	#1}
+}{}
+
+% \begin{lstlisting}[caption={Useless code},label=useless]
+% \end{lstlisting}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Table-related packages:
+
+% For multirow cells inside tabular environments
+%\usepackage{multirow}
+
+% Longtable allows you to write tables that continue to the next page
+%\usepackage{longtable}
+
+% 'tabularx' package - simple column stretching
+% http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabularx_package_-_simple_column_stretching
+%\usepackage{tabularx}
+
+% 'booktabs' - Publication quality tables in LaTeX
+%\usepackage{booktabs}
+
+% Alternating row colors in tables
+%\usepackage[table]{xcolor}
+%\definecolor{tabular-odd-color}{gray}{0.90}
+%\definecolor{tabular-even-color}{gray}{0.97}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fancy headers (and footers)
+% http://en.wikibooks.org/wiki/LaTeX/Page_Layout#Page_Styles
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%
+%% Headers and footers definition:
+%\lhead{\includegraphics[height=21mm]{shared/2aliancas_h.pdf}}
+%\chead{}
+%% This \parbox is a hack to keep text aligned at top, but it's not the
+%% only available solution:
+%% http://tex.stackexchange.com/questions/2440/how-to-vertically-align-headers-footers-in-fancyhdr-package
+%\rhead{\parbox[b][21mm][t]{0.65\textwidth}{\raggedleft\large\titletext \\[1em] \subtitletext}}
+%\lfoot{}
+%\cfoot{}
+%\rfoot{Page \thepage{} of \pageref{LastPage}}
+%
+%\renewcommand{\headrulewidth}{0pt}  % Default is 0.4pt
+%\renewcommand{\footrulewidth}{0pt}  % Default is 0pt
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 'hyperref' for including hyperlinks to the PDF.
+% It should be loaded last.
+% http://en.wikibooks.org/wiki/LaTeX/Formatting#Typesetting_URLs
+\usepackage{hyperref}
+\hypersetup{
+	pdfborder={0 0 0},
+	hyperindex=false
+}
+% hyperindex=false is required by "tabela-de-simbolos"
+
+% http://en.wikibooks.org/wiki/LaTeX/Labels_and_Cross-referencing#Issues_with_links_to_tables_and_figures_handled_by_hyperref
+%\usepackage[all]{hypcap}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom commands
+% http://tex.stackexchange.com/questions/1050/whats-the-difference-between-newcommand-and-newcommand
+
+% http://tex.stackexchange.com/questions/24132/overline-outside-of-math-mode
+\makeatletter
+\newcommand*{\textoverline}[1]{$\overline{\hbox{#1}}\m@th$}
+\makeatother
+
+% http://tex.stackexchange.com/questions/15009/macros-for-common-abbreviations
+\newcommand*{\eg}{e.g.\@\xspace}
+\newcommand*{\ie}{i.e.\@\xspace}
+
+\newcommand*{\VBUS}{V\textsubscript{BUS}\xspace}
+\newcommand*{\VCC}{V\textsubscript{CC}\xspace}
+\newcommand*{\VDD}{V\textsubscript{DD}\xspace}
+\newcommand*{\GND}{GND\xspace}
+% http://tex.stackexchange.com/questions/9691/avoid-hyphenation-in-2-d
+\newcommand*{\VUSB}{\mbox{V-USB}\xspace}
+
+\newcommand*{\resultadoimagens}[1]{
+	\includegraphics[width=0.19\textwidth]{resultados/P30T30p0t0_a#1.png}
+	\includegraphics[width=0.19\textwidth]{resultados/P45T45p0t0_a#1.png}
+	\includegraphics[width=0.19\textwidth]{resultados/P60T60p0t0_a#1.png}
+	\includegraphics[width=0.19\textwidth]{resultados/P75T75p0t0_a#1.png}
+	\includegraphics[width=0.19\textwidth]{resultados/P85T85p0t0_a#1.png}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Other notes
+
+% \linewidth is either \columnwidth in two-column mode or \textwidth in one-column mode.
+% http://tex.stackexchange.com/questions/275/how-to-find-the-textwidth-in-two-column-mode/3531#3531
+
+% Search-and-replace to add \textit to "mouse"
+% :.,$s/\(textit{\)\@<!\<\(mouses\?\|joysticks\?\)\>/\\textit{\2}/gc
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some metadata
+
+% This is used only by latex-beamer package:
+%\title{Dispositivo apontador com interface USB usando magnetômetro}
+%\author{Denilson Figueiredo de Sá}
+%\date{2011-11-16}
+%\institute{DCC/UFRJ}
+%\keywords{AVR, USB, mouse, magnetometer}
+
+\autor{Alexandre Araujo Moreira}
+\titulo{Implementação de Referência da sétima revisão da linguagem de programação Scheme}
+\orientador{Geraldo Zimbrão}
+%\comentario{}
+\instituicao{Departamento de Ciência da Computação \par Instituto de Matemática \par Universidade Federal do Rio de Janeiro}
+\local{Rio de Janeiro - RJ, Brasil}
+\data{27 de fevereiro de 2012}
+
+% latex-beamer sets the pdftitle and pdfauthor automatically, but here we
+% must explicitly run it:
+\hypersetup{
+	pdftitle={\ABNTtitulodata},
+	pdfauthor={\ABNTautordata}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+% The "abnt" class issues a warning:
+%   pdfTeX warning (ext4): destination with the same identifier
+%   (name{page.i}) has been already used, duplicate ignored
+% This page has a solution (or workaround):
+% http://en.wikibooks.org/wiki/LaTeX/Hyperlinks#Problems_with_Links_and_Pages
+%\pagenumbering{roman}
+% But, anyway, it's better to ignore that warning (or even better would be
+% to report it to abntex maintainers).
+% Instead of messing with page numbering, I've added pagestart=firstchapter
+% option.
+
+
+\capa
+
+\folhaderosto
+
+
+\begin{folhadeaprovacao}
+
+\setlength{\ABNTsignthickness}{0.4pt}
+\setlength{\ABNTsignskip}{2cm}
+\hspace*{1cm}
+
+\centerline{\textbf{\large \ABNTtitulodata}}
+
+\bigskip
+\bigskip
+
+\centerline{\textbf{\ABNTautordata}}
+
+\bigskip
+\bigskip
+
+Projeto Final de Curso submetido ao Departamento de Ciência da Computação
+do Instituto de Matemática da Universidade Federal do Rio de Janeiro como
+parte dos requisitos necessários para obtenção do grau de Bacharel em
+Ciência da Computação.
+
+Apresentado por:
+
+\assinatura{\ABNTautordata}
+
+Aprovado por:
+
+\assinatura{Prof. Geraldo Zimbrão \\ Orientador}
+\assinatura{Prof. John Doe of Unknown Surname}
+\assinatura{Profª. Whoever is Chosen to Come}
+
+\bigskip
+\bigskip
+\bigskip
+
+\begin{center}
+\ABNTlocaldata
+
+\ABNTdatadata
+\end{center}
+
+\end{folhadeaprovacao}
+
+
+% Colocar o Sumário aqui é muito bom, mas não é de acordo com a norma ABNT
+% NBR 14724: informação e documentação: trabalhos acadêmicos: apresentação.
+%\tableofcontents{}
+
+
+%\pretextualchapter{Dedicatória}
+% TODO: escrever dedicatória (opcional)
+
+\pretextualchapter{Agradecimentos}
+
+Agradeço aos professores do DCC/UFRJ, em especial aos professores
+\textsc{Nelson Quilula Vasconcelos},
+\textsc{Adriano Joaquim de Oliveira Cruz}, e
+\textsc{Silvana Rossetto} por participarem deste projeto,
+e aos professores
+\textsc{João Carlos Pereira da Silva},
+\textsc{Márcia Rosana Cerioli} e
+\textsc{Monique Moura Carmona} pelo apoio durante esses anos de faculdade.
+
+Agradeço aos amigos de faculdade, em especial
+\textsc{Alexandre Araújo Moreira},
+\textsc{Luana Pinto Araújo} e
+\textsc{Priscila Neves Bilangieri} por toda a paciência e apoio nos
+momentos em que mais precisei de ajuda.
+
+Agradeço também ao amigo de faculdade
+\textsc{Bruno Bottino Ferreira} pela paciência durante as semanas finais
+deste projeto.
+
+Agradeço aos amigos de trabalho, em especial
+\textsc{Claudio Sá de Abreu} e
+\textsc{Marcelo Salhab Brogliato} pelo apoio e pelo crescimento pessoal e
+profissional que me proporcionaram.
+
+
+\begin{resumo}
+Este projeto tem como objetivo implementar um dispositivo apontador
+compatível com um \textit{mouse} USB utilizando um microcontrolador AVR
+ATmega8 de 8 bits e um magnetômetro. O dispositivo fruto deste projeto
+permite o usuário controlar o ponteiro do mouse movendo um sensor no ar,
+simplesmente apontando-o para a posição desejada na tela. É uma forma
+bastante intuitiva de controlar o ponteiro em situações onde um
+\textit{mouse} não é adequado. Pode também ser usado para fins de
+acessibilidade, controlando o ponteiro através de movimentos da cabeça ou de
+qualquer outra parte do corpo.
+\end{resumo}
+
+\begin{abstract}
+This project implements a USB HID absolute pointing device using an ATmega8
+AVR 8-bit microcontroller and a magnetometer. This device allows the user to
+control the mouse pointer by just moving a sensor in the air, pointing it to
+the desired screen position. It is a very intuitive way to control the
+pointer whenever it is not appropriate to use a mouse. It can also be used
+for accessibility, controlling the pointer by head movements, or movements
+of any other part of the body.
+\end{abstract}
+
+
+\listoffigures
+
+%\listoftables
+
+
+% The following command does not work:
+% \listadesiglas
+% Instead, I'm using "acronym" package.
+
+\pretextualchapter{Lista de Siglas}
+
+\begin{acronym}[EEPROM]
+
+\acro{IA}{Inteligência Artificial}
+\acro{R7RS}[R⁷RS]{Revised⁷ Report on Scheme}
+\acro{R5RS}[R⁵RS]{Revised⁵ Report on Scheme}
+\acro{R6RS}[R⁶RS]{Revised⁶ Report on Scheme}
+
+
+%\acro{ADC}{Analog-to-Digital Converter}
+%\acro{API}{Application Programming Interface}
+%\acro{BIOS}{Basic Input/Output System}
+%\acro{DIP}{Dual In-line Package}
+%\acro{EEPROM}{Electrically Erasable Programmable Read-Only Memory}
+%\acro{HID}{Human Interface Device}
+%\acro{I2C}[I²C]{Inter-Integrated Circuit}
+%\acro{ICSP}{In-Circuit Serial Programmer}
+%\acro{ISP}{In-System Programmer}
+%\acro{LCC}{Leaded Chip Carrier}
+%\acro{LED}{Light-Emitting Diode}
+%\acro{LKML}{Linux Kernel Mailing List}
+%\acro{NRZI}{Non-Return-to-Zero Inverted}
+%\acro{PCB}{Printed Circuit Board}
+%\acro{PDIP}{Plastic Dual In-line Package}
+%\acro{QFN}{Quad-Flat No-leads Package}
+%\acro{QFP}{Quad Flat Package}
+%\acro{ROM}{Read-Only Memory}
+%\acro{SCL}{Serial Clock}
+%\acro{SDA}{Serial Data}
+%\acro{SE0}{Single-Ended 0}
+%\acro{SE1}{Single-Ended 1}
+%\acro{SRAM}{Static Random-Access Memory}
+%\acro{TWI}{Two-Wire Interface}
+%\acro{USB-IF}{USB Implementers' Forum}
+%\acro{USB}{Universal Serial Bus}
+
+\end{acronym}
+
+
+\tableofcontents
+
+
+
+
+
+\chapter{Introdução}
+\label{cap:introducao}
+
+
+\vfill{}
+\begin{flushright}{}
+``\emph{The world is moving so fast these days that the man who says it
+can't be done is generally interrupted by someone doing it.}''\\
+{\small Elbert Green Hubbard}
+\end{flushright}{\small \par}
+\vfill{}
+
+Neste capítulo são apresentados a motivação e os objetivos deste projeto, uma
+lista de trabalhos relacionados e a estrutura da monografia.
+\newpage
+
+\include{introducao}
+
+
+
+
+\chapter{Sobre Scheme}
+\label{cap:scheme}
+
+\vfill{}
+\begin{flushright}{}
+``\emph{The world is moving so fast these days that the man who says it
+can't be done is generally interrupted by someone doing it.}''\\
+{\small Elbert Green Hubbard}
+\end{flushright}{\small \par}
+\vfill{}
+
+Neste capítulo são apresentados a motivação e os objetivos deste projeto, uma
+lista de trabalhos relacionados e a estrutura da monografia.
+\newpage
+
+\include{scheme}
+
+
+
+
+\chapter{Estratégia de Implementação}
+\label{cap:estrategia}
+
+\vfill{}
+\begin{flushright}{}
+``\emph{The world is moving so fast these days that the man who says it
+can't be done is generally interrupted by someone doing it.}''\\
+{\small Elbert Green Hubbard}
+\end{flushright}{\small \par}
+\vfill{}
+
+Neste capítulo são apresentados a motivação e os objetivos deste projeto, uma
+lista de trabalhos relacionados e a estrutura da monografia.
+\newpage
+
+
+\input{estrategia-visao-geral}
+\input{estrategia-memoria}
+\input{estrategia-leitor}
+\input{estrategia-compilador}
+\input{estrategia-maquina-virtual}
+
+
+\end{document}
+
+% vim:filetype=tex ts=4 sw=4 noet tw=76

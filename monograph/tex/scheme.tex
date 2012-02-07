@@ -1,0 +1,273 @@
+
+\section{Introdução}
+\label{sec:introducao_scheme}
+
+Como discutido no capítulo anterior, a linguagem \textit{Scheme} mantém características
+de minimalismo e simplicidade conceitual que a tornaram bastante populares como
+ambiente de estudo de conceitos e implementações de linguagens de programação
+além de ser utilizada em diversas instituições de ensino como linguagem inicial
+para aprendizado de conceitos de computação e programação.
+
+Praticamente todas estas características, no entanto, são meros acidentes no
+processo de desenvolvimento da linguagem, que teve como objetivo inicial do
+desenvolvimento, por Gerald Jay Sussman e Guy L. Steele Jr, criar um dialeto
+Lisp simples para mapear e melhor compreender o modelo de computação chamado
+``Actor Model'', proposto por Carl Hewitt \textit{et al}, em seu paper ``\textit{A Universal
+Modular Actor Formalism for Artificial Intelligence}''. Esta implementação,
+publicada ao longo de diversos memorandos entre 1975 e 1980, resultou na
+linguagem de programação \textit{Scheme}.[1]
+
+Como resultado deste empreendimento, Sussman e Steele acabaram por descobrir
+que o modelo proposto por Hewitt podia ser diretamente traduzido para o modelo
+de computação já bastante conhecido à época chamada Cálculo Lambda, e que um
+dialeto Lisp baseado no Cálculo Lambda poderia ser criado com pequenas
+alterações nos modelos computacionais utilizados pelos dialetos Lisp utilizados
+na época. Chegaram à conclusão que um dialeto Lisp poderia ser criado para
+representar o Actor Model bastando que se passasse a utilizar uma estratégia de
+escopo léxico (em contraste com o escopo dinâmico utilizado por todos os
+dialetos Lisp da época) e que o conceito de Continuações, que discutiremos em
+breve, fosse exposto como objetos de primeira classe.
+
+A criação deste dialeto Lisp, então chamado \textit{Schemer} como uma
+brincadeira em relação ao nome de outras duas linguagens criadas por times
+próximos (\textit{Planner} e \textit{Conniver}), baseado mais fortemente no
+modelo do Cálculo Lambda, criou uma forma prática para que estudos teóricos
+sobre computação feitos sobre a base do Cálculo Lambda tivessem uma
+materialização prática na forma de uma linguagem de programação em que poderiam
+ser experimentados. Esta acabou por se tornar uma ótima plataforma de
+experimentação[1].
+
+A seguir, é descrito um subconjunto das funcionalidades de \textit{Scheme} de forma a
+familiarizar o leitor com a linguagem e facilitar a compreensão da subsequente
+discussão de sua implementação e as estratégias utilizadas.
+
+\section{Descrição da linguagem e suas funcionalidades}
+\label{sec:funcionalidades}
+
+Variáveis em \textit{Scheme} não possuem tipo. O tipo é uma propriedade do
+valor armazenado na variável, com a checagem dos tipos feita em tempo de
+execução, não havendo verificação estática desta característica. A linguagem
+vem equipada com um conjunto modesto de tipos e permite ao programador criar
+seus próprios tipos disjuntos dos tipos existentes.
+
+Não existe em \textit{Scheme}, também, o conceito de classes, como em
+linguagens orientadas a objeto, embora este conceito tenha sido diversas vezes
+implementado em termos das primitivas da linguagem [12][13][14]
+
+O Minimalismo de \textit{Scheme} pode ser verificado na forma como primitivas
+comuns em outras linguagens se mostram ausentes, sendo substituídas por
+construções compostas de primitivas mais abrangentes. Por exemplo, no lugar de
+expressões de retorno, mecanismos de exceções e interrupções de estruturas de
+laço (como \textit{break} e \textit{continue}), temos apenas as primitivas de
+obter a continuação atual e aplicar uma continuação. Até mesmo as estruturas de
+laço, mencionadas há pouco, não são primitivas em \textit{Scheme}: são meros
+padrões de utilização das primitivas de criar uma nova função e aplicação de
+funções.
+
+
+\subsection{Eliminação de Chamadas Terminais}
+
+Para que esta utilização de funções como estruturas de laço, utilizando
+recursão, não esgote a memória de uma implementação arbitrária (por exemplo,
+esgotando a pilha utilizada para manter a cadeia de chamadas), qualquer
+implementação \textit{Scheme} é obrigada a realizar a eliminação dos registros
+de ativação de chamadas terminais (\textit{tail-calls}): aplicações de função
+nas quais o resultado da função chamada será, também, o resultado da função
+chamadora. Como exemplo, observemos a execução de uma função simples, que
+retorna a soma de dois números naturais utilizando apenas as operações de
+incremento e decremento, com e sem eliminação de chamadas terminais.
+
+\begin{lstlisting}
+    (define (add op1 op2)
+      (if (zero? op1)
+        op2
+        (add (dec op1) (inc op2))))
+\end{lstlisting}
+
+Esta função é obviamente recursiva, mas a chamada recursiva aparece em uma
+posição terminal. Na figura \ref{fig:tail-call-elimination} vemos como seria o
+consumo de memória utilizado para armazenar os registros de ativação em duas
+implementações hipotéticas com e sem eliminação de chamadas terminais.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{../images/tail-call-elimination.pdf}
+\caption{Tempo de vida de registros de ativação em relação a chamadas terminais}
+\label{fig:tail-call-elimination}
+\end{figure}
+
+Quando uma implementação \textit{Scheme} se depara com uma aplicação de chamada
+de função terminal, esta, obrigatoriamente, deve evitar criar um novo registro
+de ativação e reutilizar o registro de ativação da função em vigor como o
+registro de ativação da função prestes a ser chamada. Desta forma, recursões em
+que a chamada recursiva em si é considerada terminal utilizam quantidade
+constante de memória na pilha de ativações de funções.
+
+\subsection{Representação textual}
+
+Como membro da família Lisp, código
+\textit{Scheme} é representado textualmente por listas de elementos separados
+por espaço em branco, agrupados por parênteses, que denotam um formato abstrato
+conhecido como Expressões-S (abreviação de Expressões Simbólicas). Expressões-S
+podem ser definidas recursivamente da seguinte forma:
+
+\begin{itemize}
+
+\item Um elemento atômico (número, símbolo ou outro literal da linguagem) é uma Expressão-S;
+
+\item Uma lista de Expressões-S é uma Expressão-S.
+
+\end{itemize}
+
+Ainda em conformidade com a família Lisp, \textit{Scheme} adota a notação
+polonesa (ou notação de prefixos), com as listas representando operações em que
+o primeiro elemento da lista é o operador, que pode ser uma função ou uma forma
+sintática, e os demais elementos são parâmetros para a operação.
+
+\subsection{Funções e Formas Sintáticas}
+
+Embora a sintaxe para aplicação de funções ou formas sintáticas seja idêntica,
+é importante ressaltar as diferenças básicas entre os dois tipos de operações,
+já que possuem semânticas bastante distintas. A distinção entre funções e
+formas sintáticas pode ser traçada com base na fase da computação em que são
+avaliados e na estratégia de avaliação de parâmetros, como visto na tabela
+\ref{table:functions-vs-special-forms}.
+
+É interessante notar que do ponto de vista de uma implementação \textit{Scheme}
+formas sintáticas primitivas, como \sctt{if} ou \sctt{lambda}, possuem
+tratamento semântico idêntico ao das formas sintáticas derivadas definidas pelo
+usuário, exceto pelo fato que as primeiras são tratadas diretamente pelo
+compilador e as segundas são gerenciadas pelo mecanismo de macros.
+
+\begin{table}[h!]
+ \begin{center}
+  \begin{tabular} { | c | p{4cm} | p{4cm} | }
+   \hline
+                        & \textbf{Funções} & \textbf{Formas Sintáticas} \\ \hline
+    \textbf{Avaliação de Parâmetros} & Todos os parâmetros são avaliados antes da chamada da função propriamente dita. & Nenhum dos parâmetros é avaliado, a forma sintática é executada com a representação em lista do código. \\ \hline
+    \textbf{Fase da Avaliação} & São avaliadas durante a execução do programa. & São avaliadas antes do código ser executado, durante a compilação ou imediatamente antes da interpretação. \\ \hline
+  \end{tabular}
+ \end{center}
+ \caption{Diferenças entre Funções e Formas Sintáticas} 
+ \label{table:functions-vs-special-forms}
+\end{table}
+
+\subsection{Processamento de listas e macros}
+
+Scheme herda dos Lisps anteriores um grande número de operações sobre listas, e
+a utilização de Expressões-S (estruturas baseadas em listas) faz com que seja
+fácil manipular representações em Expressão-S de código \textit{Scheme},
+utilizando a própria linguagem. Esta propriedade, aliada à capacidade do
+programador de definir código de funções ou substituições a serem aplicadas no
+código anteriormente à compilação ou interpretação, leva a um poderoso sistema
+de macros que permite ao programador criar novas formas sintáticas que são
+convertidas para formas primitivas da linguagem. Desta maneira, o fato de ser
+uma linguagem minimalista não interfere com a expressividade do programador
+final, que em geral lida com expressões mais complexas abstraídas por trás de
+formas sintáticas derivadas.
+
+\subsection{Escopo de variáveis}
+
+Como mencionado anteriormente, \textit{Scheme} foge da tradição entre
+linguagens anteriores da família Lisp por adotar um modelo de escopo léxico,
+estático, em que o escopo de uma variável pode sempre ser determinado pela
+simples análise do texto do programa. Partindo do ponto em que a variável é
+referenciada, utilizando escopo léxico, e voltando na estrutura do código é
+sempre possível encontrar o ponto em que esta é declarada ou, caso não seja
+possível (ou seja, esta variável é uma variável livre no contexto atual), esta
+tem de ser uma variável global -- ou um erro por parte do programador, visto
+que então a variável não estaria declarada em lugar algum.
+
+Tradicionalmente, no entanto, dialetos Lisp implementavam uma estratégia de
+escopo dinâmico em que uma variável livre estava vinculada à declaração da mais
+recente variável de mesmo nome no contexto dinâmico da pilha de chamadas
+anteriores. A diferença entre as estratégias de escopo léxico e dinâmico é 
+exemplificado a seguir com base no código abaixo:
+
+\begin{lstlisting}
+    (define x 0)
+    
+    (define (func1 n) 
+      (+ n x))
+    
+    (define (func2 n) 
+      (let ((x 1))
+        (func1 n)))
+\end{lstlisting}
+
+Caso se observe o código acima sob a ótica de uma implementação Lisp com
+estratégia de escopo dinâmico, ao se executar a uma chamada à função
+\sctt{func2} passando um número qualquer \sctt{n} como parâmetro, o resultado
+encontrado seria o mesmo de executar a expressão \texttt{(+ n 1)}, visto que o
+valor encontrado na variável \sctt{x} no corpo da função \sctt{func1} é
+vinculado ao valor mais próximo de \sctt{x} encontrado na estrutura dinâmica de
+registros de ativação das funções executadas, ou seja, o valor em \sctt{func2}.
+
+No entanto, sob o ponto de vista de uma estratégia de escopo estático, o
+resultado encontrado é equivalente a retornar o parâmetro diretamente, visto
+que o vínculo dado a \sctt{x} em \sctt{func1} é sempre o encontrado no escopo
+durante a análise estática do código sem informações de tempo de execução, ou
+seja, a variável global definida na linha 1.
+
+De acordo com Sussman e Steele[1], esta mudança fez com que o tratamento de
+variáveis livres em um a expressão fosse semanticamente análogo ao dado no
+formalismo do Cálculo Lambda, fornecendo um bom modelo computacional para
+experimentação com o Cálculo Lambda. Novamente de acordo com os criadores da
+linguagem [1], esta proximidade com o Cálculo Lambda foi um dos motivos
+principais para a utilização futura, não prevista originalmente, de
+\textit{Scheme} como uma linguagem de ensino e experimentação de conceitos de
+linguagens de programação.
+
+\subsection{Closures}
+
+A mudança para o escopo léxico, associada à possibilidade de criação e
+manipulação de funções como objetos em tempo de execução, faz com que seja
+possível gerar \textit{closures}, ou seja: funções que capturam o vínculo de
+variáveis como estavam no momento em que a função foi declarada em tempo de
+execução e carregam estes vínculos consigo, podendo manipulá-los e modificá-los
+como quiser. Esta técnica é largamente utilizada em \textit{Scheme} para criar
+unidades de código que contém tanto código de função como estado de variáveis,
+ de forma análoga aos objetos de uma linguagem orientada a objetos.
+
+Um exemplo simples de closure, para demonstrar o conceito, é dado no código a
+seguir, em que uma função (\sctt{multiplicador}) recebe como parâmetro um
+número \sctt{n} e retorna uma função de um parâmetro \sctt{x} que multiplica
+todo \sctt{x} passado pelo \sctt{n} recebido por \sctt{multiplicador}. Pode-se
+dizer que a função criada pela \textit{expressão lambda} contida em
+\sctt{multiplicador} cria uma closure sobre o vínculo associado ao nome \sctt{n}
+no escopo em que foi avaliada, e este vínculo é acessado sempre que a função
+resultante desta \textit{expressão lambda} for aplicada.
+
+\begin{lstlisting}
+    (define (multiplicador n)
+       (lambda (x) (* n x)))
+\end{lstlisting}
+
+Como exemplo, pode-se observar o resultado de uma interação com o interpretador
+na figura \ref{fig:interacao-closure}.
+
+\begin{figure}[h!]
+\begin{lstlisting}[numbers=none] Welcome to Stutter.
+    
+    > (define (multiplicador n) 
+        (lambda (x) (* n x)))
+    #U
+    
+    > multiplicador
+    User defined function at 0x0x7f9b3aa75a18
+    
+    > (define t5 (multiplicador 5))
+    #U
+    
+    > (define t10 (multiplicador 10))
+    #U
+    
+    > (t5 3)
+    15
+    
+    > (t10 3)
+    30
+\end{lstlisting}
+\caption{Interação com o Interpretador exemplificando efeitos de closures.}
+\label{fig:interacao-closure}
+\end{figure}
