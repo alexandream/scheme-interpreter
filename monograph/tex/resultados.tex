@@ -1,0 +1,195 @@
+\section{Visão geral}
+\label{sec:introducao-resultados}
+
+O principal resultado atingido com esta implementação foi um ambiente interativo
+\textit{Scheme} capaz de reconhecer a maior parte da linguagem descrita pelo 
+terceiro \textit{draft} do relatório \acs{R7RS}-small. Em especial, foram
+implementados:
+
+\begin{itemize}
+
+\item todos os conceitos definidos na seção 3 do relatório, ``\textit{Basic
+Concepts}'';
+
+\item todos os tipos de expressão primitivos definidos pela seção 4.1 do
+relatório, ``\textit{Primitive expression types}'';
+
+\item 15 dos 24 tipos de expressão derivados definidos pela seção 4.2 do
+relatório, ''\textit{Derived expression types}'', sendo que dos 9 não
+implementados 5 (\texttt{cond}, \texttt{case}, \texttt{letrec*}, \texttt{do},
+\texttt{case-lambda}) são formas sintáticas trivialmente implementáveis
+diretamente como macros \textit{Scheme} utilizando as expressões básicas já
+disponíveis;
+
+\item aproximadamente 60\% (8 de 13) dos tipos primitivos definidos pelo \acs{R7RS}, sendo
+ os outros 50\% de implementação opcional ou análoga a de algum tipo já
+implementado (como, por exemplo, vetores que compartilhariam muito código com
+a implementação dada para strings);
+
+\item e aproximadamente 75\% (133 de 179) dos símbolos descritos no módulo
+\texttt{base} do \acs{R7RS}, sendo que dos 46 que faltam, 31 são acessores ou
+construtores de tipos não implementados.
+
+\end{itemize}
+
+No entanto, algumas funcionalidades notáveis não foram implementadas, ou não foram
+implementadas de acordo com a especificação, estas são:
+
+\begin{itemize}
+
+\item todo o mecanismo de módulos -- embora o interpretador seja capaz de carregar 
+código de arquivos externos, todos os identificadores definidos por estes são 
+injetados diretamente no escopo global;
+
+\item a linguagem de reconhecimento de padrões utilizada para o sistema de macros
+baseadas em regras;
+
+\item a possibilidade de utilizar palavras-chave da linguagem (como \texttt{if} ou
+\texttt{lambda}) como nome de variáveis;
+
+\item as macros geradas pelo sistema de macros procedural não são higiênicas;
+
+\end{itemize}
+
+Todos estes problemas derivam de um mesmo problema na estratégia de construção do 
+compilador: o compilador utilizado não mantém conhecimento suficiente sobre o 
+contexto estático para poder dar as informações necessárias para que as diferenças
+de escopo sejam gerenciadas caso a caso.
+
+Este problema, no entanto, foi detectado em uma fase demasiado avançada do
+desenvolvimento em que a sua solução teria grande probabilidade de comprometer
+a finalização do resto da implementação e, por isso, resolveu-se continuar por
+utilizar a estratégia atual. Na seção \ref{ss:solucoes-compilador} é realizada
+uma discussão de como o compilador poderia ser modificado para resolver este
+problema base, enquanto que na seção \ref{ss:solucoes-macros} se discute como
+o sistema de macros higiênicas poderia ser criado a partir do momento que o
+compilador fosse reestruturado.
+
+Mesmo com essas falhas, a implementação base deste trabalho pode ser vista como
+uma implementação próxima o suficiente da linguagem definida pelo \acs{R7RS}-small
+e utiliza técnicas simples o suficientes para ser de perfeito entendimento por um
+aluno de graduação em ciência da computação
+
+\ldots to be continued \ldots
+
+
+
+
+A implementação do sistema de módulos também fica bastante simplificada: é
+apenas necessário que o compilador inicialize o contexto estático de cada
+módulo como um contexto vazio, incluindo neste as vinculações necessárias de
+acordo com quais símbolos os módulos importados exportam e, enfim, aplicar as
+transformações necessárias antes de inserir informações de módulos importados
+no contexto estático do importador, como prefixação de símbolos.
+
+
+%O problema IV, por sua vez, necessita de um grau de sofisticação um pouco maior
+%do compilador, começando por ser capaz de responder à pergunta 6 descrita
+%acima. Desta forma é possível, em tempo de execução, se referir a um vínculo de
+%variável de forma mais precisa: em vez de referenciar uma variável apenas como
+%``o símblo \texttt{X} com o valor vigente no contexto atual'', podemos referenciá-la
+%como ``o símbolo \texttt{X} com o valor que foi definido no contexto \texttt{N} contextos
+%acima do do contexto atual''.
+%
+%Em grande parte dos casos esta mudança não altera em nada a semântica de
+%referência a variáveis durante o tempo de execução, embora a deixe ligeiramente
+%mais rápida: a referência a uma variável não precisa mais procurar em cada
+%contexto se a variável tem um valor definido neste contexto até encontrar, pode
+%navegar diretamente ao contexto especificado e obter o valor.
+%
+%No entanto, esta referência mais precisa permite que, junto com uma outra
+%mudança, possamos utilizar a técnica de renomear símbolos, como descrita por
+%Jonathan Rees [1] para implementar macros higiênicas.
+%
+%A outra mudança necessária é permitir que o compilador seja capaz de reconhecer
+%não apenas símbolos mas também uma estrutura que vamos chamar de /símbolos
+%renomeados/ na hora de realizar uma referência a um valor. Um símbolo renomeado
+%representa uma referência a uma variável ou operador sintático baseado em um
+%contexto específico, independente do contexto atual. A explicação para a
+%escolha do termo /símbolo renomeado/ é simples: são a base para o mecanismo de
+%macros por renomeação explícita quando discutirmos macros por renomeação
+%explícita.
+%
+%A estrutura de um símbolo renomeado é a seguinte: um símbolo comum, que é o
+%mesmo que o símbolo original antes de ser renomeado; uma referência ao contexto
+%utilizado para renomear este símbolo. A operação de compilar uma referência a
+%um símbolo renomeado /S/, composto do símbolo /X/ e do contexto /E/, pode ser
+%descrita como: 
+%
+% 1 - encontre a distância /D1/ entre /E/ e o contexto mais próximo de /E/ em
+%que /X/ foi vinculado;
+% 
+% 2 - encontre a distância /D2/ entre o contexto atual e /E/;
+%
+% 3 - a referência para /S/ pode ser compilada como a referência para /X/ no
+%contexto distante /D1/ + /D2/ do contexto atual.
+%
+%Agora que o compilador possui a capacidade de compreender tanto referências
+%simples a símbolos como referências a símbolos renomeados, podemos definir um
+%mecanismo de macros que realiza uma transformação higiênica baseada no conceito
+%de macros por renomeação explícita descrito por William Clinger[2]. O mecanismo
+%é simples e é descrito nos parágrafos a seguir:
+%
+%Uma definição de macro cria um objeto macro composto de dois elementos: Uma
+%função de transformação, que recebe como parâmetros a expressão a ser
+%transformada e uma função de renomeação e o contexto estático no qual esta
+%macro foi definida. O compilador então, após criar o objeto macro, associa um
+%nome a este objeto no contexto estático relevante.
+%
+%Ao encontrar a aplicação de uma macro, ou seja, identificar que uma forma
+%aplicativa do tipo (/identificador/ parametros ...) em um contexto estático em
+%que /identificador/ está associado a um objeto macro, o compilador cria uma
+%função /renomear/, de um símbolo /S/, para um símbolo renomeado, que retorna o
+%símbolo renomeado criado a partir do símbolo /S/ e do contexto estático /E/ em
+%que a macro foi criada, se este símbolo puder ser encontrado em /E/.  Caso /S/
+%não possa ser encontrado em /E/, /renomear/ retorna um novo símbolo codificado
+%de forma a não poder conflitar com nenhum outro símbolo escolhido pelo
+%programador -- em geral, utilizando leis de formação de símbolos inválidas na
+%sintaxe escrita.
+%
+%De posse desta função /renomear/ o compilador então interpreta a execução da
+%função de transformação da macro instanciada passando como parâmetros a
+%expressão passada como os parâmetros de aplicação da macro e a função
+%/renomear/ descrita acima.
+%
+%Tendo estas ferramentas à disposição, vamos re-escrever a macro /or2/ descrita
+%anteriormente de forma correta. No código a seguir, /define-er-syntax/ é o
+%identificador utilizado para indicar ao compilador que deve-se definir uma
+%macro utilizando a estratégia de renomeação explícita.
+%
+%\begin{lstlisting}
+%     (define-er-rewriter or2
+%       (lambda (expressao rename)
+%         (let ((primeiro (cadr expressao))
+%               (segundo  (caddr expressao))
+%               (r-let    (rename 'let))
+%               (r-if     (rename 'if))
+%               (r-temp   (rename 'temp)))
+%               
+%           `(,r-let ((,r-temp ,primeiro))
+%              (,r-if ,r-temp 
+%                ,r-temp
+%                ,segundo)))))
+%\end{lstlisting}
+%
+%Pode-se observar que, em cada situação em que antes havia um problema possível
+%por quebra de higiene na implementação desta macro, foi substituído o símbolo
+%em questão pelo resultado da renomeação deste símbolo no contexto de definição
+%da macro. Por exemplo, a aplicação de (rename 'if) garante que o valor
+%retornado é um símbolo renomeado que referencia o valor do símbolo /if/ como
+%este estava definido no momento em que a macro foi criada: levando-se em
+%consideração a execução de /define-er-syntax/ no nível superior, este valor é o
+%operador sintático pré-definido de controle de fluxo condicional.
+%
+%
+%Os mecanismos apresentados acima, em especial a manutenção de um contexto
+%estático por parte do compilador, podem também serem utilizados trivialmente
+%para implementação do mecanismo de módulos. É apenas necessário que o
+%compilador inicialize o contexto estático de cada módulo como um contexto
+%vazio, incluindo neste as vinculações necessárias de acordo com quais símbolos
+%os módulos importados exportam e, enfim, aplicar as transformações necessárias
+%antes de inserir informações de módulos importados no contexto estático do
+%importador, como prefixação de símbolos.
+
+
+

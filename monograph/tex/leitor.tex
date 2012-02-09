@@ -1,0 +1,36 @@
+\section{Leitor}
+\label{sec:leitor}
+
+O módulo Leitor, uma parte tradicional da implementação de linguagens da
+família Lisp é responsável por receber um fluxo de texto e processá-lo para
+obter um fluxo de Expressões-S.
+
+Sua primeira responsabilidade é a análise léxica da entrada, identificando os
+tokens no texto e transformando-os em representações de objetos atômicos no
+contexto das Expressões-S: constantes simbólicas, constantes numéricas e outras
+constantes além de pontuação como parênteses e ponto, e eliminar os
+comentários. 
+
+Além da análise léxica, o Leitor vai um passo além, construindo as estruturas
+(listas) que compõem uma Expressão-S, agrupando os objetos de forma que todo o
+resto do processo de compilação não precise se preocupar com como a informação
+é armazenada textualmente, lidando apenas com Expressões-S.
+
+Sua implementação é bastante simples: Utilizando o gerador de analisadores
+léxicos GNU Flex[18] é criada uma função inicial capaz de traduzir a entrada
+textual nos respectivos objetos atômicos e pontuação reconhecidos pela
+estrutura das Expressões-S. Neste ponto, a análise léxica é concluída. 
+
+Uma segunda função, que é exposta para os demais módulos, é responsável por
+coordenar as chamadas à função gerada pelo GNU Flex e criar as estruturas
+recursivas de uma Expressão-S, as listas e sublistas.
+
+Todas as estruturas criadas são alocadas com a ajuda do Sistema de Gerência de
+Memória e, entre uma alocação e outra, são protegidas usando a pilha de
+proteção de memória, para evitar que uma chamada à coleta de lixo durante a
+execução de uma chamada ao Leitor descarte memória que foi recentemente alocada
+mas ainda não está em uso pelo programa do ponto de vista da Máquina Virtual.
+
+
+
+

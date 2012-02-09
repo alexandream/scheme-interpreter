@@ -1,0 +1,90 @@
+-- 3.4 Máquina Virtual
+
+A máquina virtual utilizada é baseada na arquitetura de máquina virtual SECD descrita por Peter Landin [Landin 1964] com pequenas alterações nos registradores e instruções propostas por Kent Dybvig em sua tese de doutorado[19]. Esta, como a de Landin, utiliza uma estrutura baseada em pilha, com um pequeno número de registradores que apontam para memória organizada em listas encadeadas. 
+
+A estrutura da máquina é bastante simples: cinco registradores e 14 instruções. Os registradores são todos baseados em memória organizada como listas, enquanto que as instruções todas compartilham uma peculiaridade: Recebem como parâmetro o código que deverá ser executado ao fim da instrução em questão. As duas exceções óbvias são as instruções _HALT_, que termina a operação da máquina e obviamente não recebe código algum para continuar, e _TEST_, que decide entre duas linhas diferentes e portanto recebe dois parâmetros de código para escolher executar ao fim da mesma.
+
+Esta propriedade de representar o fluxo de controle de instruções explícitamente na forma de parâmetros para todas as instruções simplifica significativamente a implementação de duas das mais complexas funcionalidades da linguagem: A obrigatoriedade de eliminar as chamadas terminais e a criação e aplicação de continuações em tempo de execução.
+
+Levando-se em consideração a simplicidade do código necessário para se implementar a máquina virtual SECD (aproximadamente 350 linhas de código em C++) e o fato de ela tornar trivial a implementação das duas funcionalidades mais complexas, esta foi escolhida para a implementação da fase de interpretação propriamente dita neste interpretador. A seguir descrevemos em detalhes os registradores e instruções que compõem esta máquina.
+
+-- 3.4.1 Registradores
+
+O estado interno da máquina é composto pelos seus cinco registradores: os quatro originais descritos por Landin, que dão o nome à máquina (Stack, Environment, Code e Dump), acrescidos de um Acumulador.
+
+- O registrador Stack, que aponta para uma lista encadeada que armazena temporariamente os valores intermediários que serão ser passados para chamadas de funções como parâmetros. 
+
+- Na arquitetura original não havia a presença de um Acumulador, que foi utilizado apenas para simplificar a codificação de algumas etapas, e poderia perfeitamente ser substituído pelo uso judicioso do topo da pilha para esta função. Este serve apenas para guardar resultados intermediários de forma separada da pilha de parâmetros guardada na Stack.
+
+- O registrador Environment aponta para uma lista composta dos níveis de vínculos de variáveis válidos no escopo atual, estendendo-se até que o escopo global é atingido por último.
+
+- O registrador Code aponta para uma representação da próxima instrução a ser executada e pode ser visto como um análogo ao _contador de programa_ em uma arquitetura convencional de hardware, com a diferença que, no modelo utilizado neste trabalho, cada instrução carrega consigo uma referência explícita para a próxima instrução a ser executada, ao invés de depender de um incremento implícito de contador.
+
+- O registrador Dump mantém uma área de armazenamento temporário para todos os outros registradores, composto de um conjunto (A, S, E, C, D) que, tendo como elemento o conteúdo anterior do registrador Dump, mantém uma pilha de contextos. É internamente utilizado para manter a pilha de registros de ativação de chamadas de função.
+
+-- 3.4.2 Instruções
+# TODO [9]: Criar as figuras 
+Para atuar sobre o estado interno da máquina, utilizamos 14 instruções que são descritas a seguir. Na verdade, apenas 13 instruções seriam necessárias para implementar a arquitetura proposta neste trabalho mas, devido a um problema de projeto na fase do compilador uma instrução extra foi incluída de forma que a máquina virtual possui algum conhecimento sobre o sistema de macros.
+
+A instrução _TEST_ (${fig:op_test}) realiza controle de fluxo condicional, utilizando o valor armazenado no acumulador e dois parâmetros chamados "conseqüência" e "alternativa". Ambos os parâmetros representam trechos de código.
+
+${do-fig:op-test}
+
+De acordo com o valor armazenado no Acumulador, decide se deve continuar a execução pela _consequência_ (caso este valor seja diferente do literal _false_) ou pela _alternativa_ (caso este seja igual ao literal _false_), armazenando no registrador Code o valor escolhido entre os dois parâmetros.
+
+${do-fig:op_test}
+
+A instrução _FRAME_ (${fig:op_frame}) é utilizada para salvar o estado da máquina quando se faz necessária a execução de um outro procedimento, armazenando o valor dos registradores atuais em uma pilha. Recebe dois parâmetros: _retorno_, que indica o código que deve ser executado quando este frame for restaurado, e _próximo_, que indica o código a ser executado ao fim desta instrução.
+
+${do-fig:op_frame}
+
+Um novo frame é armazenado no registrador Dump, contendo o valor dos registradores Environment, Stack e Dump, junto o valor do parâmetro _retorno_ que atua como valor do registrador Code. Então o valor do registrador Stack é setado para uma lista vazia e o valor do registrador Code é setado como o valor recebido no parâmetro _próximo_.
+
+A separação entre a instrução _FRAME_ e a instrução _APPLY_, utilizada para invocar uma chamada de função, é crucial para a implementação da eliminação de chamadas terminais: quando o compilador identifica que uma chamada é terminal, simplesmente omite a criação de uma instrução _FRAME_.
+
+A instrução _CONSTANT_ (${fig:op_constant}) carrega o valor de um literal para utilização por outra instrução. Recebe dois parâmetros: _valor_ e _próximo_, que representam o valor do literal a ser carregado e o código a ser executado a seguir. O valor recebido como _valor_ substitui o valor no registrador Acumulador e o valor em _próximo_ substitui o valor no registrador Code.
+
+${do-fig:op_constant}
+
+A instrução _LOOKUP_ (${fig:op_lookup}) carrega o valor de uma variável para o Acumulador. Recebe dois parâmetros: _nome_ e _próximo_, que representam o nome da variável a ser buscada e o código a ser executado a seguir. O valor recebido como _nome_ é utilizado para fazer a busca no escopo de variáveis atual e o valor encontrado é então carregado no registrador Acumulador; o valor armazenado em _próximo_ substitui o valor no registrador Code.
+
+${do-fig:op_lookup}
+
+A instrução _ASSIGN_ (${fig:op_assign}) substitui o valor de uma variável no escopo atual. Recebe dois parâmetros: _nome_, que representa o nome da variável, e _próximo_, que indica o código a ser executado após a execução da instrução atual. O valor da variável armazenada sob o vínculo indicado pelo conteúdo de _nome_ no escopo atual é substituído pelo valor no registrador Acumulador; caso não haja variável armazenada sob o nome indicado no escopo atual, um erro é sinalizado.  O valor em _próximo_ então substitui o valor no registrador Code.
+
+${do-fig:op_assign}
+
+A instrução _BIND_ (${fig:op_bind}) cria, no nível mais próximo do escopo atual, um novo vínculo de variável. Funciona de modo quase idêntico à instrução _ASSIGN_ recebendo os mesmos parâmetros, com a diferença que caso não haja variável armazenada sob o nome indicado, uma variável é criada para conter o valor.
+
+${do-fig:op_bind}
+
+A instrução _ARGUMENT_ (${fig:op_argument}) armazena na pilha do registrador Stack o valor atual do Acumulador. Recebe apenas o parâmetro indicando qual o próximo código a ser executado, que então é utilizado para setar o registrador Code.
+
+${do-fig:op_argument}
+
+A instrução _APPLY_ (${fig:op_apply}) inicia uma chamada a uma função ou primitiva e não recebe parâmetro algum. Utiliza como indicador de qual função ou primitiva a ser chamado o valor atual do Acumulador. 
+
+${do-fig:op_apply}
+
+Caso o valor no acumulador represente uma primitiva, a instrução simplesmente passa ao código da primtiiva a lista de parâmetros e mais nada. No entanto, se o valor no acumulador representar uma função ou closure definida pelo usuário um novo contexto de escopo baseado no valor dos argumentos e os parâmetros da função e substitui o valor do registrador Code pelo código da função em questão.
+
+A instrução _RETURN_ (${fig:op_return}) restaura um frame anteriormente salvo pela instrução _FRAME_. Não recebe parâmetro algum e configura os valores dos registradores Stack, Environment, Code e Dump para os valores contidos no primeiro elemento da pilha armazenada no registrador Dump. Mantém o registrador Acumulador intacto.
+
+${do-fig:op_return}
+
+A instrução _REIFY_ (${fig:op_reify}) é utilizada para restaurar a computação ao ponto de uma continuação previamente obtida. Recebe como parâmetros _dump_ e _valor_, que representam, respectivamente, o conteúdo do registrador Dump no momento da criação da continuação e o valor a ser restaurado para o Acumulador quando a continuação for restaurada. O efeito final da instrução, é o de retornar ao ponto em que a continuação foi criada, restaurando os valores presentes no primeiro elemento da pilha em Dump, deixando _valor_ no acumulador.
+
+${do-fig:op_reify}
+
+A instrução _SAVE_ (${fig:op_save}) é responsável por criar uma referência para a continuação da computação atual. Com a arquitetura utilizada pela máquina virtual, uma continuação é simplesmente uma closure de apenas um parâmetro, contendo o valor atual do registrador Dump encapsulado, cujo único efeito é chamar a instrução _REIFY_ com parâmetros o valor do registrador Dump quando a continuação foi criada e o valor do único parâmetro da closure. Esta closure é então armazenada no Acumulador.
+
+${do-fig:op_save}
+
+A instrução _CLOSURE_ (${fig:op_closure}) cria uma nova closure, uma função em que o contexto na qual foi criada é acessível. Recebe como parâmetros _argumentos_, _corpo_ e _proximo_ que são, respectivamente, uma lista contendo os parâmetros formais da closure a ser criada, o código compilado do corpo da função e o código que deve ser executado ao fim desta instrução. A nova closure criada é armazenada no Acumulador e o registrador Code é configurado com o valor de _próximo_.
+
+${do-fig:op_closure}
+
+A instrução _BIND_MACRO_ é uma variante próxima da instrução _BIND_, usada apenas para mitigar uma deficiência do compilador: a falta de um mecanismo em tempo de compilação para gerenciar macros. Esta instrução recebe dois parâmetros (_nome_ e _proximo_) e espera que o acumulador contenha código para uma macro. Como resultado, guarda em um contexto geral de macros uma referência para o código da macro sob o nome recebido como _nome_ e substitui o valor em Code pelo valor de _proximo_.
+
+A última instrução, _HALT_, simplesmente indica à máquina virtual que o processamento está terminado, e que o valor no Acumulador deve ser retornado como resultado da computação. Não recebe parâmetro algum, e não altera registrador algum.
+

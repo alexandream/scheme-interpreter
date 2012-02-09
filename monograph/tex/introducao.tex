@@ -6,8 +6,8 @@ reconhecido como \textit{de facto standard} da linguagem de programação
 \textit{Scheme}, o \acs{R7RS}, com o objetivo de demonstrar a aderência ao
 princípio, definido no plano de ratificação do relatório, que requer que uma
 implementação deveria ser possível de ser realizada por um estudante de
-graduação como meio de pesquisa e aprendizado sobre linguagens de programação
-sem a necessidade de técnicas demasiado avançadas.
+graduação em ciência da computação como meio de pesquisa e aprendizado sobre
+linguagens de programação sem a necessidade de técnicas demasiado avançadas.
 
 Scheme é uma linguagem de programação da família Lisp, que difere dos outros
 dialetos Lisp  mais conhecidos (como \textit{Common Lisp} e \textit{Emacs
@@ -18,16 +18,15 @@ minimalismo, preferindo primitivas poderosas e altamente ortogonais, que podem
 ser utilizadas para criar novas expressões compostas, a complexas
 funcionalidades especializadas[1].
 
-Por causa destas características, \textit{Scheme} foi se tornando ao longo do tempo uma
-plataforma bastante utilizada para o ensino de conceitos de linguagens de
-programação e computação. Em especial, a facilidade de implementar novos
-conceitos e funcionalidades sobre a linguagem base pré-definida fez com que
-Scheme fosse largamente utilizado no estudo exploratório de novos conceitos de
-linguagens de programação, o que se pode notar pelo grande número de cursos
-iniciais de computação e programação que adotam \textit{Scheme} como linguagem,
-inclusive em cursos de nível médio[2][3][6], bem como diversas publicações na
-área de projeto de linguagens de programação e design de interpretadores
-baseados em \textit{Scheme}[4][5].
+Por causa destas características, \textit{Scheme} foi se tornando ao longo do
+tempo uma plataforma bastante utilizada para o ensino de conceitos de
+linguagens de programação e computação. Em especial, a facilidade de
+implementar novos conceitos e funcionalidades sobre a linguagem base
+pré-definida fez com que Scheme fosse bastante utilizado no estudo exploratório
+de novos conceitos de linguagens de programação, tanto como linguagem utilizada
+em cursos iniciais de computação e programação, inclusive em cursos de nível
+médio[2][3][6], bem como meio de discussão na literatura da área de projeto de
+linguagens de programação e design de interpretadores.
 
 O crescimento de \textit{Scheme} dentro da comunidade acadêmica, inclinando-se
 para as capacidades da linguagem como plataforma de ensino e pesquisa de
@@ -51,7 +50,7 @@ controvérsia entre a comunidade de implementadores de \textit{Scheme} ao redor
 do mundo[9].
 
 Como resultado desta divisão na comunidade, em 2009 iniciou-se um novo esforço
-para revisão da linguagem, o novo relatório chamado \acs{R7RS}. Para evitar os
+para revisão da linguagem: o novo relatório chamado \acs{R7RS}. Para evitar os
 problemas anteriores foi decidido que a evolução da linguagem se daria em duas
 frentes: uma linguagem ``pequena'' (posteriormente nomeada simplesmente
 \acs{R7RS}-small), guiada pelos princípios de minimalismo que historicamente
@@ -69,14 +68,16 @@ trabalho de base antes de iniciar o trabalho mais completo nas camadas acima.
 O histórico da baixa aceitação do \acs{R6RS} demonstra que uma linguagem que
 rompa muito com as necessidades dos grupos interessados em utilizar
 \textit{Scheme} como uma linguagem de pesquisa e ensino tem pouca probabilidade
-de ser largamente implementada pela comunidade.
+de ser amplamente implementada pela comunidade.
 
 Inserido neste contexto, este trabalho é uma tentativa de demonstrar a
 aderência aos princípios de minimalismo e capacidade de implementação de
 \textit{Scheme} como objeto de estudo de alunos de graduação em ciência da
 computação por meio da apresentação de uma implementação, e das técnicas
 envolvidas nesta, da linguagem como descrita até o momento pelo terceiro
-\textit{draft}. 
+\textit{draft}. Deixando de lado os diversos pequenos módulos opcionais
+descritos no relatório, esta implementação se foca no módulo ``\texttt{base}'',
+obrigatório para uma implementação \textit{Scheme}.
 
 
 \section{Trabalhos relacionados}

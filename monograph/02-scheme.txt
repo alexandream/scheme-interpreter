@@ -1,0 +1,69 @@
+- 2 : Sobre Scheme e outras implementações.
+
+Como mencionamos anteriormente, a linguagem Scheme mantém características de minimalismo e simplicidade conceitual que a tornaram bastante populares como ambiente de estudo de conceitos e implementações de linguagens de programação além de ser utilizada em diversas instituições de ensino como linguagem inicial para aprendizado de conceitos de computação e programação.
+
+Curiosamente praticamente todas estas características são meros acidentes no processo de desenvolvimento da linguagem. O objetivo inicial do desenvolvimento, por Gerald Jay Sussman e Guy L. Steele Jr, foi criar um dialeto Lisp simples para mapear e melhor compreender o modelo de computação chamado "Actor Model", proposto por Carl Hewitt. Esta implementação, publicada ao longo de diversos memorandos entre 1975 e 1980, resultou na linguagem de programação Scheme.[1]
+
+Como resultado deste empreendimento, Sussman e Steele acabaram por descobrir que o modelo proposto por Hewitt podia ser diretamente traduzido para o modelo de computação já bastante conhecido à época chamada Cálculo Lambda, do qual as linguagens da família Lisp já se aproximavam muito, e que um dialeto Lisp poderia ser criado para representar o Actor Model bastando que os modelos de computação utilizados para Lisp na época fossem estendidos com um mecanismo de escopo léxico (em contraste com o escopo dinâmico utilizado por todos os dialetos Lisp da época) e o conceito de Continuações, que discutiremos em breve, fosse exposto como objetos de primeira classe.
+
+Em especial, o modelo de escopo dinâmico utilizado nos dialetos Lisp até então fazia com que a família Lisp divergisse consideravelmente do Cálculo Lambda por seu tratamento de variáveis livres. A adoção do escopo léxico por Scheme criou na família Lisp uma linguagem compatível com um subconjunto significativo do formalismo descrito no Cálculo Lambda e uma ótima plataforma para expressar e analisar conseqüências de modelos descritos no Cálculo Lambda.[1]
+
+A seguir, é descrito um subconjunto das funcionalidades de Scheme de forma a familiarizar o leitor com a linguagem e facilitar a compreensão da subsequente discussão de sua implementação e as estratégias utilizadas.
+
+-- 2.1: Descrição da linguagem e suas funcionalidades. 
+
+Variáveis em Scheme não possuem tipo. O tipo é uma propriedade do valor armazenado na variável, com a checagem dos tipos feita em tempo de execução, não havendo verificação estática desta característica. A linguagem vem equipada com um conjunto modesto de tipos e permite ao programador criar seus próprios tipos disjuntos dos tipos existentes.
+
+Não existe em Scheme, também, o conceito de classes, como em linguagens orientadas a objeto, embora este conceito tenha sido diversas vezes implementado em termos das primitivas da linguagem [12][13][14]
+
+O Minimalismo de Scheme pode ser verificado na forma como primitivas comuns em outras linguagens se mostram ausentes, sendo substituídas por construções compostas de primitivas mais abrangentes. Por exemplo, no lugar de expressões de retorno, mecanismos de exceções e interrupções de estruturas de laço (como /break/ e /continue/), temos apenas as primitivas de obter a continuação atual e aplicar uma continuação. Até mesmo as estruturas de laço, mencionadas há pouco, não são primitivas em Scheme: são meros padrões de utilização das primitivas de criar uma nova função e aplicação de funções.
+
+Para que esta utilização de funções como estruturas de laço, utilizando recursão, não esgote a memória de uma implementação arbitrária (por exemplo, esgotando a pilha utilizada para manter a cadeia de chamadas), qualquer implementação Scheme é obrigada a realizar a eliminação dos registros de ativação de chamadas terminais (/tail-calls/): aplicações de função nas quais o resultado da função chamada será, também, o resultado da função chamadora. Como exemplo, observemos a execução de uma função simples, que retorna a soma de dois números naturais utilizando apenas as operações de incremento e decremento, com e sem eliminação de chamadas terminais.
+
+    (define (add op1 op2)
+      (if (zero? op1)
+        op2
+        (add (dec op1) (inc op2))))
+
+Esta função é obviamente recursiva, mas a chamada recursiva aparece em uma posição terminal. Na figura ${fig:tail-call-elimination} vemos como seria o consumo de memória utilizado para armazenar os registros de ativação em duas implementações hipotéticas com e sem eliminação de chamadas terminais.
+
+{$do-fig:tail-call-elimination}
+
+Quando uma implementação Scheme se depara com uma aplicação de chamada de função terminal, esta, obrigatoriamente, deve evitar criar um novo registro de ativação e reutilizar o registro de ativação da função em vigor como o registro de ativação da função prestes a ser chamada. Desta forma, recursões em que a chamada recursiva em si é considerada terminal utilizam quantidade constante de memória na pilha de ativações de funções.
+
+Como membro da família Lisp, código Scheme é representado textualmente por listas de elementos separados por espaço em branco, agrupados por parênteses, que denotam um formato abstrato conhecido como Expressões-S (abreviação de Expressões Simbólicas). Expressões-S podem ser definidas recursivamente da seguinte forma:
+ - Um elemento atômico (número, símbolo ou outro literal da linguagem) é uma Expressão-S;
+ - Uma lista de Expressões-S é uma Expressão-S;
+
+Ainda em conformidade com a família Lisp, Scheme adota a notação polonesa (ou notação de prefixos), com as listas representando operações em que o primeiro elemento da lista é o operador, que pode ser uma função ou uma forma sintática, e os demais elementos são parâmetros para a operação. A distinção entre funções e formas sintáticas pode ser traçada com base na fase da computação em que são avaliados e na estratégia de avaliação de parâmetros, como visto na tabela ${table:functions-vs-special-forms}.
+
+# TODO[3]: Criar a tabela abaixo.
+${do-table:function-vs-special-forms}
+
+Scheme herda dos Lisps anteriores um grande número de operações sobre listas, e a utilização de Expressões-S (estruturas baseadas em listas) faz com que seja fácil manipular representações em Expressão-S de código Scheme, utilizando a própria linguagem. Esta propriedade, aliada à capacidade do programador de definir código de funções ou substituições a serem aplicadas no código anteriormente à compilação ou interpretação, leva a um poderoso sistema de macros que permite ao programador criar novas formas sintáticas que são convertidas para formas primitivas da linguagem. Desta maneira, o fato de ser uma linguagem minimalista não interfere com a expressividade do programador final, que em geral lida com expressões mais complexas abstraídas por trás de formas sintáticas derivadas.
+
+Como mencionado anteriormente, Scheme foge da tradição entre linguagens anteriores da família Lisp por adotar um modelo de escopo léxico, estático, em que o escopo de uma variável pode sempre ser determinado pela simples análise do texto do programa. Partindo do ponto em que a variável é referenciada, utilizando escopo léxico, e voltando na estrutura do código é sempre possível encontrar o ponto em que esta é declarada ou, caso não seja possível (ou seja, esta variável é uma variável livre no contexto atual), esta tem de ser uma variável global -- ou um erro por parte do programador, visto que então a variável não estaria declarada em lugar algum.
+
+Tradicionalmente, no entanto, dialetos Lisp implementavam uma estratégia de escopo dinâmico em que uma variável livre estava vinculada à declaração da mais recente variável de mesmo nome no contexto dinâmico da pilha de chamadas anteriores. A diferença entre as estratégias de escopo léxico e dinâmico pode ser analisada na figura ${fig:dynamic-vs-lexical-scope}. 
+
+A mudança para o escopo léxico, associada à possibilidade de criação e manipulação de funções como objetos em tempo de execução, faz com que seja possível gerar /closures/, ou seja: pequenas funções que capturam o vínculo de variáveis como estavam no momento em que a função foi declarada em tempo de execução e carregam estes vínculos consigo, podendo manipulá-los e modificá-los como quiser. 
+
+# TODO [4]: Criar a figura abaixo.
+${do-fig: dynamic-vs-lexical-scope}
+
+A utilização do escopo léxico em Scheme, de acordo com os seus criadores [1], fez com que o tratamento de variáveis livres em um a expressão fosse semanticamente análogo ao dado no formalismo do Cálculo Lambda, fornecendo um bom modelo computacional para experimentação com o Cálculo Lambda. Novamente de acordo com os criadores da linguagem [1], esta proximidade com o Cálculo Lambda foi um dos motivos principais para a utilização futura, não prevista originalmente, de Scheme como uma linguagem de ensino e experimentação de conceitos de linguagens de programação.
+
+# TODO [5]: Escrever mais coisas aqui.
+
+-- 2.2: Outras implementações e trabalhos relacionados.
+
+Até o momento da conclusão deste trabalho, apenas duas outras tentativas de implementar o conteúdo dos drafts da R7RS-small foram encontradas: chibi-scheme, criada pelo presidente do grupo de trabalho responsável pelo R7RS-small[15]; e r7rs-bridge criada por OKUMURA Yuki[16].
+
+Os objetivos destas, no entanto, diferem significativamente deste trabalho:
+
+Chibi Scheme é uma tentativa de implementar a linguagem R7RS-small (além de alguns dialetos mais antigos como o R5RS) como uma biblioteca de extensão e linguagem de script para programas em C. Seu foco principal está em diminuir o tamanho do executável final e aumentar a performance. Embora o código seja relativamente bem comentado, não há qualquer intenção de escolher funcionalidades e estratégias pensando na simplicidade de implementação em detrimento dos objetivos citados acima. Desta forma, Chibi Scheme não é uma implementação viável para demonstração da capacidade de se implementar a linguagem R7RS-small como objeto de estudo.
+
+R7RS-Bridge, de fato, é uma tentativa completamente diferente, focada em desenvolver uma linguagem compatível com R7RS-small através de bibliotecas para sistemas Scheme R6RS. Este pré-requisito em ter uma implementação anterior do R6RS, o relatório considerado complicado demais pela comunidade Scheme, claramente coloca as intenções de R7RS-Bridge distantes de uma implementação de R7RS-small como objeto de estudo.
+
+
+

@@ -1,21 +1,22 @@
 \section{Sistema de Gerência de Memória}
 \label{sec:memoria}
 
-Embora não seja exatamente um requerimento da R7RSsmall, esta implementação
+Embora não seja exatamente um requerimento da \acs{R7RS}-small, esta implementação
 possui também um mecanismo de gerência de memória automatizado, o que definiu
 em diversas formas as escolhas utilizadas para representação dos valores em
-tempo de execução nesta implementação. Além disso, historicamente Lisp está tão
+tempo de execução nesta implementação. Historicamente Lisp está tão
 intimamente ligada à gerência automatica de memória, visto que foi a primeira
 linguagem de programação a utilizar a técnica[20], que a escolha por incluir um
 mecanismo de gerência automática de memória se deu pelo interesse em descrever
 o mesmo algoritmo utilizado por McCarthy em sua implementação original.
 
-Em especial, existem dois tipos de valores, divididos por necessitarem ou não
-de alocação de memória dinâmica. Entre os valores que não necessitam de
-alocação de memória dinâmica, chamados daqui em diante de valores imediatos,
-encontram-se os inteiros, booleanos, caracteres e alguns valores especiais como
-o marcador de lista vazia. Estes, são implementados na forma de "ponteiros
-etiquetados" (tagged pointers), em que os dados ocupam os 62 bits mais
+Os objetos descritos na linguagem \textit{Scheme} podem ser divididos em dois
+tipos de valores, em relação a necessitarem ou não de alocação de memória
+dinâmica. Entre os valores que não necessitam de alocação de memória dinâmica,
+chamados daqui em diante de valores imediatos, encontram-se os inteiros,
+booleanos, caracteres e alguns valores especiais como o marcador de lista
+vazia. Estes, são implementados na forma de ``ponteiros etiquetados''
+(\textit{tagged pointers}), em que os dados ocupam os 62 bits mais
 significativos de uma palavra de 64 bits, e os 2 bits menos significativos são
 utilizados para identificar os valores como imediatos, identificação preliminar
 do tipo e diferenciar estes valores dos demais ponteiros no sistema.
@@ -63,7 +64,7 @@ armazenados diretamente e valores complexos são armazenados como ponteiros para
 outras estruturas idênticas às aqui descritas. 
 
 Esta estrutura simples representa diretamente a estrutura de dados mais
-utilizada em um dialeto Lisp: a "célula cons" que é utilizada para, entre
+utilizada em um dialeto Lisp: a ``célula cons'' que é utilizada para, entre
 outras coisas, representar listas, como a representação interna do código
 fonte. Uma célula cons nada mais é que um par de dois outros valores quaisquer
 da linguagem. Esta estrutura é utilizada para todos os demais valores que não
@@ -77,13 +78,11 @@ o objetivo desta implementação não é o de otimizar para espaço ou tempo.
 \label{fig:celula}
 \end{figure}
 
-
 Como todos os valores não imediatos são representados utilizando esta
 estrutura de armazenamento duplo em \textit{slots}, em alguns casos apenas um dos \textit{slots}
 de armazenamento é utilizado, em outros casos ambos. Na figura \ref{fig:memoria}
 pode-se verificar alguns exemplos de como a memória é estruturada quando
 representa alguns objetos.
-
 
 \begin{figure}[h!]
 \centering
@@ -101,7 +100,7 @@ em sua implementação original de Lisp[20], e consiste dos seguintes passos:
 
 \begin{itemize}
 
-\item Inicialize a memória como um bloco de elementos "livres", prontos a serem
+\item Inicialize a memória como um bloco de elementos livres, prontos a serem
 utilizados;
  
 \item Configure este bloco de forma que o segundo \textit{slot} de cada elemento aponte
@@ -120,9 +119,14 @@ elementos livres (fase de varredura).
 \end{itemize}
 
 Para identificar os elementos que estão em uso, basta seguir as cadeias de
-referências dos \textit{slots} da estrutura descrita acima, a partir dos registradores
-da máquina virtual e de algumas outras estruturas auxiliares, marcando todos os
-elementos encontrados como sendo utilizados.
+referências dos \textit{slots} da estrutura descrita acima, a partir de cada um
+dos registradores da máquina virtual, uma estrutura auxiliar, chamada pilha de
+proteção de memória, que é usada para manter referências para termos
+intermediários de uma computação para evitar que uma coleta remova objetos
+úteis antes destes serem postos em uso, e uma outra estrutura utilizada pelo 
+sistema de macros que guarda referência para cada um dos blocos de código
+relacionados a uma macro no sistema. Cada elemento encontrado nestas cadeias
+é então marcado como sendo utilizado.
 
 Dado que os elementos são alocados dentro de um ou mais blocos conhecidos de
 memória, é fácil iterar por todos os elementos alocados, reinserindo-os na

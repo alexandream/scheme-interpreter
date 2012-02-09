@@ -1,0 +1,249 @@
+\section{Macros}
+\label{sec:macros}
+
+Macros são o que torna possível que grande parte das estruturas sintáticas 
+necessárias em um interpretador \textit{Scheme} seja implementada em código
+\textit{Scheme}. Além disso, o mesmo mecanismo pode ser utilizado por um 
+programador final para criar suas próprias estruturas sintáticas, linguagens
+específicas de domínio ou para otimizar cálculos possíveis de serem executados
+em tempo de compilação.
+
+Uma implementação do relatório \acs{R7RS} deve conter um sistema bastante
+avançado de macros, chamado \texttt{syntax-rules}, que permite que as macros
+sejam definidas em termos de reconhecimento de padrões e substituição, além de
+garantir que as macros são ``higiênicas'', ou seja, que os símbolos criados
+durante a transformação de uma macro não conflitem com símbolos do contexto em
+que a macro foi instanciada e que vinculações inseridas por uma transformação 
+de macro não capturem inadvertidamente utilizações de variáveis do código
+usado como base para a transformação.
+
+Devido aos problemas no compilador descritos na seção
+\ref{ss:solucoes-compilador}, no entanto, não é possível implementar um sistema
+de macros higiênicas -- e o sistema de macros baseado em reconhecimento de
+padrões seria inútil, visto que para resolver possíveis problemas de higiene o
+programador deve, manualmente, interferir na substituição de alguns símbolos. 
+
+Foi implementado então o mecanismo de macros procedurais utilizado pelo outro
+dialeto Lisp em amplo uso atualmente: \textit{ANSI Common Lisp}. Um mecanismo
+de macros procedurais permite que um programador defina funções que são
+aplicadas sobre o código dado como entrada para uma macro e estas funções são
+então responsáveis por transformar a entrada e gerar a saída desejada.
+
+Para minimizar problemas de higiene, uma operação chamada \texttt{(gensym)}
+pode ser utilizada para gerar um símbolo garantido de não conflitar com outro
+símbolo qualquer no mesmo programa que um programador deve judiciosamente
+utilizar quando há possibilidade de um conflito de símbolos. Na figura 
+\ref{fig:exemplo-defmacro1} pode-se verificar um exemplo simples, porém com
+erros bastante complicados de uma macro procedural.
+
+\begin{figure}[h!]
+\begin{lstlisting}
+      (define-rewriter or2
+        (lambda (expr)
+          (let ((op1 (car expr))
+                (op2 (cadr expr)))
+          
+		    `(let ((temp ,op1))
+		       (if temp temp ,op2)))))
+\end{lstlisting}
+\caption{Exemplo incorreto de uma macro implementando a operação \texttt{or}}
+\label{fig:exemplo-defmacro1}
+\end{figure}
+
+Esta macro, embora pareça simples, possui alguns grandes problemas. O mais
+óbvio aparece com o vínculo introduzido na variável \texttt{temp}: este pode
+conflitar com o código contido tanto em \texttt{op1} como em \texttt{op2}, e a
+expressão teria um significado completamente diferente da intenção do
+programador. O problema aqui é que para ter certeza que uma utilização de macro
+vai funcionar, o programador final tem de saber quais símbolos são ``seguros''
+de se usar em conjunto com a macro.
+
+A princípio pode-se modificar sutilmente esta definição de macro, utilizando a
+operação \texttt{(gensym)} para retirar esta dependência com o símbolo
+\texttt{temp}, como visto na figura \ref{fig:exemplo-defmacro2}. No entanto,
+tudo pode dar errado se o programador final manipular o escopo global -- se as
+definições de \texttt{let} ou \texttt{if} forem alteradas, esta macro não tem
+mais o mesmo significado que tinha quando foi definida. Estes problemas são
+solucionados por um mecanismo de macros higiênicas, como o descrito na seção
+\ref{ss:solucoes-macros}.
+
+\begin{figure}[h!]
+
+\begin{lstlisting}
+      (define-rewriter or2
+        (lambda (expr)
+          (let ((op1 (car expr))
+                (op2 (cadr expr))
+                (sym-temp (gensym)))
+          
+			`(let ((,sym-temp ,op1))
+               (if ,sym-temp ,sym-temp ,op2)))))
+\end{lstlisting}
+\caption{Outro exemplo incorreto de uma macro implementando a operação
+         \texttt{or}} 
+\label{fig:exemplo-defmacro2} \end{figure}
+
+O sistema de macros é composto por dois elementos principais: uma lista de 
+vínculos que associa cada um dos símbolos marcados como macros à função
+\textit{Scheme} pré-compilada que deve ser utilizada para efetuar a
+transformação da entrada e uma função utilizada internamente para identificar
+aplicações de macros e chamar a função de transformação necessária em cada caso
+identificando e aplicando transformações numa dada entrada até que esta não 
+possa mais ser interpretada como uma aplicação de macro.
+
+Para efetuar a chamada destas funções de transformação, o sistema de macros
+conta com uma instância própria da máquina virtual, com um contexto limitado de
+variáveis (contendo os mesmos vínculos que o contexto de variáveis globais),
+que é utilizado para interpretar o código das funções de transformação quando
+necessário.
+
+A lista de vínculos é alimentada pela instrução \sctt{bind-macro} da máquina
+virtual, que teve de ser implementada para fazer com que, mesmo ante a
+incapacidade do compilador de fornecer informações de contexto estático, um
+sistema de macros pudesse ser implementado. É importante notar que, uma vez que
+um símbolo é associado a uma macro, este não será mais visto como variável por
+parte alguma do código, pois o mecanismo de macros usa uma lista de vínculos
+própria para identificar que símbolos estão associados a macros e esta lista
+não é intermediada por nenhum tipo de informação sobre contexto estático
+durante a compilação. Esta é uma das deficiências do compilador descritas na
+seção \ref{ss:solucoes-compilador}.
+
+\subsection{Estendendo o sistema de macros}
+\label{ss:solucoes-macros}
+
+A partir do momento que esta implementação é estendida com as mudanças indicadas
+na seção \ref{ss:solucoes-compilador}, torna-se possível implementar um 
+mecanismo de macros higiênicas conhecido como ``macros baseadas em renomeação
+explícita`` que, embora ainda seja um mecanismo procedural de macros, foi
+desenvolvido visando ser utilizado como base para uma implementação do sistema
+\texttt{syntax-rules} descrito no \acs{R7RS}[21].
+
+Uma das modificações indicadas na seção \ref{ss:solucoes-compilador} dizia que
+o compilador deveria ser capaz de dizer, dado um símbolo e um contexto estático,
+qual a distância entre o contexto estático dado e o contexto estático mais
+próximo no qual o símbolo possui um vínculo. Esta informação é crucial para
+a implementação de macros por renomeação explícita.
+
+Para que esta informação seja útil, as seguintes mudanças precisam ser 
+realizadas, na máquina virtual e no compilador: 
+
+\begin{itemize}
+
+\item a máquina virtual deve passar a suportar instruções \sctt{lookup} que não
+só informam o símbolo indicando a variável a ser carregada, mas também uma
+distância indicando quantos contextos de escopo devem ser caminhados até se
+procurar por este símbolo;
+
+\item o compilador deve passar a compilar todas as referências a variáveis
+como instruções \sctt{lookup} que usam tanto o símbolo da variável quanto a
+distância até o contexto mais próximo em que se sabe que ela foi definida.
+
+\end{itemize}
+
+Em grande parte dos casos esta mudança não altera em nada a semântica de
+referência a variáveis durante o tempo de execução, embora a deixe ligeiramente
+mais rápida: a referência a uma variável não precisa mais procurar em cada
+contexto se a variável tem um valor definido neste contexto até encontrar, pode
+navegar diretamente ao contexto especificado e obter o valor.
+
+No entanto, agora que a máquina virtual compreende estas novas instruções
+\sctt{lookup}, elas podem ser utilizadas para renomear símbolos, como descrito
+por Jonathan Rees [21] para implementar macros higiênicas.
+
+Para isso o compilador deve ser capaz de reconhecer
+não apenas símbolos mas também uma estrutura chamada \textit{símbolos
+renomeados} na hora de realizar uma referência a um valor. Um símbolo renomeado
+representa uma referência a uma variável ou operador sintático baseado em um
+contexto específico, independente do contexto atual.
+
+A estrutura de um símbolo renomeado é de um par contedo um símbolo comum (que é
+o mesmo que o símbolo original antes de ser renomeado) e uma referência ao
+contexto utilizado para renomear este símbolo. A operação de compilar uma
+referência a um símbolo renomeado \sctt{s}, composto do símbolo \sctt{x} e do
+contexto \sctt{e}, pode ser descrita como: 
+
+\begin{enumerate}
+
+\item encontre a distância \sctt{d1} entre \sctt{e} e o contexto mais próximo
+de \sctt{e} em que \sctt{x} foi vinculado;
+ 
+\item encontre a distância \sctt{d2} entre o contexto atual e \sctt{e};
+
+\item a referência para \sctt{s} pode ser compilada como uma instrução 
+\sctt{lookup} estendida como descrito acima, usando o símbolo \sctt{x} e a 
+distância \sctt{d1} + \sctt{d2}. 
+
+\end{enumerate}
+
+Agora que o compilador possui a capacidade de compreender tanto referências
+simples a símbolos como referências a símbolos renomeados, é possível definir
+um mecanismo de macros procedurais baseadas em renomeação explícita:
+
+Uma definição de macro cria um objeto macro composto de dois elementos: Uma
+função de transformação, que recebe como parâmetros a expressão a ser
+transformada e o contexto estático no qual esta macro foi definida. O
+compilador então, após criar o objeto macro, associa um nome a este objeto no
+contexto estático relevante.
+
+Ao encontrar a aplicação de uma macro, ou seja, identificar uma forma
+aplicativa do tipo \texttt{(\textsc{identificador} parametros ...)} em um
+contexto estático em que \sctt{identificador} está associado a um objeto macro,
+o compilador cria uma função \texttt{renomear}, de domínio um símbolo \sctt{s}
+e imagem a um símbolo renomeado, que retorna o símbolo renomeado criado a
+partir do símbolo \sctt{s} e do contexto estático \sctt{e} em que a macro foi
+criada, se este símbolo puder ser encontrado em \sctt{e}.  Caso \sctt{s} não
+possa ser encontrado em \sctt{e}, \texttt{renomear} retorna um novo símbolo
+codificado de forma a não poder conflitar com nenhum outro símbolo escolhido
+pelo programador -- por exemplo, utilizando o mecanismo \texttt{(gensym)}
+mencionado anteriormente.
+
+De posse desta função \texttt{renomear} o compilador então interpreta a
+execução da função de transformação da macro instanciada passando como
+parâmetros a expressão passada como os parâmetros da aplicação da macro e a
+função \texttt{renomear} descrita acima. Cabe ao programador que criou a 
+definição da macro, então, utilizar a função \texttt{renomear}  em todos os 
+símbolos nos quais se deseja que a higiene seja preservada -- o que, em geral,
+significa todos os símbolos utilizados na substituição.
+
+Tendo estas ferramentas à disposição, vamos re-escrever a macro \texttt{or2}
+descrita anteriormente de forma correta. No código da figura
+\ref{fig:renomeacao-explicita} \texttt{define-er-syntax} é o identificador
+utilizado para indicar ao compilador que deve-se definir uma macro utilizando a
+estratégia de renomeação explícita.
+
+\begin{figure}[h!]
+\begin{lstlisting}
+     (define-er-rewriter or2
+       (lambda (expressao rename)
+         (let ((primeiro (cadr expressao))
+               (segundo  (caddr expressao))
+               (r-let    (rename 'let))
+               (r-if     (rename 'if))
+               (r-temp   (rename 'temp)))
+               
+           `(,r-let ((,r-temp ,primeiro))
+              (,r-if ,r-temp 
+                ,r-temp
+                ,segundo)))))
+\end{lstlisting}
+\caption{Macro definida com o mecanismo de renomeação explícita.}
+\label{fig:renomeacao-explicita}
+\end{figure}
+
+Pode-se observar que, em cada situação em que antes havia um problema possível
+por quebra de higiene na implementação desta macro, foi substituído o símbolo
+em questão pelo resultado da renomeação deste símbolo no contexto de definição
+da macro. Por exemplo, a aplicação de \texttt{(rename 'if)} garante que o valor
+retornado é um símbolo renomeado que referencia o valor do símbolo \texttt{if}
+como este estava definido no momento em que a macro foi criada: levando-se em
+consideração a execução de \texttt{define-er-syntax} no nível superior, este
+valor é o operador sintático pré-definido de controle de fluxo condicional.
+
+Tendo o sistema de macros higiênicas por renomeação explícita funcionando, o que falta
+para uma implementação completa do sistema de macros como definido no \acs{R7RS}
+é uma implementação do mecanismo de reconhecimento de padrões e substituição
+conhecido como \texttt{syntax-rules}. A implementação do mesmo baseado no
+sistema de macros por renomeação explícitas, no entanto, é relativamente simples
+e uma implementação em apenas 250 linhas de código \texttt{Scheme} é fornecida
+por Jonathan Rees no mesmo \textit{paper} em que detalha o mecanismo de macros
+por renomeação explícita descrita acima[21].

@@ -1,19 +1,19 @@
 
-1 - Gerald Jay Sussman e Guy L. Steele, Jr. 
-    "The First Report on Scheme Revisited" de Dezembro de 1998;
+01 - Gerald Jay Sussman e Guy L. Steele, Jr. 
+     "The First Report on Scheme Revisited" de Dezembro de 1998;
 
-2 - Structure and Interpretation of Computer Programs.
-3 - How to Design Programs
+02 - Structure and Interpretation of Computer Programs.
+03 - How to Design Programs
 
-4 - Programming Languages Application and Interpretation
-5 - Essentials of Programming Languages
+04 - Programming Languages Application and Interpretation
+05 - Essentials of Programming Languages
 
-6 - http://www.schemers.com/schools.html, obtido em 25-11-2011
+06 - http://www.schemers.com/schools.html, obtido em 25-11-2011
 
-7 - R5RS ...
-8 - R6RS ...
+07 - R5RS ...
+08 - R6RS ...
 
-9 - "Implementors' intentions concerning R6RS", Marc Freeley 26-10-2007
+09 - "Implementors' intentions concerning R6RS", Marc Freeley 26-10-2007
     http://lists.r6rs.org/pipermail/r6rs-discuss/2007-October/003351.html 
     obtido em 21-11-2011
 
@@ -41,4 +41,10 @@
 20 - Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I.
      John McCarthy, Communications of the ACM Volume 3 Issue 4 April 1960.
 
+[21] The Scheme of Things: Implementing Lexically Scoped Macros; 
+    Jonathan Ress;
+    ACM SIGPLAN Lisp Pointers Homepage Volume VI Issue 1, Jan.-March 1993
 
+[22] Hygienic Macros Through Explicit Renaming; 
+    William Clinger;
+    ACM SIGPLAN Lisp Pointers - Volume IV Issue 4, October-December 1991 

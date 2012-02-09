@@ -1,5 +1,4 @@
-\section{Leitor}
-\label{sec:leitor}
+-- 3.2 Leitor
 
 O módulo Leitor, uma parte tradicional da implementação de linguagens da família Lisp é responsável por receber um fluxo de texto e processá-lo para obter um fluxo de Expressões-S.
 
@@ -12,7 +11,6 @@ Sua implementação é bastante simples: Utilizando o gerador de analisadores l�
 Uma segunda função, que é exposta para os demais módulos, é responsável por coordenar as chamadas à função gerada pelo GNU Flex e criar as estruturas recursivas de uma Expressão-S, as listas e sublistas.
 
 Todas as estruturas criadas são alocadas com a ajuda do Sistema de Gerência de Memória, e entre uma alocação e outra, são protegidas usando a pilha de proteção de memória, para evitar que uma chamada à coleta de lixo durante a execução de uma chamada ao Leitor descarte memória que foi recentemente alocada mas ainda não está em uso pelo programa do ponto de vista da Máquina Virtual.
-
 
 
 

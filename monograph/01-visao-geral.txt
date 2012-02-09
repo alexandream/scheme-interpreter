@@ -1,0 +1,25 @@
+- 1: Visão Geral do Trabalho.
+
+Apresentaremos, neste e nos próximos capítulos, uma implementação de referência, e as técnicas utilizadas nesta, da mais recente edição do relatório que padroniza a linguagem de programação Scheme (R7RS), atualmente em processo de ratificação. 
+
+Scheme é uma linguagem de programação da família Lisp, minimalista e multi-paradigma, embora com um grande foco em programação funcional. Como um dialeto Lisp, difere significativa dos demais dialetos mais conhecidos da família (Common Lisp e Emacs Lisp) por características como: modelo de escopo totalmente léxico, continuações como objetos de primeira classe e espaço de nomes compartilhado entre funções e variáveis. Também se destaca por ser tradicionalmente minimalista, preferindo primitivas poderosas e altamente ortogonais, que podem ser compostas de modo a criar novas expressões, a funcionalidades especializadas[1]. 
+
+Estas características tornam Scheme especialmente apropriada para o ensino de conceitos de linguagens de programação e computação, assim como a facilidade de implementar novos conceitos e funcionalidades sobre a linguagem a tornam uma boa base para o estudo exploratório de novos conceitos de linguagens de programação. Isto é evidenciado pela profusão de cursos iniciais de computação e programação que adotam Scheme como linguagem, inclusive em cursos de nível médio[2][3][6], bem como diversas publicações na área de projeto de linguagens de programação e design de interpretadores baseados em Scheme[4][5].
+
+O foco dado em minimalismo aliado à utilização comum de Scheme como uma linguagem base para o estudo de linguagens de programação e suas implementações contribuíram para que, de forma tácita, as evoluções da linguagem da década de 1970 até a publicação da quinta revisão (R5RS)[7] em 1998 fossem norteadas pela possibilidade de a linguagem ser implementada tanto de forma eficiente e sofisticada, quanto por um aluno com conhecimentos de um curso de graduação em compiladores.
+
+Em 2007 um novo processo de revisão da linguagem foi concluído, dando origem ao relatório R6RS[8]. Este relatório tinha a ambição de criar uma linguagem mais completa e próxima das necessidades de desenvolvimento de aplicações não acadêmicas, o que consequentemente a distanciava significativamente dos objetivos que nortearam o desenvolvimento até o R5RS. Junto com incompatibilidades sérias com a profusão de implementações de Scheme existentes, o relatório R6RS foi largamente ignorado pela comunidade de implementadores, causando grande controvérsia entre a comunidade Scheme ao redor do mundo[9].
+
+Como resultado desta divisão na comunidade, em 2009 iniciou-se um novo esforço para revisão da linguagem, o novo relatório chamado R7RS. Para evitar os problemas anteriores foi decidido que a evolução da linguagem se daria em duas frentes: uma linguagem "pequena" (posteriormente nomeada simplesmente R7RS-small), guiada pelos princípios de minimalismo que historicamente foram seguidos, e uma linguagem "grande" (R7RS-large), baseada na R7RS-small[10]. 
+
+O processo de ratificação da R7RS-small está próximo do fim, com o draft mais recente tendo sido publicado em março de 2011[11], enquanto a linguagem R7RS-large foi deixada para definição futura pelo fato de todos os participantes do grupo de trabalho dedicado à R7RS-large também fazerem parte do grupo de trabalho dedicado à R7RS-small e preferirem terminar o trabalho de base antes de iniciar o trabalho mais completo nas camadas acima.
+
+Este trabalho é uma tentativa de demonstrar a aderência aos princípios de minimalismo e capacidade de implementação de Scheme como objeto de estudo de alunos de graduação em ciência da computação por meio da apresentação de uma implementação, e das técnicas envolvidas nesta, da linguagem como descrita até o momento pelo terceiro draft. Deste ponto em diante, utilizamos os termos "Scheme" e "R7RS-small" intercambiavelmente, exceto quando explicitamente informarmos o contrário.
+
+No próximo capítulo discutiremos a linguagem Scheme e suas funcionalidades mais notáveis, que a diferenciam da maior parte das linguagens de uso geral em amplo uso atualmente. Também discutiremos outras implementações da linguagem R7RS-small em andamento atualmente, e suas diferenças em relação a este trabalho.
+
+A seguir, no capítulo 3, discutimos a implementação que é o foco deste trabalho, detalhando a estratégia utilizada e descrevendo os mecanismos e técnicas utilizadas para gerência de memória, ambiente de execução e compilador. Apresentamos também os pontos em que a abordagem inicialmente proposta (e implementada) não é suficiente para expressar a linguagem Scheme e então detalhamos estratégias alternativas que podem ser utilizadas para estender a implementação atual para ser capaz de transpor estes problemas.
+
+# TODO [1]: Nos capítulos 4 e 5 eu ainda não sei o que eu vou falar ;)
+
+

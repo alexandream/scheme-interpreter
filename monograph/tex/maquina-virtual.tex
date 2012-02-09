@@ -2,7 +2,7 @@
 \label{sec:maquina-virtual}
 
 A máquina virtual utilizada é baseada na arquitetura de máquina virtual
-\sctt{secd} descrita por Peter Landin [Landin 1964] com pequenas alterações nos
+\sctt{secd} descrita por Peter Landin [64] com pequenas alterações nos
 registradores e instruções propostas por Kent Dybvig em sua tese de
 doutorado[19]. Esta, como a de Landin, utiliza uma estrutura baseada em pilha,
 com um pequeno número de registradores que apontam para memória organizada em
@@ -27,7 +27,7 @@ Levando-se em consideração a simplicidade do código necessário para se
 implementar a máquina virtual \sctt{secd} (aproximadamente 350 linhas de código
 em C++) e o fato de ela tornar trivial a implementação das duas funcionalidades
 mais complexas, esta foi escolhida para a implementação da fase de
-interpretação propriamente dita neste interpretador. Nas sessões
+interpretação propriamente dita neste interpretador. Nas seções
 \ref{ss:registradores} e \ref{ss:instrucoes} são detalhados os registradores e
 instruções que compõem esta máquina.
 

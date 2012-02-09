@@ -69,7 +69,7 @@
 % http://tex.stackexchange.com/questions/32208/footnote-runs-onto-second-page
 % http://www.tex.ac.uk/cgi-bin/texfaq2html?label=splitfoot
 %\interfootnotelinepenalty=10000
-
+\usepackage{enumerate}
 % Avoid floats and figures from crossing a section boundary
 % http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions#Keeping_floats_in_their_place
 \usepackage[section]{placeins}
@@ -518,12 +518,31 @@ lista de trabalhos relacionados e a estrutura da monografia.
 \newpage
 
 
-\input{estrategia-visao-geral}
-\input{estrategia-memoria}
-\input{estrategia-leitor}
-\input{estrategia-compilador}
-\input{estrategia-maquina-virtual}
+\input{visao-geral}
+\input{memoria}
+\input{leitor}
+\input{compilador}
+\input{macro}
+\input{maquina-virtual}
 
+\chapter{Resultados}
+\label{cap:resultados}
+
+\vfill{}
+\begin{flushright}{}
+``\emph{The world is moving so fast these days that the man who says it
+can't be done is generally interrupted by someone doing it.}''\\
+{\small Elbert Green Hubbard}
+\end{flushright}{\small \par}
+\vfill{}
+
+Neste capítulo são apresentados a motivação e os objetivos deste projeto, uma
+lista de trabalhos relacionados e a estrutura da monografia.
+\newpage
+\include{resultados}
+
+\bibliography{monografia}{}
+\bibliographystyle{plain}
 
 \end{document}
 

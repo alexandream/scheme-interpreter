@@ -166,17 +166,43 @@ uma linguagem minimalista não interfere com a expressividade do programador
 final, que em geral lida com expressões mais complexas abstraídas por trás de
 formas sintáticas derivadas.
 
+A criação de macros, embora uma das partes mais difíceis da linguagem em um
+primeiro contato com \textit{Scheme}, se baseia em uma idéia simples: O
+programador pode indicar ao compilador palavras-chave que serão identificadas
+quando encontradas como primeiro elemento de uma forma aplicativa (expressão
+entre parênteses).  A estas palavras-chave se associam transformações que
+deverão ser executadas pelo compilador, utilizando como entrada a forma
+aplicativa encontrada no código fonte como parâmetro, e que retornam uma nova
+Expressão-S que o compilador deve substituir pela forma aplicativa inicial.
+Desta forma, um programador pode informar ao compilador a maneira (a
+transformação associada à palavra-chave) que deverá ser utilizada para tratar
+formas sintáticas inicialmente desconhecidas, reduzindo-as para formas
+sintáticas primitivas que o compilador conhece.
+
+Historicamente, dois mecanismos principais de macros foram utilizados em
+\textit{Scheme} e outras linguagens da família Lisp: macros procedurais e
+macros baseadas em regras. \textit{Scheme} como definida pelo \acs{R7RS}
+oferece suporte apenas a macros baseadas em regras.
+
+As macros procedurais são aquelas em que o programador define a transformação a
+ser aplicada em termos de código \textit{Scheme}, recebendo a forma sintática
+original em seu formato de Expressão-S e manipulando-a como necessário para
+atingir a forma final desejada. Já as macros baseadas em regras são descritas
+em uma linguagem auxiliar de reconhecimento de padrões e suas regras de
+substituição são utilizadas para transformar uma Expressão-S que case com uma
+das regras pelo resultado definido para a regra indicada. 
+
 \subsection{Escopo de variáveis}
 
-Como mencionado anteriormente, \textit{Scheme} foge da tradição entre
-linguagens anteriores da família Lisp por adotar um modelo de escopo léxico,
-estático, em que o escopo de uma variável pode sempre ser determinado pela
-simples análise do texto do programa. Partindo do ponto em que a variável é
-referenciada, utilizando escopo léxico, e voltando na estrutura do código é
-sempre possível encontrar o ponto em que esta é declarada ou, caso não seja
-possível (ou seja, esta variável é uma variável livre no contexto atual), esta
-tem de ser uma variável global -- ou um erro por parte do programador, visto
-que então a variável não estaria declarada em lugar algum.
+\textit{Scheme} foge da tradição entre linguagens anteriores da família Lisp
+por adotar um modelo de escopo léxico, ou estático, em que o escopo de uma
+variável pode sempre ser determinado pela simples análise do texto do programa.
+Partindo do ponto em que a variável é referenciada, utilizando escopo léxico, e
+voltando na estrutura do código é sempre possível encontrar o ponto em que esta
+é declarada ou, caso não seja possível (ou seja, esta variável é uma variável
+livre no contexto atual), esta tem de ser uma variável global -- ou um erro por
+parte do programador, visto que então a variável não estaria declarada em lugar
+algum.
 
 Tradicionalmente, no entanto, dialetos Lisp implementavam uma estratégia de
 escopo dinâmico em que uma variável livre estava vinculada à declaração da mais
@@ -204,10 +230,11 @@ vinculado ao valor mais próximo de \sctt{x} encontrado na estrutura dinâmica d
 registros de ativação das funções executadas, ou seja, o valor em \sctt{func2}.
 
 No entanto, sob o ponto de vista de uma estratégia de escopo estático, o
-resultado encontrado é equivalente a retornar o parâmetro diretamente, visto
-que o vínculo dado a \sctt{x} em \sctt{func1} é sempre o encontrado no escopo
-durante a análise estática do código sem informações de tempo de execução, ou
-seja, a variável global definida na linha 1.
+resultado encontrado é equivalente a retornar o parâmetro diretamente, na
+verdade a soma deste parâmetro ao valor 0, visto que o vínculo dado a \sctt{x}
+em \sctt{func1} é sempre o encontrado no escopo durante a análise estática do
+código sem informações de tempo de execução, ou seja, a variável global
+definida na linha 1.
 
 De acordo com Sussman e Steele[1], esta mudança fez com que o tratamento de
 variáveis livres em um a expressão fosse semanticamente análogo ao dado no
@@ -247,7 +274,8 @@ Como exemplo, pode-se observar o resultado de uma interação com o interpretado
 na figura \ref{fig:interacao-closure}.
 
 \begin{figure}[h!]
-\begin{lstlisting}[numbers=none] Welcome to Stutter.
+\begin{lstlisting}[numbers=none]
+    Welcome to Stutter.
     
     > (define (multiplicador n) 
         (lambda (x) (* n x)))
@@ -271,3 +299,119 @@ na figura \ref{fig:interacao-closure}.
 \caption{Interação com o Interpretador exemplificando efeitos de closures.}
 \label{fig:interacao-closure}
 \end{figure}
+
+\subsection{Continuações como objetos de primeira classe}
+\label{ss:continuacoes}
+
+Uma continuação de uma computação qualquer pode ser vista como o contexto em
+que aquela computação está acontecendo e o lugar para o qual esta computação
+deve retornar o seu valor após ser avaliada. Por exemplo, no trecho de código
+seguir:
+
+\begin{lstlisting}
+(set! x (+ 3 2))
+
+\end{lstlisting}
+
+Pode-se dizer que a continuação da expressão ``\texttt{2}'' é composta pelo
+contexto dos vínculos de variáveis presentes durante sua execução (que contém,
+entre outras coisas os valores das variáveis ``\texttt{x}'' e ``\texttt{+}''),
+a cadeia de registros de ativação de funções que leva ao momento em que esta
+expressão está sendo executada e uma referência ao ponto da computação para o
+qual o valor deve ser entregue (neste caso a expressão ``\texttt{(+ 3 \_)}'',
+onde ``\texttt{\_}'' representa onde este valor vai ser entregue). De forma 
+mais simples, uma continuação é uma \textit{procedure} que representa os passos
+seguintes de uma computação.
+
+\textit{Scheme} foi a primeira linguagem de programação a tratar continuações
+como objetos de primeira classe, ou seja: um progamador pode obter a
+continuação atual, passar continuações como parâmetros, armazená-las em
+variáveis, retornar como valor de uma função e invocá-las para retornar ao
+ponto da computação que elas descrevem. Isto é feito por meio da primitiva
+\texttt{call-with-current-continuation}, normalmente abreviada \texttt{call/cc}.
+Esta primitiva recebe uma função de apenas um parâmetro e invoca esta função
+passando a continuação da computação no momento em que foi chamada; e retorna
+o valor retornado pela função que recebeu, na primeira chamada, ou os valores
+passados para a continuação sempre que esta for invocada. Vejamos por exemplo
+uma utilização de continuações para simular o efeito do ``\texttt{return}'' em 
+outras linguagens:
+
+\begin{lstlisting}
+    (define (find-return n lst accept?)
+       (call/cc 
+         (lambda (return)
+            (for-each (lambda (element)
+                        (if (accept? element)
+                           (return element)))
+                      lst)
+            #F)))
+\end{lstlisting}
+
+A função acima, \texttt{find-return}, itera por uma lista procurando pelo 
+primeiro elemento que satisfaça ao predicado \texttt{accept?}. Embora seja uma 
+forma estranha de programar \texttt{Scheme}, demonstra como o conceito de 
+continuações como objetos de primeira classe pode ser utilizado para simular
+a instrução ``\texttt{return}'' como aparece em outras linguagens: a continuação
+da chamada a \texttt{call/cc} é salva como a variável \texttt{return} e é 
+invocada quando o elemento é encontrado. 
+
+Formas mais complexas de utilização de continuações, aliadas ao fato de que o
+\textit{boilerplate} pode ser escondido por trás de macros mais convenientes,
+tornam as continuações uma fonte de estruturas de controle das mais diversas.
+Por exemplo, o mecanismo de tratamento de exceções utilizado em \texttt{Scheme}
+pode ser totalmente implementado em termos de continuações de primeira classe.
+
+\subsection{Quote}
+\label{ss:quote}
+
+Como em \textit{Scheme} a mesma sintaxe é utilizada para representar uma lista
+de dados como para representar uma aplicação de função ou forma sintática,
+assim como a mesma sintaxe é utilizada para repersentar símbolos como objetos e
+símbolos como referência a variáveis, é necessário ter um mecanismo pelo qual
+descrever elementos a serem usados como dado em um programa que não devem
+sofrer nenhuma avaliação pelo ambiente. A expressão \texttt{quote} supre essa
+necessidade.
+
+Na maior parte dos casos, uma referência a uma lista no código, como
+\texttt{(foo 10)} significa uma aplicação de função a seus parâmetros. Em 
+algumas situações no entanto, podemos querer, por exemplo, indicar a lista
+composta pelo símbolo \texttt{foo} e o número inteiro \texttt{10}, nestes
+casos podemos utilizar a expressão \texttt{(quote (foo 10))} que pode ser 
+abreviada simplesmente como \texttt{'(print 10)}. 
+
+O mesmo vale para quaisquer outros valores \textit{Scheme}. Os que possuem
+algum significado específico, diferente do próprio valor, na sintaxe da
+linguagem quando \textit{citados} (em tradução livre do termo original
+\textit{quoted}) serão ignorados pelo compilador, sendo utilizados como
+constantes. Os valores que não possuem significado especial algum além do
+próprio valor são considerados automaticamente \textit{citados}, de forma que
+aplicar a operação \texttt{quote} nestes não faz diferença alguma.
+
+\subsection{Quasiquote}
+\label{ss:quasiquote}
+
+Parecido com o mecanismo disponível pela expressão \texttt{quote}, a expressão
+\texttt{quasiquote} permite criar dados com a sintaxe de lista, utilizando
+durante sua definição as expressões \texttt{unquote} e \texttt{unquote-splicing}
+para misturar dados que devem ser utilizados como constantes não interpretadas
+na lista final com dados que devem ser interpretador antes de ter seu valor 
+utilizado na criação da lista final. As expressões \texttt{unquote} e 
+\texttt{unquote-splicing} funcionam da seguinte maneira:
+
+\begin{itemize}
+
+\item \texttt{unquote} coloca o valor da próxima Expressão-S, interpretada como
+seria caso não houvesse quote, como um elemento da Expressão-S sendo gerada.
+Por exemplo, \texttt{(quasiquote 1 2 (unquote (list 3 4)))} é equivalente à lista
+\texttt{'(1 2 (3 4))}.
+
+\item \texttt{unquote-splicing} coloca o valor da próxima Expressão-S, em geral
+uma lista, de forma que todos os seus elementos estejam presentes diretamente
+na Expressão-S que a engloba. Por exemplo, \texttt{(quasiquote 1 2
+(unquote-splicing (list 3 4)))} é equivalente à lista \texttt{(1 2 3 4)}.
+
+\end{itemize}
+
+As expressões \texttt{quasiquote}, \texttt{unquote} e \texttt{unquote-splicing}
+podem ser abreviadas respectivamente pelos caracteres \textit{backtick}
+(\texttt{`}), vírgula (\texttt{,}) e a combinação vírgula-arroba (\texttt{,@}).

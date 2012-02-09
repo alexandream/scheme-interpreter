@@ -13,79 +13,177 @@
 # CONTEÚDO #
 ############
 
-Como mencionado anteriormente na seção ${section:compiler}, o compilador apresentado nesta implementação sofre de uma falha que o torna incapaz de reconhecer, na sua totalidade, a linguagem descrita pelo R7RS. Vamos descrever, a seguir, um pequeno conjunto de mudanças que deveriam ser realizadas no compilador e estratégias de implementação para as funcionalidades que faltam que podem ser utilizadas para atingir completa compatibilidade com o R7RS.
+Como mencionado anteriormente na seção ${section:compiler}, o compilador
+apresentado nesta implementação sofre de uma falha que o torna incapaz de
+reconhecer, na sua totalidade, a linguagem descrita pelo R7RS. Vamos descrever,
+a seguir, um pequeno conjunto de mudanças que deveriam ser realizadas no
+compilador e estratégias de implementação para as funcionalidades que faltam
+que podem ser utilizadas para atingir completa compatibilidade com o R7RS.
 
-A falha principal existente no compilador é a falta de manutenção de um contexto estático de nomes e escopo. Esta falha cria os seguintes problemas:
+A falha principal existente no compilador é a falta de manutenção de um
+contexto estático de nomes e escopo. Esta falha cria os seguintes problemas:
 
- I   - os nomes dos operadores sintáticos pré-definidos da linguagem não podem ser redefinidos pelo usuário como variáveis em um escopo local;
+ I   - os nomes dos operadores sintáticos pré-definidos da linguagem não podem
+ser redefinidos pelo usuário como variáveis em um escopo local;
 
- II  - os nomes das macros presentes no sistema ou definidas pelo usuário, após serem definidos, não podem ser redefinidos localmente como variáveis;
+ II  - os nomes das macros presentes no sistema ou definidas pelo usuário, após
+serem definidos, não podem ser redefinidos localmente como variáveis;
 
- III - se torna impossível implementar macros locais (uma conseqüência direta do problema II descrito acima);
+ III - se torna impossível implementar macros locais (uma conseqüência direta
+do problema II descrito acima);
  
  IV  - se torna impossível implementar macros higiênicas.
 
-Mais precisamente, o fato de o compilador não manter este contexto estático de nomes e escopo o torna incapaz de analisar de forma mais sofisticada o código que recebe, criando a necessidade de soluções pouco elegantes na máquina virtual (como a vinculação de macros em tempo de execução) e impossibilitando qualquer análise que não seja possível implementar diretamente na máquina virtual.
+Mais precisamente, o fato de o compilador não manter este contexto estático de
+nomes e escopo o torna incapaz de analisar de forma mais sofisticada o código
+que recebe, criando a necessidade de soluções pouco elegantes na máquina
+virtual (como a vinculação de macros em tempo de execução) e impossibilitando
+qualquer análise que não seja possível implementar diretamente na máquina
+virtual.
 
-Para a solucionar estes problemas, o compilador deve ser capaz de reconhecer construções primitivas que introduzem novos vínculos de nomes e manter uma tabela de símbolos que o possa responder, durante a compilação, pelo menos, as seguintes perguntas dado um símbolo qualquer /X/ e um contexto qualquer /E/:
+Para a solucionar estes problemas, o compilador deve ser capaz de reconhecer
+construções primitivas que introduzem novos vínculos de nomes e manter uma
+tabela de símbolos que o possa responder, durante a compilação, pelo menos, as
+seguintes perguntas dado um símbolo qualquer /X/ e um contexto qualquer /E/:
 
  1 - /X/ representa um operador sintático pré-definido no contexto /E/? 
 
- 2 - Caso /X/ represente um operador sintático no contexto /E/, qual é este operador?
+ 2 - Caso /X/ represente um operador sintático no contexto /E/, qual é este
+operador?
 
  3 - /X/ representa uma macro no contexto /E/? 
  
- 4 - Caso /X/ represnete um operador sintático no contexto /E/, qual a função de transformação de /X/ e em qual contexto /X/ foi definido?
+ 4 - Caso /X/ represnete um operador sintático no contexto /E/, qual a função
+de transformação de /X/ e em qual contexto /X/ foi definido?
 
  5 - /X/ representa uma variável comum no contexto /E/? 
 
- 6 - Caso /X/ represente uma variável no contexto /E/, qual a distância entre /E/ e o contexto em que /X/ foi vinculado mais recentemente. Onde a distância entre dois contextos /E1/ e /E2/ é definida como a diferença de altura entre dois nós em uma árvore de contextos.
+ 6 - Caso /X/ represente uma variável no contexto /E/, qual a distância entre
+/E/ e o contexto em que /X/ foi vinculado mais recentemente. Onde a distância
+entre dois contextos /E1/ e /E2/ é definida como a diferença de altura entre
+dois nós em uma árvore de contextos.
 
-Dado que o compilador pode responder às perguntas 1 a 5 acima, é possível restringir o escopo dos operadores sintáticos (tanto pré-definidos, como macros) durante um bloco qualquer vinculando localmente o nome associado a um operador sintático a uma variável, como visto na listagem ${lst:compiler-scope} abaixo, resolvendo de uma só vez os problemas I, II e III listados acima.
+Dado que o compilador pode responder às perguntas 1 a 5 acima, é possível
+restringir o escopo dos operadores sintáticos (tanto pré-definidos, como
+macros) durante um bloco qualquer vinculando localmente o nome associado a um
+operador sintático a uma variável, como visto na listagem ${lst:compiler-scope}
+abaixo, resolvendo de uma só vez os problemas I, II e III listados acima.
 
 ${lst:compiler-scope}
 
-Como o compilador precisa conhecer apenas as formas primitivas, deixando as formas derivadas a cargo de transformações de macro que ocorrem antes da compilação propriamente dita de um determinado trecho de código, podemos tratar especialmente cada caso que influencie a resposta das perguntas acima. A estratégia delineada a seguir exemplifica como estender o compilador de forma a responder às perguntas 1 a 5:
+Como o compilador precisa conhecer apenas as formas primitivas, deixando as
+formas derivadas a cargo de transformações de macro que ocorrem antes da
+compilação propriamente dita de um determinado trecho de código, podemos tratar
+especialmente cada caso que influencie a resposta das perguntas acima. A
+estratégia delineada a seguir exemplifica como estender o compilador de forma a
+responder às perguntas 1 a 5:
 
-A - Inicie o compilador sob um contexto estático em que os operadores sintáticos pré-definidos pela linguagem, as macros pré-definidas pela biblioteca padrão e as variáveis e funções pré-definidas pela biblioteca padrão estão associadas com seus respectivos nomes aos valores esperados para cada tipo.
+A - Inicie o compilador sob um contexto estático em que os operadores
+sintáticos pré-definidos pela linguagem, as macros pré-definidas pela
+biblioteca padrão e as variáveis e funções pré-definidas pela biblioteca padrão
+estão associadas com seus respectivos nomes aos valores esperados para cada
+tipo.
 
-B - Sempre que o compilador encontrar uma operação /define/, altere o contexto estático atual de modo que o valor do símbolo definido aponte para uma variável comum.
+B - Sempre que o compilador encontrar uma operação /define/, altere o contexto
+estático atual de modo que o valor do símbolo definido aponte para uma variável
+comum.
 
-C - Sempre que o compilador encontrar uma operação /lambda/, compile o código do corpo desta operação em um contexto estático derivado do contexto atual tal que os parâmetros formais da expressão /lambda/ estejam associados a variáveis comuns.
+C - Sempre que o compilador encontrar uma operação /lambda/, compile o código
+do corpo desta operação em um contexto estático derivado do contexto atual tal
+que os parâmetros formais da expressão /lambda/ estejam associados a variáveis
+comuns.
 
-D - Sempre que o compilador encontrar uma operação /define-syntax/, altere o contexto estático atual de modo que o valor do símbolo definido aponte para o objeto macro resultante de compilar a definição de macro fornecida.
+D - Sempre que o compilador encontrar uma operação /define-syntax/, altere o
+contexto estático atual de modo que o valor do símbolo definido aponte para o
+objeto macro resultante de compilar a definição de macro fornecida.
 
-E - Sempre que o compilador encontrar uma operação /let-syntax/, compile o código do corpo desta operação em um contexto estático derivado do contexto atual tal que os valores dos símbolos definidos nesta operação estejam associados aos objetos macros resultantes de compilar as suas respectivas definições de macros.
+E - Sempre que o compilador encontrar uma operação /let-syntax/, compile o
+código do corpo desta operação em um contexto estático derivado do contexto
+atual tal que os valores dos símbolos definidos nesta operação estejam
+associados aos objetos macros resultantes de compilar as suas respectivas
+definições de macros.
 
-Dadas estas regras acima, o compilador mantém um contexto estático atualizado ao compilar cada fragmento do programa, de forma a sempre ser capaz de responder às perguntas 1 a 5 enumeradas anteriormente. Utilizando a estratégia de derivar um contexto estático de outro utilizando encadeamento de contextos, a resposta para a pergunta 6 segue trivialmente: é apenas necessário navegar para cima na cadeia de contextos até encontrar o contexto mais próximo no qual a variável pedida foi definida, contando o número de elos percorridos.
+Dadas estas regras acima, o compilador mantém um contexto estático atualizado
+ao compilar cada fragmento do programa, de forma a sempre ser capaz de
+responder às perguntas 1 a 5 enumeradas anteriormente. Utilizando a estratégia
+de derivar um contexto estático de outro utilizando encadeamento de contextos,
+a resposta para a pergunta 6 segue trivialmente: é apenas necessário navegar
+para cima na cadeia de contextos até encontrar o contexto mais próximo no qual
+a variável pedida foi definida, contando o número de elos percorridos.
  
-O problema IV, por sua vez, necessita de um grau de sofisticação um pouco maior do compilador, começando por ser capaz de responder à pergunta 6 descrita acima. Desta forma é possível, em tempo de execução, se referir a um vínculo de variável de forma mais precisa: em vez de referenciar uma variável apenas como "o símblo /X/ com o valor vigente no contexto atual", podemos referenciá-la como "o símbolo /X/ com o valor que foi definido no contexto /N/ contextos acima do do contexto atual".
+O problema IV, por sua vez, necessita de um grau de sofisticação um pouco maior
+do compilador, começando por ser capaz de responder à pergunta 6 descrita
+acima. Desta forma é possível, em tempo de execução, se referir a um vínculo de
+variável de forma mais precisa: em vez de referenciar uma variável apenas como
+\"o símblo /X/ com o valor vigente no contexto atual", podemos referenciá-la
+como "o símbolo /X/ com o valor que foi definido no contexto /N/ contextos
+acima do do contexto atual".
 
-Em grande parte dos casos esta mudança não altera em nada a semântica de referência a variáveis durante o tempo de execução, embora a deixe ligeiramente mais rápida: a referência a uma variável não precisa mais procurar em cada contexto se a variável tem um valor definido neste contexto até encontrar, pode navegar diretamente ao contexto especificado e obter o valor.
+Em grande parte dos casos esta mudança não altera em nada a semântica de
+referência a variáveis durante o tempo de execução, embora a deixe ligeiramente
+mais rápida: a referência a uma variável não precisa mais procurar em cada
+contexto se a variável tem um valor definido neste contexto até encontrar, pode
+navegar diretamente ao contexto especificado e obter o valor.
 
-No entanto, esta referência mais precisa permite que, junto com uma outra mudança, possamos utilizar a técnica de renomear símbolos, como descrita por Jonathan Rees [1] para implementar macros higiênicas.
+No entanto, esta referência mais precisa permite que, junto com uma outra
+mudança, possamos utilizar a técnica de renomear símbolos, como descrita por
+Jonathan Rees [1] para implementar macros higiênicas.
 
-A outra mudança necessária é permitir que o compilador seja capaz de reconhecer não apenas símbolos mas também uma estrutura que vamos chamar de /símbolos renomeados/ na hora de realizar uma referência a um valor. Um símbolo renomeado representa uma referência a uma variável ou operador sintático baseado em um contexto específico, independente do contexto atual. A explicação para a escolha do termo /símbolo renomeado/ é simples: são a base para o mecanismo de macros por renomeação explícita quando discutirmos macros por renomeação explícita.
+A outra mudança necessária é permitir que o compilador seja capaz de reconhecer
+não apenas símbolos mas também uma estrutura que vamos chamar de /símbolos
+renomeados/ na hora de realizar uma referência a um valor. Um símbolo renomeado
+representa uma referência a uma variável ou operador sintático baseado em um
+contexto específico, independente do contexto atual. A explicação para a
+escolha do termo /símbolo renomeado/ é simples: são a base para o mecanismo de
+macros por renomeação explícita quando discutirmos macros por renomeação
+explícita.
 
-A estrutura de um símbolo renomeado é a seguinte: um símbolo comum, que é o mesmo que o símbolo original antes de ser renomeado; uma referência ao contexto utilizado para renomear este símbolo. A operação de compilar uma referência a um símbolo renomeado /S/, composto do símbolo /X/ e do contexto /E/, pode ser descrita como: 
+A estrutura de um símbolo renomeado é a seguinte: um símbolo comum, que é o
+mesmo que o símbolo original antes de ser renomeado; uma referência ao contexto
+utilizado para renomear este símbolo. A operação de compilar uma referência a
+um símbolo renomeado /S/, composto do símbolo /X/ e do contexto /E/, pode ser
+descrita como: 
 
- 1 - encontre a distância /D1/ entre /E/ e o contexto mais próximo de /E/ em que /X/ foi vinculado;
+ 1 - encontre a distância /D1/ entre /E/ e o contexto mais próximo de /E/ em
+que /X/ foi vinculado;
  
  2 - encontre a distância /D2/ entre o contexto atual e /E/;
 
- 3 - a referência para /S/ pode ser compilada como a referência para /X/ no contexto distante /D1/ + /D2/ do contexto atual.
+ 3 - a referência para /S/ pode ser compilada como a referência para /X/ no
+contexto distante /D1/ + /D2/ do contexto atual.
 
-Agora que o compilador possui a capacidade de compreender tanto referências simples a símbolos como referências a símbolos renomeados, podemos definir um mecanismo de macros que realiza uma transformação higiênica baseada no conceito de macros por renomeação explícita descrito por William Clinger[2]. O mecanismo é simples e é descrito nos parágrafos a seguir:
+Agora que o compilador possui a capacidade de compreender tanto referências
+simples a símbolos como referências a símbolos renomeados, podemos definir um
+mecanismo de macros que realiza uma transformação higiênica baseada no conceito
+de macros por renomeação explícita descrito por William Clinger[2]. O mecanismo
+é simples e é descrito nos parágrafos a seguir:
 
-Uma definição de macro cria um objeto macro composto de dois elementos: Uma função de transformação, que recebe como parâmetros a expressão a ser transformada e uma função de renomeação e o contexto estático no qual esta macro foi definida. O compilador então, após criar o objeto macro, associa um nome a este objeto no contexto estático relevante.
+Uma definição de macro cria um objeto macro composto de dois elementos: Uma
+função de transformação, que recebe como parâmetros a expressão a ser
+transformada e uma função de renomeação e o contexto estático no qual esta
+macro foi definida. O compilador então, após criar o objeto macro, associa um
+nome a este objeto no contexto estático relevante.
 
-Ao encontrar a aplicação de uma macro, ou seja, identificar que uma forma aplicativa do tipo
-    (/identificador/ parametros ...)
-em um contexto estático em que /identificador/ está associado a um objeto macro, o compilador cria uma função /renomear/, de um símbolo /S/, para um símbolo renomeado, que retorna o símbolo renomeado criado a partir do símbolo /S/ e do contexto estático /E/ em que a macro foi criada, se este símbolo puder ser encontrado em /E/.  Caso /S/ não possa ser encontrado em /E/, /renomear/ retorna um novo símbolo codificado de forma a não poder conflitar com nenhum outro símbolo escolhido pelo programador -- em geral, utilizando leis de formação de símbolos inválidas na sintaxe escrita.
+Ao encontrar a aplicação de uma macro, ou seja, identificar que uma forma
+aplicativa do tipo (/identificador/ parametros ...) em um contexto estático em
+que /identificador/ está associado a um objeto macro, o compilador cria uma
+função /renomear/, de um símbolo /S/, para um símbolo renomeado, que retorna o
+símbolo renomeado criado a partir do símbolo /S/ e do contexto estático /E/ em
+que a macro foi criada, se este símbolo puder ser encontrado em /E/.  Caso /S/
+não possa ser encontrado em /E/, /renomear/ retorna um novo símbolo codificado
+de forma a não poder conflitar com nenhum outro símbolo escolhido pelo
+programador -- em geral, utilizando leis de formação de símbolos inválidas na
+sintaxe escrita.
 
-De posse desta função /renomear/ o compilador então interpreta a execução da função de transformação da macro instanciada passando como parâmetros a expressão passada como os parâmetros de aplicação da macro e a função /renomear/ descrita acima.
+De posse desta função /renomear/ o compilador então interpreta a execução da
+função de transformação da macro instanciada passando como parâmetros a
+expressão passada como os parâmetros de aplicação da macro e a função
+/renomear/ descrita acima.
 
-Tendo estas ferramentas à disposição, vamos re-escrever a macro /or2/ descrita anteriormente de forma correta. No código a seguir, /define-er-syntax/ é o identificador utilizado para indicar ao compilador que deve-se definir uma macro utilizando a estratégia de renomeação explícita.
+Tendo estas ferramentas à disposição, vamos re-escrever a macro /or2/ descrita
+anteriormente de forma correta. No código a seguir, /define-er-syntax/ é o
+identificador utilizado para indicar ao compilador que deve-se definir uma
+macro utilizando a estratégia de renomeação explícita.
 
      (define-er-rewriter or2
        (lambda (expressao rename)
@@ -100,9 +198,23 @@ Tendo estas ferramentas à disposição, vamos re-escrever a macro /or2/ descrit
                 ,r-temp
                 ,segundo)))))
 
-Pode-se observar que, em cada situação em que antes havia um problema possível por quebra de higiene na implementação desta macro, foi substituído o símbolo em questão pelo resultado da renomeação deste símbolo no contexto de definição da macro. Por exemplo, a aplicação de (rename 'if) garante que o valor retornado é um símbolo renomeado que referencia o valor do símbolo /if/ como este estava definido no momento em que a macro foi criada: levando-se em consideração a execução de /define-er-syntax/ no nível superior, este valor é o operador sintático pré-definido de controle de fluxo condicional.
+Pode-se observar que, em cada situação em que antes havia um problema possível
+por quebra de higiene na implementação desta macro, foi substituído o símbolo
+em questão pelo resultado da renomeação deste símbolo no contexto de definição
+da macro. Por exemplo, a aplicação de (rename 'if) garante que o valor
+retornado é um símbolo renomeado que referencia o valor do símbolo /if/ como
+este estava definido no momento em que a macro foi criada: levando-se em
+consideração a execução de /define-er-syntax/ no nível superior, este valor é o
+operador sintático pré-definido de controle de fluxo condicional.
 
 
-Os mecanismos apresentados acima, em especial a manutenção de um contexto estático por parte do compilador, podem também serem utilizados trivialmente para implementação do mecanismo de módulos. É apenas necessário que o compilador inicialize o contexto estático de cada módulo como um contexto vazio, incluindo neste as vinculações necessárias de acordo com quais símbolos os módulos importados exportam e, enfim, aplicar as transformações necessárias antes de inserir informações de módulos importados no contexto estático do importador, como prefixação de símbolos.
+Os mecanismos apresentados acima, em especial a manutenção de um contexto
+estático por parte do compilador, podem também serem utilizados trivialmente
+para implementação do mecanismo de módulos. É apenas necessário que o
+compilador inicialize o contexto estático de cada módulo como um contexto
+vazio, incluindo neste as vinculações necessárias de acordo com quais símbolos
+os módulos importados exportam e, enfim, aplicar as transformações necessárias
+antes de inserir informações de módulos importados no contexto estático do
+importador, como prefixação de símbolos.
 
 
