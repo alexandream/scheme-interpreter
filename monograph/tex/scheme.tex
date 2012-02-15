@@ -2,40 +2,40 @@
 \section{Introdução}
 \label{sec:introducao_scheme}
 
-Como discutido no capítulo anterior, a linguagem \textit{Scheme} mantém características
-de minimalismo e simplicidade conceitual que a tornaram bastante populares como
-ambiente de estudo de conceitos e implementações de linguagens de programação
-além de ser utilizada em diversas instituições de ensino como linguagem inicial
-para aprendizado de conceitos de computação e programação.
+Como discutido no capítulo anterior, a linguagem \textit{Scheme} mantém
+características de minimalismo e simplicidade conceitual que a tornaram
+bastante populares como ambiente de estudo de conceitos e implementações de
+linguagens de programação além de ser utilizada em diversas instituições de
+ensino como linguagem inicial para aprendizado de conceitos de computação e
+programação.
 
 Praticamente todas estas características, no entanto, são meros acidentes no
-processo de desenvolvimento da linguagem, que teve como objetivo inicial do
-desenvolvimento, por Gerald Jay Sussman e Guy L. Steele Jr, criar um dialeto
-Lisp simples para mapear e melhor compreender o modelo de computação chamado
-``Actor Model'', proposto por Carl Hewitt \textit{et al}, em seu paper ``\textit{A Universal
-Modular Actor Formalism for Artificial Intelligence}''. Esta implementação,
-publicada ao longo de diversos memorandos entre 1975 e 1980, resultou na
-linguagem de programação \textit{Scheme}.[1]
+processo de desenvolvimento da linguagem. Ela foi desenvolvida por Gerald Jay
+Sussman e Guy L. Steele Jr com o objetivo de  criar um dialeto Lisp simples
+para mapear e melhor compreender o modelo de computação chamado ``\textit{Actor
+Model}''. Este modelo foi proposto por Carl Hewitt \textit{et al}, em seu paper
+``\textit{A Universal Modular Actor Formalism for Artificial Intelligence}''.
+Esta implementação inicial, publicada ao longo de diversos memorandos entre
+1975 e 1980, resultou na linguagem de programação \textit{Scheme}.[1]
 
 Como resultado deste empreendimento, Sussman e Steele acabaram por descobrir
 que o modelo proposto por Hewitt podia ser diretamente traduzido para o modelo
-de computação já bastante conhecido à época chamada Cálculo Lambda, e que um
-dialeto Lisp baseado no Cálculo Lambda poderia ser criado com pequenas
-alterações nos modelos computacionais utilizados pelos dialetos Lisp utilizados
-na época. Chegaram à conclusão que um dialeto Lisp poderia ser criado para
-representar o Actor Model bastando que se passasse a utilizar uma estratégia de
-escopo léxico (em contraste com o escopo dinâmico utilizado por todos os
-dialetos Lisp da época) e que o conceito de Continuações, que discutiremos em
-breve, fosse exposto como objetos de primeira classe.
+de computação já bastante conhecido à época chamada Cálculo Lambda. Perceberam
+também que um dialeto Lisp baseado no Cálculo Lambda poderia ser criado com
+pequenas alterações nos modelos computacionais utilizados pelos dialetos Lisp
+utilizados na época. Chegaram à conclusão que um dialeto Lisp poderia ser
+criado para representar o \textit{Actor Model} bastando que se passasse a
+utilizar uma estratégia de escopo léxico (em contraste com o escopo dinâmico
+utilizado por todos os dialetos Lisp da época) e que o conceito de
+\textit{Continuações} fosse exposto como objetos de primeira classe.
 
 A criação deste dialeto Lisp, então chamado \textit{Schemer} como uma
 brincadeira em relação ao nome de outras duas linguagens criadas por times
 próximos (\textit{Planner} e \textit{Conniver}), baseado mais fortemente no
 modelo do Cálculo Lambda, criou uma forma prática para que estudos teóricos
-sobre computação feitos sobre a base do Cálculo Lambda tivessem uma
-materialização prática na forma de uma linguagem de programação em que poderiam
-ser experimentados. Esta acabou por se tornar uma ótima plataforma de
-experimentação[1].
+feitos sobre a base do Cálculo Lambda tivessem uma materialização prática na
+forma de uma linguagem de programação em que poderiam ser experimentados. Esta
+acabou por se tornar uma ótima plataforma de experimentação[1].
 
 A seguir, é descrito um subconjunto das funcionalidades de \textit{Scheme} de forma a
 familiarizar o leitor com a linguagem e facilitar a compreensão da subsequente
@@ -50,32 +50,41 @@ execução, não havendo verificação estática desta característica. A lingua
 vem equipada com um conjunto modesto de tipos e permite ao programador criar
 seus próprios tipos disjuntos dos tipos existentes.
 
-Não existe em \textit{Scheme}, também, o conceito de classes, como em
+Além disso, não existe em \textit{Scheme} o conceito de classes, como em
 linguagens orientadas a objeto, embora este conceito tenha sido diversas vezes
-implementado em termos das primitivas da linguagem [12][13][14]
+implementado em termos das primitivas da linguagem [12][13][14].
 
-O Minimalismo de \textit{Scheme} pode ser verificado na forma como primitivas
-comuns em outras linguagens se mostram ausentes, sendo substituídas por
-construções compostas de primitivas mais abrangentes. Por exemplo, no lugar de
-expressões de retorno, mecanismos de exceções e interrupções de estruturas de
-laço (como \textit{break} e \textit{continue}), temos apenas as primitivas de
-obter a continuação atual e aplicar uma continuação. Até mesmo as estruturas de
-laço, mencionadas há pouco, não são primitivas em \textit{Scheme}: são meros
-padrões de utilização das primitivas de criar uma nova função e aplicação de
-funções.
+Seu caráter minimalista pode ser verificado na forma como primitivas que são
+comuns em outras linguagens simplesmente não existem em \textit{Scheme}, sendo
+substituídas por construções compostas de primitivas mais abrangentes.  Por
+exemplo, no lugar de expressões de retorno, mecanismos de exceções ou
+interrupções de estruturas de laço (como \textit{break} e \textit{continue}),
+temos apenas as primitivas de obter a continuação atual e aplicar uma
+continuação e formas sintáticas derivadas desta primitiva. Até mesmo as
+estruturas de laço não são primitivas em \textit{Scheme}: são meros padrões de
+utilização das primitivas de criar uma nova função e aplicação de funções.
 
+A seguir são discutidas algumas características de \textit{Scheme} que a
+diferenciam de grande parte das linguagens de uso geral em ampla utilização
+atualmente ou que a diferenciam das linguagens anteriores da família
+\textit{Lisp}.
 
 \subsection{Eliminação de Chamadas Terminais}
 
-Para que esta utilização de funções como estruturas de laço, utilizando
-recursão, não esgote a memória de uma implementação arbitrária (por exemplo,
-esgotando a pilha utilizada para manter a cadeia de chamadas), qualquer
-implementação \textit{Scheme} é obrigada a realizar a eliminação dos registros
-de ativação de chamadas terminais (\textit{tail-calls}): aplicações de função
+Toda implementação de \textit{Scheme} é obrigada a realizar a eliminação dos
+registros de ativação de chamadas a funções quandos estas funções estiverem 
+na condição conhecida como uma ``chamada terminal'' (também conhecidas como 
+\textit{tail-calls}): aplicações de função
 nas quais o resultado da função chamada será, também, o resultado da função
-chamadora. Como exemplo, observemos a execução de uma função simples, que
-retorna a soma de dois números naturais utilizando apenas as operações de
-incremento e decremento, com e sem eliminação de chamadas terminais.
+chamadora.
+
+Esta obrigação deriva da utilização de funções como estruturas de laço,
+utilizando recursão: se a cada iteração for criado um novo registro de ativação
+irrelevante, é possível que a memória de uma implementação arbitrária seja
+esgotada por um laço longo o suficiente (por exemplo, esgotando a pilha
+utilizada para manter a cadeia de chamadas). Como exemplo, o código a seguir
+exibe uma função recursiva simples que retorna a soma de dois números naturais
+utilizando apenas as operações de incremento e decremento.
 
 \begin{lstlisting}
     (define (add op1 op2)
@@ -84,10 +93,11 @@ incremento e decremento, com e sem eliminação de chamadas terminais.
         (add (dec op1) (inc op2))))
 \end{lstlisting}
 
-Esta função é obviamente recursiva, mas a chamada recursiva aparece em uma
-posição terminal. Na figura \ref{fig:tail-call-elimination} vemos como seria o
-consumo de memória utilizado para armazenar os registros de ativação em duas
-implementações hipotéticas com e sem eliminação de chamadas terminais.
+Esta função é obviamente recursiva, no entanto chamada recursiva aparece em uma
+posição terminal. Na figura \ref{fig:tail-call-elimination} pode-se verificar
+como seria o consumo de memória utilizado para armazenar os registros de
+ativação em duas implementações hipotéticas com e sem eliminação de chamadas
+terminais.
 
 \begin{figure}[h!]
 \centering
@@ -97,11 +107,11 @@ implementações hipotéticas com e sem eliminação de chamadas terminais.
 \end{figure}
 
 Quando uma implementação \textit{Scheme} se depara com uma aplicação de chamada
-de função terminal, esta, obrigatoriamente, deve evitar criar um novo registro
-de ativação e reutilizar o registro de ativação da função em vigor como o
-registro de ativação da função prestes a ser chamada. Desta forma, recursões em
-que a chamada recursiva em si é considerada terminal utilizam quantidade
-constante de memória na pilha de ativações de funções.
+de função terminal, esta deve evitar criar um novo registro de ativação e
+reutilizar o registro de ativação da função em vigor como o registro de
+ativação da função prestes a ser chamada. Recursões em que a chamada recursiva
+em si é considerada terminal, por meio da eliminação de chamadas terminais,
+utilizam quantidade constante de memória na pilha de ativações de funções.
 
 \subsection{Representação textual}
 
@@ -113,15 +123,16 @@ podem ser definidas recursivamente da seguinte forma:
 
 \begin{itemize}
 
-\item Um elemento atômico (número, símbolo ou outro literal da linguagem) é uma Expressão-S;
+\item Um elemento atômico (número, símbolo ou outro literal da linguagem) é uma
+Expressão-S;
 
 \item Uma lista de Expressões-S é uma Expressão-S.
 
 \end{itemize}
 
 Ainda em conformidade com a família Lisp, \textit{Scheme} adota a notação
-polonesa (ou notação de prefixos), com as listas representando operações em que
-o primeiro elemento da lista é o operador, que pode ser uma função ou uma forma
+polonesa (ou notação de prefixos), na qual as listas representam operações em
+que o primeiro elemento é o operador, que pode ser uma função ou uma forma
 sintática, e os demais elementos são parâmetros para a operação.
 
 \subsection{Funções e Formas Sintáticas}
@@ -170,14 +181,15 @@ A criação de macros, embora uma das partes mais difíceis da linguagem em um
 primeiro contato com \textit{Scheme}, se baseia em uma idéia simples: O
 programador pode indicar ao compilador palavras-chave que serão identificadas
 quando encontradas como primeiro elemento de uma forma aplicativa (expressão
-entre parênteses).  A estas palavras-chave se associam transformações que
-deverão ser executadas pelo compilador, utilizando como entrada a forma
-aplicativa encontrada no código fonte como parâmetro, e que retornam uma nova
-Expressão-S que o compilador deve substituir pela forma aplicativa inicial.
-Desta forma, um programador pode informar ao compilador a maneira (a
-transformação associada à palavra-chave) que deverá ser utilizada para tratar
-formas sintáticas inicialmente desconhecidas, reduzindo-as para formas
-sintáticas primitivas que o compilador conhece.
+entre parênteses) e associar transformações às mesmas. Estas transformações
+deverão ser executadas pelo compilador quando uma forma aplicativa iniciando
+por uma das palavras-chave definidas for encontrada, utilizando como entrada a
+forma aplicativa encontrada no código fonte como parâmetro. Esta execução deve
+retornam uma nova Expressão-S que o compilador substituirá pela forma
+aplicativa inicial.  Desta forma, um programador pode informar ao compilador a
+maneira (a transformação associada à palavra-chave) que deverá ser utilizada
+para tratar formas sintáticas inicialmente desconhecidas, reduzindo-as para
+formas sintáticas primitivas que o compilador conhece.
 
 Historicamente, dois mecanismos principais de macros foram utilizados em
 \textit{Scheme} e outras linguagens da família Lisp: macros procedurais e
@@ -195,7 +207,7 @@ das regras pelo resultado definido para a regra indicada.
 \subsection{Escopo de variáveis}
 
 \textit{Scheme} foge da tradição entre linguagens anteriores da família Lisp
-por adotar um modelo de escopo léxico, ou estático, em que o escopo de uma
+por adotar um modelo de escopo léxico, ou estático, no qual o escopo de uma
 variável pode sempre ser determinado pela simples análise do texto do programa.
 Partindo do ponto em que a variável é referenciada, utilizando escopo léxico, e
 voltando na estrutura do código é sempre possível encontrar o ponto em que esta
@@ -241,9 +253,8 @@ variáveis livres em um a expressão fosse semanticamente análogo ao dado no
 formalismo do Cálculo Lambda, fornecendo um bom modelo computacional para
 experimentação com o Cálculo Lambda. Novamente de acordo com os criadores da
 linguagem [1], esta proximidade com o Cálculo Lambda foi um dos motivos
-principais para a utilização futura, não prevista originalmente, de
-\textit{Scheme} como uma linguagem de ensino e experimentação de conceitos de
-linguagens de programação.
+principais para a utilização futura de \textit{Scheme} como uma linguagem de
+ensino e experimentação de conceitos de linguagens de programação.
 
 \subsection{Closures}
 
@@ -254,7 +265,8 @@ variáveis como estavam no momento em que a função foi declarada em tempo de
 execução e carregam estes vínculos consigo, podendo manipulá-los e modificá-los
 como quiser. Esta técnica é largamente utilizada em \textit{Scheme} para criar
 unidades de código que contém tanto código de função como estado de variáveis,
- de forma análoga aos objetos de uma linguagem orientada a objetos.
+de forma análoga a alguns tipos de objetos de uma linguagem orientada a
+objetos.
 
 Um exemplo simples de closure, para demonstrar o conceito, é dado no código a
 seguir, em que uma função (\sctt{multiplicador}) recebe como parâmetro um
@@ -303,10 +315,10 @@ na figura \ref{fig:interacao-closure}.
 \subsection{Continuações como objetos de primeira classe}
 \label{ss:continuacoes}
 
-Uma continuação de uma computação qualquer pode ser vista como o contexto em
-que aquela computação está acontecendo e o lugar para o qual esta computação
-deve retornar o seu valor após ser avaliada. Por exemplo, no trecho de código
-seguir:
+Uma continuação de uma computação qualquer pode ser vista como um par composto
+pelo contexto em que aquela computação está acontecendo e o lugar para o qual
+esta computação deve retornar o seu valor após ser avaliada. Por exemplo, no
+trecho de código seguir:
 
 \begin{lstlisting}
 (set! x (+ 3 2))
@@ -319,22 +331,22 @@ entre outras coisas os valores das variáveis ``\texttt{x}'' e ``\texttt{+}''),
 a cadeia de registros de ativação de funções que leva ao momento em que esta
 expressão está sendo executada e uma referência ao ponto da computação para o
 qual o valor deve ser entregue (neste caso a expressão ``\texttt{(+ 3 \_)}'',
-onde ``\texttt{\_}'' representa onde este valor vai ser entregue). De forma 
-mais simples, uma continuação é uma \textit{procedure} que representa os passos
-seguintes de uma computação.
+onde ``\texttt{\_}'' representa onde este valor vai ser entregue). De forma
+mais simples, uma continuação é uma \textit{procedure} que representa a idéia
+dos ``passos seguintes'' de uma computação.
 
 \textit{Scheme} foi a primeira linguagem de programação a tratar continuações
 como objetos de primeira classe, ou seja: um progamador pode obter a
 continuação atual, passar continuações como parâmetros, armazená-las em
 variáveis, retornar como valor de uma função e invocá-las para retornar ao
 ponto da computação que elas descrevem. Isto é feito por meio da primitiva
-\texttt{call-with-current-continuation}, normalmente abreviada \texttt{call/cc}.
-Esta primitiva recebe uma função de apenas um parâmetro e invoca esta função
-passando a continuação da computação no momento em que foi chamada; e retorna
-o valor retornado pela função que recebeu, na primeira chamada, ou os valores
-passados para a continuação sempre que esta for invocada. Vejamos por exemplo
-uma utilização de continuações para simular o efeito do ``\texttt{return}'' em 
-outras linguagens:
+\texttt{call-with-current-continuation}, normalmente abreviada
+\texttt{call/cc}.  Esta primitiva recebe uma função de apenas um parâmetro e
+invoca esta função passando a continuação da computação no momento em que foi
+chamada; e retorna o valor retornado pela função que recebeu, na primeira
+chamada, ou os valores passados para a continuação sempre que esta for
+invocada. O exemplo a seguir utiliza a obtenção da continuação atual para
+simular o efeito da operação``\texttt{return}'' em outras linguagens:
 
 \begin{lstlisting}
     (define (find-return n lst accept?)
@@ -374,9 +386,9 @@ necessidade.
 
 Na maior parte dos casos, uma referência a uma lista no código, como
 \texttt{(foo 10)} significa uma aplicação de função a seus parâmetros. Em 
-algumas situações no entanto, podemos querer, por exemplo, indicar a lista
+algumas situações no entanto, pode ser interessante, por exemplo, indicar a lista
 composta pelo símbolo \texttt{foo} e o número inteiro \texttt{10}, nestes
-casos podemos utilizar a expressão \texttt{(quote (foo 10))} que pode ser 
+casos pode-se utilizar a expressão \texttt{(quote (foo 10))} que pode ser 
 abreviada simplesmente como \texttt{'(print 10)}. 
 
 O mesmo vale para quaisquer outros valores \textit{Scheme}. Os que possuem

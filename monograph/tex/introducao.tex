@@ -3,66 +3,60 @@
 
 Este projeto apresenta uma implementação da mais recente edição do relatório
 reconhecido como \textit{de facto standard} da linguagem de programação
-\textit{Scheme}, o \acs{R7RS}, com o objetivo de demonstrar a aderência ao
-princípio, definido no plano de ratificação do relatório, que requer que uma
-implementação deveria ser possível de ser realizada por um estudante de
-graduação em ciência da computação como meio de pesquisa e aprendizado sobre
-linguagens de programação sem a necessidade de técnicas demasiado avançadas.
+\textit{Scheme}, o \acs{R7RS}. O objetivo é demonstrar a aderência ao
+princípio, definido no plano de ratificação do relatório, que requer que a
+implementação da linguagem seja passível de ser realizada como meio de pesquisa
+e aprendizado sobre linguagens de programação sem a necessidade de técnicas
+demasiado avançadas[23].
 
 Scheme é uma linguagem de programação da família Lisp, que difere dos outros
 dialetos Lisp  mais conhecidos (como \textit{Common Lisp} e \textit{Emacs
 Lisp}) por utilizar uma estratégia de escopo totalmente léxico, possuir
 continuações como objetos de primeira classe, e compartilhar o espaço de nomes
 entre funções e variáveis. Também se destaca por manter um considerável foco em
-minimalismo, preferindo primitivas poderosas e altamente ortogonais, que podem
-ser utilizadas para criar novas expressões compostas, a complexas
-funcionalidades especializadas[1].
+minimalismo, preferindo primitivas poderosas a complexas funcionalidades
+especializadas[1]. Estas primitivas são, em geral, altamente ortogonais e podem
+ser utilizadas para criar novas expressões compostas,
 
-Por causa destas características, \textit{Scheme} foi se tornando ao longo do
-tempo uma plataforma bastante utilizada para o ensino de conceitos de
-linguagens de programação e computação. Em especial, a facilidade de
-implementar novos conceitos e funcionalidades sobre a linguagem base
-pré-definida fez com que Scheme fosse bastante utilizado no estudo exploratório
-de novos conceitos de linguagens de programação, tanto como linguagem utilizada
-em cursos iniciais de computação e programação, inclusive em cursos de nível
-médio[2][3][6], bem como meio de discussão na literatura da área de projeto de
-linguagens de programação e design de interpretadores.
+Por causa destas características, \textit{Scheme} tornou-se ao longo do tempo
+uma plataforma bastante utilizada para o ensino de computação e conceitos de
+linguagens de programação. Em especial, a facilidade de implementar novos
+conceitos e funcionalidades sobre a linguagem base pré-definida fez com que
+Scheme fosse bastante utilizado no estudo exploratório de novos conceitos de
+linguagens de programação. Esta linguagem é utilizada em diversos cursos
+iniciais de computação e programação, inclusive em cursos de nível
+médio[2][3][6]. Também é frequentemente utilizada como linguagem de exemplo na
+literatura da área de projeto de linguagens de programação e design de
+interpretadores[4][5].
 
-O crescimento de \textit{Scheme} dentro da comunidade acadêmica, inclinando-se
-para as capacidades da linguagem como plataforma de ensino e pesquisa de
-linguagens de programação e suas implementações contribuíram para que, de forma
-tácita, os comitês responsáveis pelas evoluções da linguagem da década de 1970
-até a publicação da quinta revisão, conhecida como \acs{R5RS} em 1998 dessem
-grande importância à possibilidade de a linguagem ser implementada tanto de
-forma eficiente e sofisticada, quanto por um aluno, como estudo, dentro do
-currículo de um curso de graduação em ciência da computação.
 
-Em 2007 um novo processo de revisão da linguagem foi concluído, dando origem ao
-relatório \acs{R6RS}. Este relatório tinha a ambição de criar uma linguagem
-mais completa e próxima das necessidades de desenvolvimento de aplicações
-demandadas pelo mercado de desenvolvimento de sistemas, o que acabou por
-distanciá-lo significativamente dos objetivos que nortearam o desenvolvimento
-até o \acs{R5RS}. Aliando a este distanciamento a algumas pequenas
-incompatibilidades com a profusão de implementações de \textit{Scheme}
-existentes, o relatório \acs{R6RS} foi largamente ignorado pelos responsáveis
-por algumas das mais utilizadas implementações da época, causando grande
-controvérsia entre a comunidade de implementadores de \textit{Scheme} ao redor
-do mundo[9].
+A utilização constante de \textit{Scheme} dentro da comunidade acadêmica
+contribuiu para que os comitês responsáveis pelas evoluções da linguagem, até a
+ratificação do \acs{R5RS} em 1998, dessem grande importância à possibilidade de
+a linguagem ser implementada de forma simples como objeto de estudo e
+experimentação. No entanto, os objetivos por trás da ratificação do \acs{R6RS}
+em 2007 estavam mais alinhados com as necessidades do mercado de
+desenvolvimento de aplicações e padronização entre implementações, o que
+distanciou a linguagem significativamente dos objetivos mantidos até o
+\acs{R5RS}. Este distanciamento, junto com algumas incompatibilidades entre a
+linguagem descrita pelo \acs{R6RS} e a descrita pelo \acs{R5RS}, fez com que o
+\acs{R6RS} fosse ignorado por uma parcela significativa da comunidade de 
+implementadores[9].
 
-Como resultado desta divisão na comunidade, em 2009 iniciou-se um novo esforço
-para revisão da linguagem: o novo relatório chamado \acs{R7RS}. Para evitar os
+Esta divisão levou a comunidade a um esforço de unificação dos objetivos que
+é encarnado na iminente ratificação do \acs{R7RS}. Para evitar os
 problemas anteriores foi decidido que a evolução da linguagem se daria em duas
 frentes: uma linguagem ``pequena'' (posteriormente nomeada simplesmente
 \acs{R7RS}-small), guiada pelos princípios de minimalismo que historicamente
 foram seguidos, e uma linguagem ``grande'' (\acs{R7RS}-large), baseada na
-R7RS-small com a intenção de levá-la em direção aos objetivos mal sucedidos do
-\acs{R6RS}[10]. 
+R7RS-small com a intenção de levá-la em direção aos objetivos do \acs{R6RS}
+sem tanta oposição[10]. 
 
 O processo de ratificação da \acs{R7RS}-small está próximo do fim, com o draft
-mais recente tendo sido publicado em março de 2011[11], enquanto a linguagem
-\acs{R7RS}-large foi deixada para definição futura pelo fato de todos os
-participantes do grupo de trabalho dedicado à \acs{R7RS}-large também fazerem
-parte do grupo de trabalho dedicado à \acs{R7RS}-small e preferirem terminar o
+mais recente tendo sido publicado em março de 2011[11]. Entretanto, a linguagem
+\acs{R7RS}-large foi deixada para definição futura pois todos os
+participantes do grupo de trabalho dedicado à \acs{R7RS}-large também fazem
+parte do grupo de trabalho dedicado à \acs{R7RS}-small e preferiram terminar o
 trabalho de base antes de iniciar o trabalho mais completo nas camadas acima.
 
 O histórico da baixa aceitação do \acs{R6RS} demonstra que uma linguagem que
@@ -73,11 +67,14 @@ de ser amplamente implementada pela comunidade.
 Inserido neste contexto, este trabalho é uma tentativa de demonstrar a
 aderência aos princípios de minimalismo e capacidade de implementação de
 \textit{Scheme} como objeto de estudo de alunos de graduação em ciência da
-computação por meio da apresentação de uma implementação, e das técnicas
-envolvidas nesta, da linguagem como descrita até o momento pelo terceiro
-\textit{draft}. Deixando de lado os diversos pequenos módulos opcionais
-descritos no relatório, esta implementação se foca no módulo ``\texttt{base}'',
-obrigatório para uma implementação \textit{Scheme}.
+computação. Este objetivo será atingido por meio da apresentação de uma
+implementação  da linguagem como descrita pelo terceiro \textit{draft} do
+\acs{R7RS}, utilizando técnicas simples e diretas passíveis de serem abordadas
+por um aluno de graduação.
+
+Deixando de lado os diversos pequenos módulos opcionais descritos no relatório,
+este trabalho se concentra no módulo ``\texttt{base}'', obrigatório para uma
+implementação \textit{Scheme}.
 
 
 \section{Trabalhos relacionados}
@@ -94,33 +91,34 @@ Os objetivos destas, no entanto, diferem significativamente deste trabalho:
 \subsection{Chibi Schemee}
 \label{sub:chibi_scheme}
 
-Chibi Scheme é uma tentativa de implementar a linguagem R7RS-small (além de
-alguns dialetos mais antigos como o R5RS) como uma biblioteca de extensão e
+Chibi Scheme é uma tentativa de implementar a linguagem \acs{R7RS}-small (além de
+alguns dialetos mais antigos como o \acs{R5RS}) como uma biblioteca de extensão e
 linguagem de script para programas em C. Seu foco principal está em diminuir o
 tamanho do executável final e aumentar a performance. Embora o código seja
 relativamente bem comentado, não há qualquer intenção de escolher
 funcionalidades e estratégias pensando na simplicidade de implementação em
 detrimento dos objetivos citados acima. Desta forma, Chibi Scheme não é uma
 implementação viável para demonstração da capacidade de se implementar a
-linguagem R7RS-small como objeto de estudo.
+linguagem \acs{R7RS}-small como objeto de estudo.
 
 
-\subsection{R⁷RS Bridge}
+\subsection{\acs{R7RS} Bridge}
 \label{sub:r7rs_bridge}
 
 R7RS-Bridge, de fato, é uma tentativa completamente diferente, focada em
-desenvolver uma linguagem compatível com R7RS-small através de bibliotecas para
-sistemas Scheme R6RS. Este pré-requisito em ter uma implementação anterior do
-R6RS, o relatório considerado complicado demais pela comunidade Scheme,
-claramente coloca as intenções de R7RS-Bridge distantes de uma implementação de
-R7RS-small como objeto de estudo.
+desenvolver uma linguagem compatível com \acs{R7RS}-small através de
+bibliotecas para sistemas Scheme \acs{R6RS}. Portanto, este pré-requisito em
+ter uma implementação anterior do \acs{R6RS} (o relatório controverso que o
+\acs{R7RS} tenta substituir) claramente coloca as intenções de
+\acs{R7RS}-Bridge distantes de uma implementação de \acs{R7RS}-small como objeto de
+estudo.
 
 \section{Estrutura da monografia}
 \label{sec:estrutura_da_monografia}
 
 O capítulo \ref{cap:scheme} descreve a linguagem \textit{Scheme} e suas
 funcionalidades mais notáveis, que a diferenciam da maior parte das linguagens
-de uso geral em amplo uso atualmente.
+de uso geral em ampla utilização atualmente.
 
 O capítulo \ref{cap:estrategia} descreve as estratégias utilizadas na
 implementação deste trabalho, e está dividido nas seções descritas as seguir:
@@ -129,8 +127,8 @@ implementação deste trabalho, e está dividido nas seções descritas as segui
 
 \item A seção \ref{sec:memoria} descreve a estrutura interna utilizada para
 representar valores no interpretador, bem como as estratégias utilizadas para
-reutilização de memória de objetos impossíveis de serem utilizados pelo
-programa;
+reutilização da memória alocada anteriormente para objetos que passaram a ser
+impossíveis de serem utilizados pelo programa;
 
 \item A seção \ref{sec:leitor} descreve o leitor, uma fase tradicional da
 compilação de programas Lisp que corresponde à análise léxica e parte da

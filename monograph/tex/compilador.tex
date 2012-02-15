@@ -6,33 +6,34 @@ como exemplo por Kent Dybvig em sua tese de doutorado[19]. Este compilador,
 embora simples, sofre de algumas deficiências que serão discutidas na seção
 \ref{ss:solucoes-compilador}.
 
-Durante a etapa de compilação uma Expressão-S representando código
-Scheme é traduzida para uma Expressão-S representando a implementação deste
- código nas
-instruções utilizadas pela máquina virtual. Observe que, como a compilação se
+Durante a etapa de compilação uma Expressão-S representando código Scheme é
+traduzida para uma Expressão-S representando a implementação deste código nas
+instruções utilizadas pela máquina virtual. É importante observar que, como a compilação se
 dá em termos de Expressões-S como entrada, nada impede que um usuário forneça
 ao compilador uma Expressão-S que não é diretamente derivada da representação
 textual do programa. Esta característica é essencial para o funcionamento do
 mecanismo de tradução de macros.
 
-Neste momento o funcionamento do mecanismo de macros não será discutido
-profundamente, embora seja necessário deixar claro que, antes de a compilação
+Neste ponto o funcionamento do mecanismo de macros ainda não será discutido
+profundamente. No entanto, é necessário deixar claro que, antes de a compilação
 propriamente dita de uma expressão ter início, o compilador invoca o sistema de
-macros para processar a Expressão-S recebida como entrada de forma a
-transformá-la em uma Expressão-S representando uma das poucas operações
-primitivas das quais o compilador tem conhecimento. Este pré-processamento
-simplifica muito a etapa de compilação, permitindo ao compilador se preocupar
-apenas com um número reduzido das estruturas sintáticas definidas no R7RS-small
-como \textit{formas sintáticas primitivas}.
+macros para pré-processar a Expressão-S recebida como entrada. Este
+pré-processamento é necessário para transformar a entrada em um conjunto de
+Expressões-S composta apenas das poucas operações primitivas sobre as quais o
+compilador tem conhecimento. Isto simplifica muito a etapa de compilação,
+permitindo ao compilador se preocupar apenas com um número reduzido das
+estruturas sintáticas definidas no R7RS-small como \textit{formas sintáticas
+primitivas}.
 
-A estratégia de implementação utilizada é a mais ingênua possível. Com efeito,
+A estratégia de implementação utilizada é a mais ingênua possível. De fato,
 esta implementação não mantém informações de análise estática relacionadas a
 escopo, o que a faz incapaz de representar o mecanismo de macros definido pela
-linguagem Scheme. A implementação de um mecanismo alternativo de macros
-procedurais, compatível com os mecanismos tradicionais de outras linguagens da
-família Lisp, é discutido na seção \ref{sec:macros} e uma descrição das
-mudanças necessárias para se implementar o mecanismo de macros descrito por
-Scheme é vista posteriormente na seção \ref{sec:problemas-macros}.
+linguagem Scheme. Esta implementação conta com um mecanismo alternativo de
+macros procedurais, compatível com os mecanismos tradicionais de outras
+linguagens da família Lisp, que é discutido na seção \ref{sec:macros}. Uma
+descrição das mudanças necessárias para esta implementação seja capaz de 
+suportar um conjunto maior da linguagem \textit{Scheme}
+vista na seção \ref{sec:solucoes-compilador}.
 
 Apenas dez tipos de expressão são reconhecidos pelo compilador: Referência a variável,
 constantes,  expressões literais, criação de procedimentos, condicionais,
@@ -43,11 +44,12 @@ construídas, simplificando significativamente o projeto do compilador.
 
 O processo de compilação inicia-se com dois parâmetros: a expressão a ser
 compilada e a próxima etapa da computação que está sendo efetuada. Quando
-estamos realizando a compilação de uma expressão no escopo mais alto, esta
-próxima etapa normalmente é um pedaço de código pré compilado correspondendo à
-instrução \sctt{halt} da máquina virtual. Esta expressão representando a próxima etapa
-da computação pode então ser utilizada para compor o parâmetro das instruções
-da máquina virtual que indica qual a próxima instrução a ser executada.
+estamos realizando a compilação de uma expressão no escopo superior como no
+ambiente interativo, esta próxima etapa normalmente é um pedaço de código pré
+compilado correspondendo à instrução \sctt{halt} da máquina virtual. Esta
+expressão representando a próxima etapa da computação pode então ser utilizada
+para compor o parâmetro das instruções da máquina virtual que indica qual a
+próxima instrução a ser executada.
 
 O compilador então invoca o sistema de macros de forma que a expressão dada como
 entrada seja reduzida para uma expressão primitiva, caso seja uma invocação de
@@ -171,11 +173,11 @@ uma coleta seja invocada durante a execução do compilador.
 \subsection{Estendendo o compilador}
 \label{ss:solucoes-compilador}
 
-Embora o compilador apresentado aqui seja suficientemente simples de implementar,
+Embora o compilador apresentado aqui seja simples de implementar,
 ele possui alguns problemas que criam empecilhos para toda a implementação.
 Durante a implementação de outras funcionalidades notou-se que a estratégia
 utilizada seria insuficiente para representar toda a linguagem descrita pelo
-\acs{R7RS}-small.  Embora este problema tenha sido notado, já era tarde demais
+\acs{R7RS}-small. Embora este problema tenha sido notado, já era tarde demais
 para alterar a base do sistema de compilação sem arriscar atrasar todo o resto
 do projeto.
 
@@ -204,10 +206,10 @@ do problema 2 descrito acima).
 
 
 O fato de o compilador não manter este contexto estático de nomes e escopo o
-torna incapaz de analisar de forma mais sofisticada o código que recebe,
-criando a necessidade de soluções pouco elegantes na máquina virtual (como a
+torna incapaz de analisar de forma mais sofisticada o código que recebe.
+Isto criaa necessidade de soluções pouco elegantes na máquina virtual (como a
 vinculação de macros em tempo de execução) e impossibilitando qualquer análise
-que não seja possível implementar diretamente na máquina virtual. A seguir é
+que deva ser realizada em tempo de compilação. A seguir é
 discutida uma evolução do compilador que o torna capaz de resolver os problemas
 I, II e III. O problema IV requer um pouco mais de sofisticação e será
 discutido na seção \ref{sec:solucao-macros}.
@@ -215,7 +217,7 @@ discutido na seção \ref{sec:solucao-macros}.
 Para a solucionar estes problemas, o compilador deve ser capaz de tratar de
 forma especial as construções primitivas que introduzem novos vínculos de nomes
 e manter uma tabela de símbolos que o possa responder, durante a compilação,
-pelo menos, as seguintes perguntas dado um símbolo qualquer \sctt{x} e um
+as seguintes perguntas dado um símbolo qualquer \sctt{x} e um
 contexto qualquer \sctt{e}:
 
 \begin{enumerate}
@@ -305,7 +307,8 @@ a resposta para a pergunta 6 segue trivialmente: é apenas necessário navegar
 para cima na cadeia de contextos até encontrar o contexto mais próximo no qual
 a variável pedida foi definida, contando o número de elos percorridos.
 
-Com esse conjunto pequeno de mudanças, então, grande parte das maiores falhas desta
-implementação em relação ao descrito pelo \acs{R7RS}-small são resolvidas.
-Em especial o problema quanto à utilização de palavras-chave como nomes de variáveis
-já é resolvido diretamente simplesmente pela manutenção dos contextos estáticos.
+Com esse conjunto pequeno de mudanças, então, grande parte das maiores falhas
+desta implementação em relação ao descrito pelo \acs{R7RS}-small são
+resolvidas.  Em especial o problema quanto à utilização de palavras-chave como
+nomes de variáveis já é resolvido diretamente simplesmente pela manutenção dos
+contextos estáticos.

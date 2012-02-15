@@ -17,7 +17,8 @@
     http://lists.r6rs.org/pipermail/r6rs-discuss/2007-October/003351.html 
     obtido em 21-11-2011
 
-10 - scheme report anouncement.
+10 - Steering Committee Position Statement
+     http://www.scheme-reports.org/2009/position-statement.html 
 
 11 - R7RS-small draft 3
 
@@ -48,3 +49,6 @@
 [22] Hygienic Macros Through Explicit Renaming; 
     William Clinger;
     ACM SIGPLAN Lisp Pointers - Volume IV Issue 4, October-December 1991 
+
+[23] R7RS Working Group 1 Charter 
+     http://www.scheme-reports.org/2009/working-group-1-charter.html 

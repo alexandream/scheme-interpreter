@@ -2,20 +2,25 @@
 \label{sec:memoria}
 
 Embora não seja exatamente um requerimento da \acs{R7RS}-small, esta implementação
-possui também um mecanismo de gerência de memória automatizado, o que definiu
-em diversas formas as escolhas utilizadas para representação dos valores em
-tempo de execução nesta implementação. Historicamente Lisp está tão
+possui um mecanismo de gerência automática de memória que influenciou de várias
+maneiras as escolhas utilizadas para representação dos valores em
+tempo de execução nesta implementação.
+
+Historicamente Lisp está tão
 intimamente ligada à gerência automatica de memória, visto que foi a primeira
 linguagem de programação a utilizar a técnica[20], que a escolha por incluir um
 mecanismo de gerência automática de memória se deu pelo interesse em descrever
-o mesmo algoritmo utilizado por McCarthy em sua implementação original.
+uma implementação, embora simples, o mais próxima possível de uma implementação
+utilizável em cenários reais. O algoritmo de gerência de memória utilizado é 
+o mesmo descrito por John McCarthy em sua implementação original da linguagem
+Lisp.
 
-Os objetos descritos na linguagem \textit{Scheme} podem ser divididos em dois
+Os objetos utilizados nesta implementação podem ser divididos em dois
 tipos de valores, em relação a necessitarem ou não de alocação de memória
 dinâmica. Entre os valores que não necessitam de alocação de memória dinâmica,
 chamados daqui em diante de valores imediatos, encontram-se os inteiros,
 booleanos, caracteres e alguns valores especiais como o marcador de lista
-vazia. Estes, são implementados na forma de ``ponteiros etiquetados''
+vazia. Estes são implementados na forma de ``ponteiros etiquetados''
 (\textit{tagged pointers}), em que os dados ocupam os 62 bits mais
 significativos de uma palavra de 64 bits, e os 2 bits menos significativos são
 utilizados para identificar os valores como imediatos, identificação preliminar
@@ -24,15 +29,15 @@ do tipo e diferenciar estes valores dos demais ponteiros no sistema.
 Os demais, como funções, strings, pares e quaisquer estruturas de dados
 complexas, são implementados seguindo uma estrutura de dados comum a todos, de
 forma a simplificar a implementação do mecanismo de gerência de memória.
-Nestes, os 2 bits menos significativos têm obrigatóriamente o valor zero,
-criando a necessidade de um alinhamento de 4 bytes para cada objeto alocado em
-memória. A estrutura utilizada para estes valores complexos é a descrita a
-seguir e pode ser vista na figura \ref{fig:celula}:
+Nestes objetos, o valor da referência possui os 2 bits menos significativos com
+o valor zero, o que cria a necessidade de um alinhamento de 4 bytes para cada
+objeto alocado em memória na \textit{heap}. A estrutura utilizada para estes valores complexos é
+a descrita a seguir e pode ser vista na figura \ref{fig:celula}:
 
-Uma palavra de 64 bits é utilizada para manter informações de tipo, dados
-relacionados à gerência de memória e se o objeto armazenado pode ser
-modificado. Entre estes, deve-se ressaltar os dados de gerência de memória que
-indicam:
+Uma palavra de 64 bits é utilizada para manter um cabeçalho com informações de
+tipo, dados relacionados à gerência de memória e se o objeto armazenado pode
+ser modificado. Entre estes, deve-se ressaltar os dados de gerência de memória
+que indicam:
 
 \begin{itemize}
 
@@ -52,24 +57,25 @@ coleta (\sctt{gc\_has\_mark});
 
 Além destas informações, um conjunto de bits é utilizado para manter a
 informação sobre o tipo destes objetos, para questões de despacho de funções e
-checagem de tipos. Oito bits foram utilizados para este fim, embora devido ao
-grande espaço não utilizado na estrutura mais possam ser utilizados para
-estender o mecanismo de tipos caso seja necessário.
+checagem de tipos. Oito bits foram utilizados para este fim embora mais possam
+ser utilizados para estender o mecanismo de tipos caso seja necessário, devido
+ao grande espaço não utilizado na estrutura.
 
 Em seguida, duas outras palavras de 64 bits são utilizadas para armazenar as
-demais partes da estrutura de dados. Estas duas palavras (chamados daqui em diante
-simplesmente de  \textit{slots}) armazenam valores arbitrários do sistema, usando a mesma técnica
-de tagged pointers mencionada anteriormente, em que valores imediatos são
-armazenados diretamente e valores complexos são armazenados como ponteiros para
-outras estruturas idênticas às aqui descritas. 
+demais partes da estrutura de dados. Estas duas palavras (chamadas daqui em
+diante de \textit{slots}) armazenam valores arbitrários do sistema, usando a
+mesma técnica de tagged pointers mencionada anteriormente, em que valores
+imediatos são armazenados diretamente e valores complexos são armazenados como
+ponteiros para outras estruturas idênticas às aqui descritas. 
 
-Esta estrutura simples representa diretamente a estrutura de dados mais
-utilizada em um dialeto Lisp: a ``célula cons'' que é utilizada para, entre
+Esta organização representa diretamente a estrutura de dados mais utilizada em
+um dialeto Lisp: a ``célula cons''. Esta estrutura é utilizada para, entre
 outras coisas, representar listas, como a representação interna do código
 fonte. Uma célula cons nada mais é que um par de dois outros valores quaisquer
-da linguagem. Esta estrutura é utilizada para todos os demais valores que não
-podem ser representados como valores imediatos, o que é bom o suficiente já que
-o objetivo desta implementação não é o de otimizar para espaço ou tempo.
+da linguagem. Esta estrutura de cabeçalho e slots é utilizada para todos os
+demais valores que não podem ser representados como valores imediatos o que é
+bom o suficiente já que o objetivo desta implementação não é o de otimizar para
+espaço ou tempo, embora seja pouco eficiente em termos de espaço utilizado.
 
 \begin{figure}[h!]
 \centering
@@ -119,14 +125,15 @@ elementos livres (fase de varredura).
 \end{itemize}
 
 Para identificar os elementos que estão em uso, basta seguir as cadeias de
-referências dos \textit{slots} da estrutura descrita acima, a partir de cada um
-dos registradores da máquina virtual, uma estrutura auxiliar, chamada pilha de
-proteção de memória, que é usada para manter referências para termos
-intermediários de uma computação para evitar que uma coleta remova objetos
-úteis antes destes serem postos em uso, e uma outra estrutura utilizada pelo 
-sistema de macros que guarda referência para cada um dos blocos de código
-relacionados a uma macro no sistema. Cada elemento encontrado nestas cadeias
-é então marcado como sendo utilizado.
+referências dos \textit{slots} da estrutura descrita acima, a partir de um
+conjunto de ``raízes'' e marcar cada elemento encontrado nestas cadeias como em
+uso. As raízes utilizadas são cada um dos registradores da máquina virtual, uma
+estrutura auxiliar chamada pilha de proteção de memória e uma estrutura
+utilizada pelo sistema de macros chamada repositório de macros. O repositório
+de macros guarda referência para cada um dos blocos de código relacionados a
+uma macro no sistema enquanto a pilha de proteção de memória é usada para
+manter referências para termos intermediários de uma computação e evitar que
+uma coleta remova objetos úteis antes destes serem postos em uso.
 
 Dado que os elementos são alocados dentro de um ou mais blocos conhecidos de
 memória, é fácil iterar por todos os elementos alocados, reinserindo-os na
@@ -134,16 +141,18 @@ lista de elementos livres se não estiverem marcados e desmarcando os que
 estiverem, para deixar o estado geral da memória pronto para outro ciclo de
 coleta.
 
-Por questões de otimização uma flag (\sctt{gc\_always\_marked}) indica objetos
+Uma \textit{flag} (\sctt{gc\_always\_marked}) indica objetos
 que não são varridos por gerenciarem a própria memória e nunca serem
-desalocados após serem criados. E por haver valores que não ocupam ambos os
-\textit{slots}, ou ainda por haver valores que guardam dados que não são controlados
-pela gerência de memória nestes \textit{slots}, algumas flags
+desalocados após serem criados. Outras duas \textit{flags}
 (\sctt{mark\_policy\_first}, \sctt{mark\_policy\_second}) controlam se é
-necessário continuar o percurso por cada um dos \textit{slots} de um elemento.
+necessário continuar o percurso por cada um dos \textit{slots} de um elemento:
+isto é necessário por haver valores que não ocupam ambos os
+\textit{slots} ou que guardam dados que não são controlados
+pela gerência de memória nestes \textit{slots}, os quais poderiam ser
+corrompidos ao serem modificados pelo sistema de gerência de memória.
 
-Este modelo simples de gerência de memória, conhecido como Mark \& Sweep pelas
-duas fases utilizadas[17], é suficiente para garantir que a máquina virtual
-utilize plenamente a memória disponível antes de terminar por falta de
-memória.
+Este modelo simples de gerência de memória é conhecido como Mark \& Sweep, pelo
+nome das duas fases utilizadas[17], e é suficiente para garantir que a máquina
+virtual utilize plenamente a memória disponível antes de terminar por falta de
+memória embora não seja eficiente.
 
