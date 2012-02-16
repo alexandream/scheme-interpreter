@@ -22,7 +22,7 @@ diretamente como macros \textit{Scheme} utilizando as expressões básicas já
 disponíveis;
 
 \item aproximadamente 60\% (8 de 13) dos tipos primitivos definidos pelo \acs{R7RS}, sendo
- os outros 50\% de implementação opcional ou análoga a de algum tipo já
+ os outros 40\% de implementação opcional ou análoga a de algum tipo já
 implementado (como, por exemplo, vetores que compartilhariam muito código com
 a implementação dada para strings);
 
@@ -66,130 +66,101 @@ o sistema de macros higiênicas poderia ser criado a partir do momento que o
 compilador fosse reestruturado.
 
 Mesmo com essas falhas, a implementação base deste trabalho pode ser vista como
-uma implementação próxima o suficiente da linguagem definida pelo \acs{R7RS}-small
-e utiliza técnicas simples o suficientes para ser de perfeito entendimento por um
-aluno de graduação em ciência da computação
+uma implementação próxima o suficiente da linguagem definida pelo
+\acs{R7RS}-small e utiliza técnicas suficientemente simples para ser de
+perfeito entendimento por um aluno de graduação em ciência da computação. 
 
-\ldots to be continued \ldots
+A implementação total se dá em 4359 linhas de código \textit{C++} e
+\textit{Scheme}, das quais a implementação do núcleo do interpretador consome
+apenas 1448. Todo o restante do trabalho de implementação é relacionado à
+implementação dos tipos primitivos e biblioteca padrão em cima do núcleo
+original.
 
+Analisando apenas o tamanho do esforço de implementação, parece
+razoável supor que a implementação de um subconjunto significativo desta
+implementação possa ser realizada por pequenos grupos de alunos de graduação
+como trabalho de conclusão de disciplinas na área de implementação de
+interpretadores, dado que as técnicas envolvidas sejam abordadas durante o curso.
 
+Analisando a complexidade das técnicas utilizadas dentro das respectivas áreas
+necessárias para a implementação de um interpretador, nada causa motivo para
+supor que esta implementação seja tecnicamente acima do desempenho esperado de
+um aluno de graduação ao fim de um curso. Deve-se observar que as técnicas
+escolhidas figuram quase sempre entre as técnicas introdutórias na literatura
+para cada um dos tópicos abordados\cite{jones:gc}\cite{plai}. A exceção é a
+utilização da máquina \sctt{secd} como máquina virtual já que a utilização de
+uma máquina virtual para um interpretador raramente é abordada pela literatura
+introdutória na área.
 
-
-A implementação do sistema de módulos também fica bastante simplificada: é
-apenas necessário que o compilador inicialize o contexto estático de cada
-módulo como um contexto vazio, incluindo neste as vinculações necessárias de
-acordo com quais símbolos os módulos importados exportam e, enfim, aplicar as
-transformações necessárias antes de inserir informações de módulos importados
-no contexto estático do importador, como prefixação de símbolos.
-
-
-%O problema IV, por sua vez, necessita de um grau de sofisticação um pouco maior
-%do compilador, começando por ser capaz de responder à pergunta 6 descrita
-%acima. Desta forma é possível, em tempo de execução, se referir a um vínculo de
-%variável de forma mais precisa: em vez de referenciar uma variável apenas como
-%``o símblo \texttt{X} com o valor vigente no contexto atual'', podemos referenciá-la
-%como ``o símbolo \texttt{X} com o valor que foi definido no contexto \texttt{N} contextos
-%acima do do contexto atual''.
-%
-%Em grande parte dos casos esta mudança não altera em nada a semântica de
-%referência a variáveis durante o tempo de execução, embora a deixe ligeiramente
-%mais rápida: a referência a uma variável não precisa mais procurar em cada
-%contexto se a variável tem um valor definido neste contexto até encontrar, pode
-%navegar diretamente ao contexto especificado e obter o valor.
-%
-%No entanto, esta referência mais precisa permite que, junto com uma outra
-%mudança, possamos utilizar a técnica de renomear símbolos, como descrita por
-%Jonathan Rees [1] para implementar macros higiênicas.
-%
-%A outra mudança necessária é permitir que o compilador seja capaz de reconhecer
-%não apenas símbolos mas também uma estrutura que vamos chamar de /símbolos
-%renomeados/ na hora de realizar uma referência a um valor. Um símbolo renomeado
-%representa uma referência a uma variável ou operador sintático baseado em um
-%contexto específico, independente do contexto atual. A explicação para a
-%escolha do termo /símbolo renomeado/ é simples: são a base para o mecanismo de
-%macros por renomeação explícita quando discutirmos macros por renomeação
-%explícita.
-%
-%A estrutura de um símbolo renomeado é a seguinte: um símbolo comum, que é o
-%mesmo que o símbolo original antes de ser renomeado; uma referência ao contexto
-%utilizado para renomear este símbolo. A operação de compilar uma referência a
-%um símbolo renomeado /S/, composto do símbolo /X/ e do contexto /E/, pode ser
-%descrita como: 
-%
-% 1 - encontre a distância /D1/ entre /E/ e o contexto mais próximo de /E/ em
-%que /X/ foi vinculado;
-% 
-% 2 - encontre a distância /D2/ entre o contexto atual e /E/;
-%
-% 3 - a referência para /S/ pode ser compilada como a referência para /X/ no
-%contexto distante /D1/ + /D2/ do contexto atual.
-%
-%Agora que o compilador possui a capacidade de compreender tanto referências
-%simples a símbolos como referências a símbolos renomeados, podemos definir um
-%mecanismo de macros que realiza uma transformação higiênica baseada no conceito
-%de macros por renomeação explícita descrito por William Clinger[2]. O mecanismo
-%é simples e é descrito nos parágrafos a seguir:
-%
-%Uma definição de macro cria um objeto macro composto de dois elementos: Uma
-%função de transformação, que recebe como parâmetros a expressão a ser
-%transformada e uma função de renomeação e o contexto estático no qual esta
-%macro foi definida. O compilador então, após criar o objeto macro, associa um
-%nome a este objeto no contexto estático relevante.
-%
-%Ao encontrar a aplicação de uma macro, ou seja, identificar que uma forma
-%aplicativa do tipo (/identificador/ parametros ...) em um contexto estático em
-%que /identificador/ está associado a um objeto macro, o compilador cria uma
-%função /renomear/, de um símbolo /S/, para um símbolo renomeado, que retorna o
-%símbolo renomeado criado a partir do símbolo /S/ e do contexto estático /E/ em
-%que a macro foi criada, se este símbolo puder ser encontrado em /E/.  Caso /S/
-%não possa ser encontrado em /E/, /renomear/ retorna um novo símbolo codificado
-%de forma a não poder conflitar com nenhum outro símbolo escolhido pelo
-%programador -- em geral, utilizando leis de formação de símbolos inválidas na
-%sintaxe escrita.
-%
-%De posse desta função /renomear/ o compilador então interpreta a execução da
-%função de transformação da macro instanciada passando como parâmetros a
-%expressão passada como os parâmetros de aplicação da macro e a função
-%/renomear/ descrita acima.
-%
-%Tendo estas ferramentas à disposição, vamos re-escrever a macro /or2/ descrita
-%anteriormente de forma correta. No código a seguir, /define-er-syntax/ é o
-%identificador utilizado para indicar ao compilador que deve-se definir uma
-%macro utilizando a estratégia de renomeação explícita.
-%
-%\begin{lstlisting}
-%     (define-er-rewriter or2
-%       (lambda (expressao rename)
-%         (let ((primeiro (cadr expressao))
-%               (segundo  (caddr expressao))
-%               (r-let    (rename 'let))
-%               (r-if     (rename 'if))
-%               (r-temp   (rename 'temp)))
-%               
-%           `(,r-let ((,r-temp ,primeiro))
-%              (,r-if ,r-temp 
-%                ,r-temp
-%                ,segundo)))))
-%\end{lstlisting}
-%
-%Pode-se observar que, em cada situação em que antes havia um problema possível
-%por quebra de higiene na implementação desta macro, foi substituído o símbolo
-%em questão pelo resultado da renomeação deste símbolo no contexto de definição
-%da macro. Por exemplo, a aplicação de (rename 'if) garante que o valor
-%retornado é um símbolo renomeado que referencia o valor do símbolo /if/ como
-%este estava definido no momento em que a macro foi criada: levando-se em
-%consideração a execução de /define-er-syntax/ no nível superior, este valor é o
-%operador sintático pré-definido de controle de fluxo condicional.
-%
-%
-%Os mecanismos apresentados acima, em especial a manutenção de um contexto
-%estático por parte do compilador, podem também serem utilizados trivialmente
-%para implementação do mecanismo de módulos. É apenas necessário que o
-%compilador inicialize o contexto estático de cada módulo como um contexto
-%vazio, incluindo neste as vinculações necessárias de acordo com quais símbolos
-%os módulos importados exportam e, enfim, aplicar as transformações necessárias
-%antes de inserir informações de módulos importados no contexto estático do
-%importador, como prefixação de símbolos.
+No entanto, a literatura deixa para discutir tópicos como continuações como
+objetos de primeira classe e eliminação de chamadas terminais quando a base
+dos interpretadores de exemplo já é complexa o suficiente para comportá-los
+sem a necessidade de uma máquina virtual. Utilizando a estrutura proposta por
+Dybvig\cite{3imp} é possível realizar a implementação da máquina virtual e o 
+compilador que a alimenta de forma suficientemente simples e, ao mesmo tempo,
+resolver os tópicos complexos que a literatura normalmente evita em textos
+introdutórios. Na literatura sobre máquinas virtuais, no entanto, a máquina
+\sctt{secd} ganha novamente o aspecto de um elemento introdutório utilizado
+para familiarizar o leitor com o assunto, como visto no livro ``Virtual Machines''
+de Iain Craig\cite{craig:vm}.
 
 
+\section{Alguns problemas}
+\label{sec:problemas-resultados}
+
+Embora a implementação como um todo seja simples, esta simplicidade levou a
+alguns problemas de implementação que poderiam ser corrigidos com o uso de
+algumas técnicas mais avançadas. A seguir são discutidos brevemente alguns
+destes problemas.
+
+\subsection{O Compilador}
+\label{ss:compilador-resultados}
+
+Como já discutido, o compilador apresentado nesta implementação é incapaz
+de reconhecer toda a linguagem \textit{Scheme} como definida pelo \acs{R7RS}.
+A discussão sobre os problemas, incluindo uma possível solução, é feita na 
+seção \ref{ss:solucoes-compilador}.
+
+\subsection{Macros}
+\label{ss:macros-resultados}
+
+A implementação do sistema de macros neste trabalho é, na verdade,
+completamente diferente da descrita pelo \acs{R7RS}. No entanto, com a
+estratégia utilizada no compilador seria impossível implementar o sistema de
+macros descrito pelo \acs{R7RS}. Um sistema de macros alternativo foi
+implementado que, ainda assim, possui alguns problemas caso se deseje utilizar
+este interpretador em projetos reais. Os problemas no sistema de macros
+implementado e as mudanças necessárias para criar um sistema de macros
+compatível com o \acs{R7RS} são descritos na seção \ref{ss:solucoes-macros}.
+
+\subsection{Módulos}
+\label{ss:modulos-resultados}
+
+O sistema de módulos descrito por \acs{R7RS} não foi implementado, novamente
+por não ser possível implementá-lo sobre o compilador utilizado. Para a 
+utilização do interpretador como ambiente interativo pouco se nota esta
+deficiência. No entanto, caso se deseje utilizar o interpretador para a
+execução de um programa real, a falta do sistema de módulos cria diversos
+empecilhos para a organização do código.
+
+Utilizando as modificações descritas na seção \ref{ss:solucoes-compilador},
+no entanto, é possível implementar um sistema de módulos no interpretador
+sem muitos problemas. É apenas necessário que o compilador inicialize o
+contexto estático de cada módulo como um contexto vazio, incluindo neste
+os vínculos necessários de acordo com quais módulos foram importados e
+quais símbolos estes módulos exportam.
+
+\subsection{Performance e memória}
+\label{ss:performance-resultados}
+
+Praticamente todos os algoritmos utilizados nesta implementação podem ter
+sua performance melhorada. Estruturas de dados melhores podem ser utilizadas
+para melhorar o custo de acesso a variáveis e macros. 
+
+O consumo de memória também é muito acima do necessário. Devido à escolha de
+diminuir a complexidade na gerência de memória, as estruturas utilizadas
+utilizam mais memória que o necessário em uma parcela significativa dos valores
+armazenados. O algoritmo de gerência de memória também não se preocupa em
+reduzir fragmentação de memória, o que causa um consumo total de memória ainda
+maior.
 

@@ -8,7 +8,7 @@ tempo de execução nesta implementação.
 
 Historicamente Lisp está tão
 intimamente ligada à gerência automatica de memória, visto que foi a primeira
-linguagem de programação a utilizar a técnica[20], que a escolha por incluir um
+linguagem de programação a utilizar a técnica\cite{mccarthy:lisp}, que a escolha por incluir um
 mecanismo de gerência automática de memória se deu pelo interesse em descrever
 uma implementação, embora simples, o mais próxima possível de uma implementação
 utilizável em cenários reais. O algoritmo de gerência de memória utilizado é 
@@ -102,7 +102,7 @@ Dado que todos os valores armazenados por meio de alocações dinâmicas possuem
 mesmo formato e é trivialmente possível identificar ponteiros para outros
 objetos na estrutura utilizada, fica simples implementar um mecanismo de
 gerência de memória. O algoritmo utilizado é o mesmo descrito por John McCarthy
-em sua implementação original de Lisp[20], e consiste dos seguintes passos:
+em sua implementação original de Lisp\cite{mccarthy:lisp}, e consiste dos seguintes passos:
 
 \begin{itemize}
 
@@ -152,7 +152,7 @@ pela gerência de memória nestes \textit{slots}, os quais poderiam ser
 corrompidos ao serem modificados pelo sistema de gerência de memória.
 
 Este modelo simples de gerência de memória é conhecido como Mark \& Sweep, pelo
-nome das duas fases utilizadas[17], e é suficiente para garantir que a máquina
+nome das duas fases utilizadas\cite{jones:gc}, e é suficiente para garantir que a máquina
 virtual utilize plenamente a memória disponível antes de terminar por falta de
 memória embora não seja eficiente.
 

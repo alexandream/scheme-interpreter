@@ -1,0 +1,76 @@
+A intenção deste trabalho foi demonstrar que a linguagem \textit{Scheme}, como
+descrita pelo relatório \acs{R7RS} em seu terceiro \textit{draft}, pode ser
+implementada de forma simples sem a necessidade de conhecimento muito
+aprofundado sobre implementação de interpretadores de linguagens de
+programação. Inicialmente, a linguagem e o contexto histórico necessário para
+entender esta necessidade foram expostos.
+
+Através do desenvolvimento de uma implementação e da pesquisa e escolha das
+técnicas mais simples encontradas, foi possível concluir uma implementação de
+uma parcela significativa da linguagem descrita pelo \acs{R7RS}. Também foi
+possível  listar diversas técnicas, suficientemente simples, que podem ser
+utilizadas para realizar esta implementação -- mesmo que o programador utilize
+como base apenas descrições das técnicas específicas na literatura, sem uma
+profunda pesquisa das áreas tocadas por cada uma das técnicas utilizadas.
+
+Nos pontos em que a implementação não conseguiu cumprir com todos os requisitos
+de uma implementação da linguagem \textit{Scheme}, foram apresentadas técnicas
+que podem ser utilizadas para circundar problemas de projeto desta implementação.
+Estas técnicas, embora não implementadas, aparentam ser simples o suficiente para
+não impossibilitar a implementação ou demandar um esforço de pesquisa muito maior
+que o esperado pelas premissas deste trabalho.
+
+A maior dificuldade encontrada no decorrer deste trabalho foi a enorme pesquisa
+necessária para encontrar técnicas suficientemente simples que ainda assim 
+pudessem ser usadas em conjunto para realizar a implementação da maior parcela
+possível da linguagem \textit{Scheme}. Desta dificuldade e de uma escolha ruim
+em uma das técnicas utilizadas derivam a maior parte dos problemas e 
+incompatibilidades desta implementação com os requisitos iniciais.
+
+Outra dificuldade foi a falta de experiência do autor com a implementação de
+linguagens de programação, em especial na área de representação de dados tipados
+em tempo de execução e gerência automática de memória. No entanto, a conclusão
+de uma implementação tão próxima dos requisitos iniciais, não obstante a falta
+de experiência, foi um dos indicadores mais fortes para que, no ponto de vista do
+autor, este experimento possa ser visto como um sucesso em demonstrar que a
+linguagem \textit{Scheme} cumpre com a premissa que este trabalho se propôs a
+verificar.
+
+A execução deste trabalho, sua implementação e documentação foram,
+indubitavelmente, o elemento do curso de graduação em ciência da computação que
+mais contribuiu para meu crescimento e realização acadêmica e pessoal. Todas as decisões e
+toda a pesquisa necessária para fazer com que este projeto se tornasse uma
+realidade foram suficientes para despertar um novo interesse sobre as áreas de
+implementação de linguagens de programação, máquinas virtuais e gerenciadores
+automáticos de memória -- e mostrar novos caminhos a partir dos quais continuar
+o aprendizado sobre estas áreas.
+
+\section{Trabalhos Futuros}
+\label{sec:trabalhos-futuros}
+
+Devido ao limite de tempo disponível para o desenvolvimento deste projeto, não foi
+possível corrigir as falhas encontradas durante a implementação, embora fossem
+conceitualmente simples. Trabalhos futuros poderão implementar as sugestões
+descritas nas seções \ref{ss:solucoes-compilador} e \ref{ss:solucoes-macros} e
+aproximar mais a implementação atual do padrão definido pela linguagem.
+
+O próprio relatório \acs{R7RS} está ainda em fase de ratificação, de forma que
+um projeto futuro pode adaptar esta implementação às mudanças nos \textit{drafts}
+subsequentes e na versão final quando esta for finalmente ratificada.
+
+Outra oportunidade para um projeto futuro é o de estender esta implementação
+para completar os módulos opcionais e implementar as funções e tipos que foram
+deixados em aberto por este trabalho.
+
+Uma sugestão para projeto futuro que não se liga diretamente à implementação,
+mas às técnicas e aos resultados obtidos, é compilar as técnicas utilizadas em
+um material mais fluido e sequencial, com descrições mais didáticas, para
+compor um programa de uma disciplina introdutória sobre a implementação de
+interpretadores de linguagens de programação para um curso de graduação em
+ciência da computação.
+
+Todas as técnicas utilizadas podem ser estendidas e alteradas para prover
+melhor desempenho, menor utilização de memória e melhor detecção de informação
+de erros.  Em especial, esta implementação poderia ser adaptada para gerar
+código para uma máquina virtual existente, como a ``Parrot VM'' e colher as
+otimizações constantes feitas nesta.

@@ -116,7 +116,7 @@ na seção \ref{ss:solucoes-compilador}, torna-se possível implementar um
 mecanismo de macros higiênicas conhecido como ``macros baseadas em renomeação
 explícita`` que, embora ainda seja um mecanismo procedural de macros, foi
 desenvolvido visando ser utilizado como base para uma implementação do sistema
-\texttt{syntax-rules} descrito no \acs{R7RS}[21].
+\texttt{syntax-rules} descrito no \acs{R7RS}\cite{scheme-of-things}.
 
 Uma das modificações indicadas na seção \ref{ss:solucoes-compilador} dizia que
 o compilador deveria ser capaz de dizer, dado um símbolo e um contexto estático,
@@ -148,7 +148,7 @@ navegar diretamente ao contexto especificado e obter o valor.
 
 No entanto, agora que a máquina virtual compreende estas novas instruções
 \sctt{lookup}, elas podem ser utilizadas para renomear símbolos, como descrito
-por Jonathan Rees [21] para implementar macros higiênicas.
+por Jonathan Rees\cite{scheme-of-things} para implementar macros higiênicas.
 
 Para isso o compilador deve ser capaz de reconhecer
 não apenas símbolos mas também uma estrutura chamada \textit{símbolos
@@ -246,4 +246,4 @@ conhecido como \texttt{syntax-rules}. A implementação do mesmo baseado no
 sistema de macros por renomeação explícitas, no entanto, é relativamente simples
 e uma implementação em apenas 250 linhas de código \texttt{Scheme} é fornecida
 por Jonathan Rees no mesmo \textit{paper} em que detalha o mecanismo de macros
-por renomeação explícita descrita acima[21].
+por renomeação explícita descrita acima\cite{scheme-of-things}.

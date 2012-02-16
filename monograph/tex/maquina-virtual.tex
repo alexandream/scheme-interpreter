@@ -2,11 +2,14 @@
 \label{sec:maquina-virtual}
 
 A máquina virtual utilizada é baseada na arquitetura de máquina virtual
-\sctt{secd} descrita por Peter Landin [64] com pequenas alterações nos
+\sctt{secd} descrita por Peter Landin\cite{secd} com pequenas alterações nos
 registradores e instruções propostas por Kent Dybvig em sua tese de
-doutorado[19]. Esta, como a de Landin, utiliza uma estrutura baseada em pilha,
+doutorado\cite{3imp}. Esta, como a de Landin, utiliza uma estrutura baseada em pilha,
 com um pequeno número de registradores que apontam para memória organizada em
-listas encadeadas. 
+listas encadeadas. Uma curiosidade interessante: de acordo com algumas fontes
+\cite{craig:vm} a máquina \sctt{secd} pode ser considerada a primeira máquina
+virtual já especificada, embora sua primeira implementação tenha ocorrido apenas
+anos depois.
 
 A estrutura da máquina é bastante simples: cinco registradores e 14 instruções.
 Os registradores são todos baseados em memória organizada como listas, enquanto
@@ -88,8 +91,8 @@ representações para o conteúdo de cada registrador nos exemplos:
 \begin{itemize}
 
 \item Os registradores \sctt{stack} e \sctt{acumulador} serão representados
-pela representação dos seus valores em Scheme, como descrito no apêndice 
-\ref{apendice:sintaxe-leitor} com as seguintes adições:
+pela representação dos seus valores em Scheme
+ com as seguintes adições:
  \begin{itemize}
  
  \item Closures serão representadas com o formato \texttt{closure(contexto;

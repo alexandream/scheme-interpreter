@@ -16,7 +16,7 @@ para mapear e melhor compreender o modelo de computação chamado ``\textit{Acto
 Model}''. Este modelo foi proposto por Carl Hewitt \textit{et al}, em seu paper
 ``\textit{A Universal Modular Actor Formalism for Artificial Intelligence}''.
 Esta implementação inicial, publicada ao longo de diversos memorandos entre
-1975 e 1980, resultou na linguagem de programação \textit{Scheme}.[1]
+1975 e 1980, resultou na linguagem de programação \textit{Scheme}.\cite{first-report}
 
 Como resultado deste empreendimento, Sussman e Steele acabaram por descobrir
 que o modelo proposto por Hewitt podia ser diretamente traduzido para o modelo
@@ -35,7 +35,7 @@ próximos (\textit{Planner} e \textit{Conniver}), baseado mais fortemente no
 modelo do Cálculo Lambda, criou uma forma prática para que estudos teóricos
 feitos sobre a base do Cálculo Lambda tivessem uma materialização prática na
 forma de uma linguagem de programação em que poderiam ser experimentados. Esta
-acabou por se tornar uma ótima plataforma de experimentação[1].
+acabou por se tornar uma ótima plataforma de experimentação\cite{first-report}.
 
 A seguir, é descrito um subconjunto das funcionalidades de \textit{Scheme} de forma a
 familiarizar o leitor com a linguagem e facilitar a compreensão da subsequente
@@ -52,7 +52,7 @@ seus próprios tipos disjuntos dos tipos existentes.
 
 Além disso, não existe em \textit{Scheme} o conceito de classes, como em
 linguagens orientadas a objeto, embora este conceito tenha sido diversas vezes
-implementado em termos das primitivas da linguagem [12][13][14].
+implementado em termos das primitivas da linguagem \cite{tinyclos}\cite{meroon3}\cite{scheme/objects}.
 
 Seu caráter minimalista pode ser verificado na forma como primitivas que são
 comuns em outras linguagens simplesmente não existem em \textit{Scheme}, sendo
@@ -86,7 +86,7 @@ utilizada para manter a cadeia de chamadas). Como exemplo, o código a seguir
 exibe uma função recursiva simples que retorna a soma de dois números naturais
 utilizando apenas as operações de incremento e decremento.
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=none]
     (define (add op1 op2)
       (if (zero? op1)
         op2
@@ -150,7 +150,7 @@ tratamento semântico idêntico ao das formas sintáticas derivadas definidas pe
 usuário, exceto pelo fato que as primeiras são tratadas diretamente pelo
 compilador e as segundas são gerenciadas pelo mecanismo de macros.
 
-\begin{table}[h!]
+\begin{figure}[h!]
  \begin{center}
   \begin{tabular} { | c | p{4cm} | p{4cm} | }
    \hline
@@ -161,7 +161,7 @@ compilador e as segundas são gerenciadas pelo mecanismo de macros.
  \end{center}
  \caption{Diferenças entre Funções e Formas Sintáticas} 
  \label{table:functions-vs-special-forms}
-\end{table}
+\end{figure}
 
 \subsection{Processamento de listas e macros}
 
@@ -222,7 +222,7 @@ recente variável de mesmo nome no contexto dinâmico da pilha de chamadas
 anteriores. A diferença entre as estratégias de escopo léxico e dinâmico é 
 exemplificado a seguir com base no código abaixo:
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=none]
     (define x 0)
     
     (define (func1 n) 
@@ -234,7 +234,7 @@ exemplificado a seguir com base no código abaixo:
 \end{lstlisting}
 
 Caso se observe o código acima sob a ótica de uma implementação Lisp com
-estratégia de escopo dinâmico, ao se executar a uma chamada à função
+estratégia de escopo dinâmico, ao se executar uma chamada à função
 \sctt{func2} passando um número qualquer \sctt{n} como parâmetro, o resultado
 encontrado seria o mesmo de executar a expressão \texttt{(+ n 1)}, visto que o
 valor encontrado na variável \sctt{x} no corpo da função \sctt{func1} é
@@ -248,11 +248,11 @@ em \sctt{func1} é sempre o encontrado no escopo durante a análise estática do
 código sem informações de tempo de execução, ou seja, a variável global
 definida na linha 1.
 
-De acordo com Sussman e Steele[1], esta mudança fez com que o tratamento de
+De acordo com Sussman e Steele\cite{first-report}, esta mudança fez com que o tratamento de
 variáveis livres em um a expressão fosse semanticamente análogo ao dado no
 formalismo do Cálculo Lambda, fornecendo um bom modelo computacional para
 experimentação com o Cálculo Lambda. Novamente de acordo com os criadores da
-linguagem [1], esta proximidade com o Cálculo Lambda foi um dos motivos
+linguagem \cite{first-report}, esta proximidade com o Cálculo Lambda foi um dos motivos
 principais para a utilização futura de \textit{Scheme} como uma linguagem de
 ensino e experimentação de conceitos de linguagens de programação.
 
@@ -277,7 +277,7 @@ dizer que a função criada pela \textit{expressão lambda} contida em
 no escopo em que foi avaliada, e este vínculo é acessado sempre que a função
 resultante desta \textit{expressão lambda} for aplicada.
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=none]
     (define (multiplicador n)
        (lambda (x) (* n x)))
 \end{lstlisting}
@@ -320,7 +320,7 @@ pelo contexto em que aquela computação está acontecendo e o lugar para o qual
 esta computação deve retornar o seu valor após ser avaliada. Por exemplo, no
 trecho de código seguir:
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=none]
 (set! x (+ 3 2))
 
 \end{lstlisting}
@@ -348,7 +348,7 @@ chamada, ou os valores passados para a continuação sempre que esta for
 invocada. O exemplo a seguir utiliza a obtenção da continuação atual para
 simular o efeito da operação``\texttt{return}'' em outras linguagens:
 
-\begin{lstlisting}
+\begin{lstlisting}[frame=none]
     (define (find-return n lst accept?)
        (call/cc 
          (lambda (return)

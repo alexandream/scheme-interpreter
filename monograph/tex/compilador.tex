@@ -2,7 +2,7 @@
 \label{sec:compilador}
 
 A estratégia utilizada para o compilador é derivada de um compilador utilizado
-como exemplo por Kent Dybvig em sua tese de doutorado[19]. Este compilador,
+como exemplo por Kent Dybvig em sua tese de doutorado\cite{3imp}. Este compilador,
 embora simples, sofre de algumas deficiências que serão discutidas na seção
 \ref{ss:solucoes-compilador}.
 
@@ -33,7 +33,7 @@ macros procedurais, compatível com os mecanismos tradicionais de outras
 linguagens da família Lisp, que é discutido na seção \ref{sec:macros}. Uma
 descrição das mudanças necessárias para esta implementação seja capaz de 
 suportar um conjunto maior da linguagem \textit{Scheme}
-vista na seção \ref{sec:solucoes-compilador}.
+vista na seção \ref{ss:solucoes-compilador}.
 
 Apenas dez tipos de expressão são reconhecidos pelo compilador: Referência a variável,
 constantes,  expressões literais, criação de procedimentos, condicionais,
@@ -56,14 +56,32 @@ entrada seja reduzida para uma expressão primitiva, caso seja uma invocação d
 uma forma sintática derivada.
 
 Com uma expressão primitiva o compilador pode então verificar cada um dos casos
-possíveis e gerar o código necessário de acordo com as regras descritas a
-seguir:
+possíveis e gerar o código necessário. 
+
+Durante a discussão das regras utilizadas
+pelo compilador para gerar código, a notação utilizada é a mesma de código
+\textit{Scheme}. A expressividade da linguagem permite que, para efeitos de 
+discussão transformações razoavelmente complexas sejam 
+
+
+O compilador utiliza as seguintes regras para a geração de código, dada uma 
+expressão de entrada e um parâmetro indicando o código seguinte a ser executado
+pela expressão sendo compilada:
 
 \begin{itemize}
 
 \item Caso a expressão seja um símbolo, é retornada uma instrução \sctt{lookup} 
 recebendo como parâmetros o símbolo em questão e o código a ser executado em
 seguida. Este processo pode ser visto na figura \ref{fig:compile-lookup}.
+
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-REFERENCIA(Referencia, Proximo)
+    RESULTADO := MAKE-LOOKUP(Referencia.Variavel, Proximo)
+\end{lstlisting}
+\caption{Processo de compilação de uma referência a variável}
+\label{fig:compile-lookup}
+\end{figure}
 
 \item Caso a expressão seja uma lista o compilador verifica o primeiro elemento
 desta. Se este for um símbolo, e for um dos símbolos indicadores de formas
@@ -86,6 +104,18 @@ símbolo encontrado:
  código seguinte a instrução \sctt{test} gerada anteriormente. Este processo
  pode ser visto na figura \ref{fig:compile-test}.  
  
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-CONDICIONAL(Condicional, Proximo)
+    Consequencia := COMPILAR(Condicional.Consequencia, Proximo)
+    Alternativa := COMPILAR(Condicional.Alternativa, Proximo)
+    Test := MAKE-TEST(Consequencia, Alternativa)
+    Resultado := COMPILAR(Condicional.Condicao, Test)
+\end{lstlisting}
+\caption{Processo de compilação de uma expressão condicional}
+\label{fig:compile-test}
+\end{figure}
+
  \item Caso o símbolo encontrado seja \texttt{quote}, o compilador retorna uma
  instrução \sctt{constant} que possui como parâmetros o primeiro parâmetro 
  passado para a operação quote como valor da constante e o código a ser
@@ -99,11 +129,31 @@ símbolo encontrado:
  como código a ser executado em seguida. Este processo pode ser visto na figura
  \ref{fig:compile-define}
  
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-DEFINICAO(Definicao, Proximo)
+    Bind := MAKE-BIND(Definicao.Variavel, Proximo)
+    Resultado := COMPILAR(Definicao.Expressao, Bind)
+\end{lstlisting}
+\caption{Processo de compilação de uma definição de variável}
+\label{fig:compile-define}
+\end{figure}
+
  \item Caso o símbolo encontrado seja \texttt{set!}, o comportamento é
  praticamente idêntico ao anterior para \texttt{define} exceto por ser utilizada
  uma instrução \sctt{assign} no lugar da instrução \sctt{bind}. Este processo
- pode ser visto na figura \ref{fig:compile-set}
+ pode ser visto na figura \ref{fig:compile-assign}
  
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-ATRIBUICAO(Atribuicao, Proximo)
+    Bind := MAKE-ASSIGN(Atribuicao.Variavel, Proximo)
+    Resultado := COMPILAR(Atribuicao.Expressao, Bind)
+\end{lstlisting}
+\caption{Processo de compilação de uma atribuição}
+\label{fig:compile-assign}
+\end{figure}
+
  \item Caso o símbolo encontrado seja \texttt{define-rewriter}, novamente,
  o comportamento é análogo ao de \texttt{define} exceto por ser utilizada uma
  instrução \sctt{bind-macro} no lugar da instrução \sctt{bind}.
@@ -124,7 +174,24 @@ símbolo encontrado:
  no início da compilação e a instrução \sctt{save} criada como parâmetros, e esta
  instrução \sctt{frame} é retornada. Este processo pode ser visto com mais 
  detalhes na figura \ref{fig:compile-save}.
- 
+
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-CALL/CC(Call/CC, Proximo)
+    Apply := MAKE-APPLY()
+    Expressao := COMPILAR(Call/CC.Expressao, Apply)
+    Argument := MAKE-ARGUMENT(Expressao)
+    Save := MAKE-SAVE(Argument)
+
+    IF IS-RETURN(Proximo) THEN
+        Resultado := Save
+    ELSE
+        Resultado := MAKE-FRAME(Proximo, Save)
+\end{lstlisting}
+\caption{Processo de compilação de uma criação de continuação.}
+\label{fig:compile-save}
+\end{figure}
+
  \item Caso o símbolo encontrado seja \texttt{lambda}, primeiro uma instrução
  \sctt{return} é criada. O compilador então compila o corpo da função a ser
  criada usando a instrução \sctt{return} como código a ser executado em seguida.
@@ -133,17 +200,27 @@ símbolo encontrado:
  o corpo compilado da função como parâmetros, e retornada. Este processo pode ser
  visto na figura \ref{fig:compile-lambda}.
 
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-LAMBDA(Lambda, Proximo)
+    Return := MAKE-RETURN()
+    Conteudo := COMPILAR(Lambda.Corpo, Return)
+    Resultado := MAKE-CLOSURE(Lambda.Argumentos, Conteudo, Proximo)
+\end{lstlisting}
+\caption{Processo de compilação de uma expressão \textit{lambda}}
+\label{fig:compile-lambda}
+\end{figure}
 \end{itemize}
 
 \item Caso a expressão seja uma lista que não se enquadre em nenhum dos casos
 anteriores, então assume-se que seja uma aplicação de função. Primeiro uma
 instrução \sctt{apply} é criada e o primeiro elemento da lista (que corresponde
 à qual função deve ser chamada) é compilado usando como código seguinte esta
-instrução \sctt{apply}.
+instrução \sctt{apply}. 
 
 Então, para cada um dos elementos seguintes da lista, que serão os argumentos
 da aplicação de função, uma instrução \sctt{argument}  é criada usando como
-código seguinte ou o código da instrução \sctt{apply} criada anteriormente 
+código seguinte ou o código compilado da função gerado anteriormente 
 (apenas para o primeiro argumento) ou o código gerado pela compilação do
 argumento anterior na lista (para todos os demais) e o argumento atual é
 compilado usando como código seguinte esta instrução \sctt{argument} criada.
@@ -156,6 +233,25 @@ seguinte e usando como código seguinte o resultado da compilação do último
 argumento, e esta instrução \sctt{frame} é retornada. Este processo pode ser
 visto com mais detalhes na figura \ref{fig:compile-application}.
 
+\begin{figure}
+\begin{lstlisting}
+COMPILAR-APLICACAO(Aplicacao, Proximo)
+    Apply := MAKE-APPLY()
+    Operador := COMPILAR(Aplicacao.Operador, Apply)
+    Acumulado := Operador
+    
+    FOREACH Operando in Aplicacao.Operandos DO
+        Argument := MAKE-ARGUMENT(Acumulado)
+        Acumulado := COMPILAR(Operando, Argument)
+    
+    IF IS-RETURN(Proximo) THEN
+        Resultado := Acumulado
+    ELSE
+        Resultado := MAKE-FRAME(Proximo, Acumulado)
+\end{lstlisting}
+\caption{Processo de compilação de uma expressão de aplicação de função}
+\label{fig:compile-application}
+\end{figure}
 \item Caso a expressão não se enquadre em nenhum dos casos anteriores, 
 assume-se que seja uma constante, então uma instrução \sctt{constant} é criada
 usando a expressão como parâmetro e o código recebido como seguinte é usado 
@@ -173,7 +269,7 @@ uma coleta seja invocada durante a execução do compilador.
 \subsection{Estendendo o compilador}
 \label{ss:solucoes-compilador}
 
-Embora o compilador apresentado aqui seja simples de implementar,
+Embora o compilador apresentado seja simples de implementar,
 ele possui alguns problemas que criam empecilhos para toda a implementação.
 Durante a implementação de outras funcionalidades notou-se que a estratégia
 utilizada seria insuficiente para representar toda a linguagem descrita pelo
@@ -212,7 +308,7 @@ vinculação de macros em tempo de execução) e impossibilitando qualquer anál
 que deva ser realizada em tempo de compilação. A seguir é
 discutida uma evolução do compilador que o torna capaz de resolver os problemas
 I, II e III. O problema IV requer um pouco mais de sofisticação e será
-discutido na seção \ref{sec:solucao-macros}.
+discutido na seção \ref{ss:solucoes-macros}.
 
 Para a solucionar estes problemas, o compilador deve ser capaz de tratar de
 forma especial as construções primitivas que introduzem novos vínculos de nomes

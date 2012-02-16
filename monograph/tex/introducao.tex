@@ -7,7 +7,7 @@ reconhecido como \textit{de facto standard} da linguagem de programação
 princípio, definido no plano de ratificação do relatório, que requer que a
 implementação da linguagem seja passível de ser realizada como meio de pesquisa
 e aprendizado sobre linguagens de programação sem a necessidade de técnicas
-demasiado avançadas[23].
+demasiado avançadas\cite{wg1-charter}.
 
 Scheme é uma linguagem de programação da família Lisp, que difere dos outros
 dialetos Lisp  mais conhecidos (como \textit{Common Lisp} e \textit{Emacs
@@ -15,7 +15,7 @@ Lisp}) por utilizar uma estratégia de escopo totalmente léxico, possuir
 continuações como objetos de primeira classe, e compartilhar o espaço de nomes
 entre funções e variáveis. Também se destaca por manter um considerável foco em
 minimalismo, preferindo primitivas poderosas a complexas funcionalidades
-especializadas[1]. Estas primitivas são, em geral, altamente ortogonais e podem
+especializadas\cite{first-report}. Estas primitivas são, em geral, altamente ortogonais e podem
 ser utilizadas para criar novas expressões compostas,
 
 Por causa destas características, \textit{Scheme} tornou-se ao longo do tempo
@@ -25,9 +25,9 @@ conceitos e funcionalidades sobre a linguagem base pré-definida fez com que
 Scheme fosse bastante utilizado no estudo exploratório de novos conceitos de
 linguagens de programação. Esta linguagem é utilizada em diversos cursos
 iniciais de computação e programação, inclusive em cursos de nível
-médio[2][3][6]. Também é frequentemente utilizada como linguagem de exemplo na
+médio\cite{sicp}\cite{htdp}\cite{scheme-schools}. Também é frequentemente utilizada como linguagem de exemplo na
 literatura da área de projeto de linguagens de programação e design de
-interpretadores[4][5].
+interpretadores\cite{plai}\cite{eopl}.
 
 
 A utilização constante de \textit{Scheme} dentro da comunidade acadêmica
@@ -41,7 +41,7 @@ distanciou a linguagem significativamente dos objetivos mantidos até o
 \acs{R5RS}. Este distanciamento, junto com algumas incompatibilidades entre a
 linguagem descrita pelo \acs{R6RS} e a descrita pelo \acs{R5RS}, fez com que o
 \acs{R6RS} fosse ignorado por uma parcela significativa da comunidade de 
-implementadores[9].
+implementadores\cite{r6rs-controversy}.
 
 Esta divisão levou a comunidade a um esforço de unificação dos objetivos que
 é encarnado na iminente ratificação do \acs{R7RS}. Para evitar os
@@ -50,10 +50,10 @@ frentes: uma linguagem ``pequena'' (posteriormente nomeada simplesmente
 \acs{R7RS}-small), guiada pelos princípios de minimalismo que historicamente
 foram seguidos, e uma linguagem ``grande'' (\acs{R7RS}-large), baseada na
 R7RS-small com a intenção de levá-la em direção aos objetivos do \acs{R6RS}
-sem tanta oposição[10]. 
+sem tanta oposição\cite{r7rs-steering-committee-position}. 
 
-O processo de ratificação da \acs{R7RS}-small está próximo do fim, com o draft
-mais recente tendo sido publicado em março de 2011[11]. Entretanto, a linguagem
+O processo de ratificação da \acs{R7RS}-small está próximo do fim, com o terceiro
+draft tendo sido publicado em março de 2011\cite{r7rs-draft3}. Entretanto, a linguagem
 \acs{R7RS}-large foi deixada para definição futura pois todos os
 participantes do grupo de trabalho dedicado à \acs{R7RS}-large também fazem
 parte do grupo de trabalho dedicado à \acs{R7RS}-small e preferiram terminar o
@@ -83,8 +83,8 @@ implementação \textit{Scheme}.
 Até o momento da conclusão deste trabalho, apenas duas outras tentativas de
 implementar o conteúdo dos drafts da \acs{R7RS}-small foram encontradas:
 \textit{chibi-scheme}, criada por Alex Shinn, presidente do grupo de trabalho
-responsável pelo \acs{R7RS}-small[15]; e \textit{r7rs-bridge} criada por
-Okumura Yuki[16].
+responsável pelo \acs{R7RS}-small\cite{chibi}; e \textit{r7rs-bridge} criada por
+Okumura Yuki\cite{r7rs-bridge}.
 
 Os objetivos destas, no entanto, diferem significativamente deste trabalho:
 
@@ -140,7 +140,13 @@ restante da análise sintática e gera código para uma máquina virtual simples
 \item A seção \ref{sec:maquina-virtual} descreve a arquitetura da máquina
 virtual implementada, seus registradores e instruções;
 
-%%% TODO: To be continued...
 
 \end{itemize}
+
+O capítulo \ref{cap:resultados} lista os resultados conseguidos com a
+implementação, identifica que partes da especificação foram implementados e
+aponta as partes em que esta implementação falha em seguir a especificação.
+
+O capítulo \ref{cap:conclusao} detalha os objetivos atingidos com este trabalho
+e lista possíveis trabalhos futuros baseados neste.
 

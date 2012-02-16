@@ -5,7 +5,7 @@
 
 % This adds support for Unicode chars.
 \usepackage{ucs}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
 % But should be avoided:
 % http://tex.stackexchange.com/questions/13067/utf8x-vs-utf8-inputenc
 
@@ -119,6 +119,7 @@
 	numbers=left,
 	escapeinside={(*@}{@*)},
 	tabsize=4,
+    frame=single,
 	breaklines=true,
 	breakatwhitespace=true,
 	showspaces=false,
@@ -221,33 +222,6 @@
 %\usepackage[all]{hypcap}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Custom commands
-% http://tex.stackexchange.com/questions/1050/whats-the-difference-between-newcommand-and-newcommand
-
-% http://tex.stackexchange.com/questions/24132/overline-outside-of-math-mode
-\makeatletter
-\newcommand*{\textoverline}[1]{$\overline{\hbox{#1}}\m@th$}
-\makeatother
-
-% http://tex.stackexchange.com/questions/15009/macros-for-common-abbreviations
-\newcommand*{\eg}{e.g.\@\xspace}
-\newcommand*{\ie}{i.e.\@\xspace}
-
-\newcommand*{\VBUS}{V\textsubscript{BUS}\xspace}
-\newcommand*{\VCC}{V\textsubscript{CC}\xspace}
-\newcommand*{\VDD}{V\textsubscript{DD}\xspace}
-\newcommand*{\GND}{GND\xspace}
-% http://tex.stackexchange.com/questions/9691/avoid-hyphenation-in-2-d
-\newcommand*{\VUSB}{\mbox{V-USB}\xspace}
-
-\newcommand*{\resultadoimagens}[1]{
-	\includegraphics[width=0.19\textwidth]{resultados/P30T30p0t0_a#1.png}
-	\includegraphics[width=0.19\textwidth]{resultados/P45T45p0t0_a#1.png}
-	\includegraphics[width=0.19\textwidth]{resultados/P60T60p0t0_a#1.png}
-	\includegraphics[width=0.19\textwidth]{resultados/P75T75p0t0_a#1.png}
-	\includegraphics[width=0.19\textwidth]{resultados/P85T85p0t0_a#1.png}
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Other notes
@@ -270,7 +244,7 @@
 %\keywords{AVR, USB, mouse, magnetometer}
 
 \autor{Alexandre Araujo Moreira}
-\titulo{Implementação de Referência da sétima revisão da linguagem de programação Scheme}
+\titulo{Implementação da sétima revisão da linguagem de programação Scheme}
 \orientador{Geraldo Zimbrão}
 %\comentario{}
 \instituicao{Departamento de Ciência da Computação \par Instituto de Matemática \par Universidade Federal do Rio de Janeiro}
@@ -332,8 +306,8 @@ Apresentado por:
 Aprovado por:
 
 \assinatura{Prof. Geraldo Zimbrão \\ Orientador}
-\assinatura{Prof. John Doe of Unknown Surname}
-\assinatura{Profª. Whoever is Chosen to Come}
+\assinatura{Prof. Escolher membro da banca}
+\assinatura{Prof. Escolher membro da banca}
 
 \bigskip
 \bigskip
@@ -353,22 +327,79 @@ Aprovado por:
 %\tableofcontents{}
 
 
-%\pretextualchapter{Dedicatória}
-% TODO: escrever dedicatória (opcional)
-
 \pretextualchapter{Agradecimentos}
 
-\textit{To be written\ldots}
+Agradeço, especialmente e em primeiro lugar, à minha esposa \textsc{Luana dos
+Santos Pinto Araujo}, cujo apoio foi fundamental para que este trabalho se
+realizasse -- sem seu suporte e compreensão seria impossível terminar este 
+projeto.
+
+Agradeço aos professores do DCC/UFRJ, em especial aos professores 
+\textsc{Severino Collier Coutinho} e \textsc{Geraldo Zimbrão}, cujo trabalho foi
+fundamental para meu entendimento dos aspectos teóricos e práticos
+relacionados à implementação de linguagens de programação.
+
+Agradeço ao amigo de faculdade \textsc{Denilson Figueiredo de Sá}, cujo trabalho 
+anterior com \LaTeX e o suporte fornecido durante a execução deste projeto foram
+fundamentais para permitir que me focasse em conteúdo, ignorando a forma, do
+texto.
+
+Um agradecimento especial para os professores \textsc{Gerald ``Gerry'' Sussman}
+e \textsc{Harold ``Hal'' Abelson} por seu trabalho em vídeo-aulas e livro-texto
+do curso ``Structure and Interpretation of Computer Programs'', bem como por
+suas palavras inspiradoras em uma breve discussão por \textit{e-mail}. Sua
+contribuição, embora sutil e provavelmente ignorada por ambos, foi fundamental
+para a escolha deste tema e para a descoberta de uma nova paixão, há muito
+adormecida, pelo estudo de linguagens de programação e sua implementação.
 
 \begin{resumo}
-% TODO: Escrever o resumo.
-\textit{To be written\ldots}
+
+ A linguagem de programação \textit{Scheme} vem sendo utilizada há quase 3
+décadas como base para o ensino de programação, conceitos de linguagens de
+programação e técnicas de implementações de linguagens de programação. 
+
+A última especificação desta linguagem (\acs{R6RS}), no entanto, causou grande
+controvérsia por romper com várias necessidades daqueles que a utilizavam como
+plataforma acadêmica. Assim, a comunidade se reúne mais uma vez para ratificar
+uma nova especificação (\acs{R7RS}) que possa mais uma vez unificar a direção
+que os diversos interesses envolvidos na padronização da linguagem tencionam
+seguir.
+
+Este trabalho tem como objetivo demonstrar que a nova versão da linguagem
+\textit{Scheme}, em processo de ratificação pelo relatório \acs{R7RS}, define
+uma linguagem cuja implementação é passível de ser realizada como objeto de
+estudo e experimentação. Isto deve ser possível inclusive por alunos de
+graduação em ciência da computação sem a necessidade de uma complexa base
+teórica na área de projeto e implementação de interpretadores de linguagens de
+programação, utilizando técnicas e conceitos simples que possam ser abordados
+dentro do escopo de um curso de ciência da computação sem ser necessária muita
+especialização na área.
 
 \end{resumo}
 
 \begin{abstract}
-% TODO: Escrever o abstract
-\textit{To be written\ldots}
+
+The programming language \textit{Scheme} has been in use for the past 3 decades
+as a platform for teaching programming, programming languages concepts and 
+programming languages implementation techniques.
+
+The last specification of this language (\acs{R7RS}), though, caused great
+controversy by departing from various needs of those who used it as an academic
+platform. Therefore, the community gathers once again to ratify a new specification
+(\acs{R7RS}) that may once again unify the direction the various interests 
+surrounding the standardization of the language intend to follow.
+
+This work attempts to confirm that the new version of the language
+\textit{Scheme}, in the process of being ratified by the report \acs{R7RS},
+defines a language of which a viable implementation can be made as grounds for
+study and experimenting. This should be possible even for undergraduate
+students of Computer Science without needing a complex theoretical basis in the
+field of design and implementation of programming languages interpreters, using
+simple techniques and concepts that could be approached in the scope of a
+computer science undergraduate program without specializing too much in this
+field.
+
+
 \end{abstract}
 
 
@@ -429,11 +460,11 @@ Aprovado por:
 
 
 \vfill{}
-\begin{flushright}{}
-``\emph{The world is moving so fast these days that the man who says it
-can't be done is generally interrupted by someone doing it.}''\\
-{\small Elbert Green Hubbard}
-\end{flushright}{\small \par}
+%\begin{flushright}{}
+%``\emph{The world is moving so fast these days that the man who says it
+%can't be done is generally interrupted by someone doing it.}''\\
+%{\small Elbert Green Hubbard}
+%\end{flushright}{\small \par}
 \vfill{}
 
 Neste capítulo são apresentados a motivação e os objetivos deste projeto, uma
@@ -449,11 +480,11 @@ lista de trabalhos relacionados e a estrutura da monografia.
 \label{cap:scheme}
 
 \vfill{}
-\begin{flushright}{}
-``\emph{The world is moving so fast these days that the man who says it
-can't be done is generally interrupted by someone doing it.}''\\
-{\small Elbert Green Hubbard}
-\end{flushright}{\small \par}
+%\begin{flushright}{}
+%``\emph{The world is moving so fast these days that the man who says it
+%can't be done is generally interrupted by someone doing it.}''\\
+%{\small Elbert Green Hubbard}
+%\end{flushright}{\small \par}
 \vfill{}
 
 Neste capítulo são discutidas a linguagem \textit{Scheme} e as características
@@ -469,11 +500,11 @@ mais importantes que a destacam entre outras linguagens de programação.
 \label{cap:estrategia}
 
 \vfill{}
-\begin{flushright}{}
-``\emph{The world is moving so fast these days that the man who says it
-can't be done is generally interrupted by someone doing it.}''\\
-{\small Elbert Green Hubbard}
-\end{flushright}{\small \par}
+%\begin{flushright}{}
+%``\emph{The world is moving so fast these days that the man who says it
+%can't be done is generally interrupted by someone doing it.}''\\
+%{\small Elbert Green Hubbard}
+%\end{flushright}{\small \par}
 \vfill{}
 
 Neste capítulo são discutidas a arquitetura de alto nível da implementação e as
@@ -493,19 +524,33 @@ estratégias utilizadas para a implementação de cada um dos seus módulos.
 \label{cap:resultados}
 
 \vfill{}
-\begin{flushright}{}
-``\emph{The world is moving so fast these days that the man who says it
-can't be done is generally interrupted by someone doing it.}''\\
-{\small Elbert Green Hubbard}
-\end{flushright}{\small \par}
+%\begin{flushright}{}
+%``\emph{The world is moving so fast these days that the man who says it
+%can't be done is generally interrupted by someone doing it.}''\\
+%{\small Elbert Green Hubbard}
+%\end{flushright}{\small \par}
 \vfill{}
 
-\textit{To be written\ldots}
+Neste capítulo são discutidos os resultados obtidos e as deficiências da
+implementação em relação aos requisitos iniciais propostos.
 \newpage
 \include{resultados}
 
+
+\chapter{Conclusão}
+\label{cap:conclusao}
+\vfill{}
+\vfill{}
+
+Neste capítulo é apresentada uma visão geral do que foi atingido por este trabalho
+e uma relação de idéias para projetos futuros que venham a estender este.
+\newpage
+\include{conclusao}
+
 \bibliography{monografia}{}
 \bibliographystyle{plain}
+
+
 
 \end{document}
 
